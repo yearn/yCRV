@@ -1,15 +1,53 @@
 import	React, {ReactElement}				from	'react';
 import	Head								from	'next/head';
-import	Link								from	'next/link';
 import	{AppProps}							from	'next/app';
 import	{DefaultSeo}						from	'next-seo';
-import	{Header}							from	'@yearn-finance/web-lib/layouts';
+import	{AnimatePresence, motion}			from	'framer-motion';
 import	{WithYearn}							from	'@yearn-finance/web-lib/contexts';
-import	{useBalance}						from	'@yearn-finance/web-lib/hooks';
-import	LogoYearn							from	'components/icons/LogoYearn';
-import	Footer								from	'components/StandardFooter';
+import	{WalletContextApp}					from	'contexts/useWallet';
+import	{YearnContextApp}					from	'contexts/useYearn';
+import	{CurveContextApp}					from	'contexts/useCurve';
+import	Header								from	'components/Header';
 
 import	'../style.css';
+
+const transition = {duration: 0.3, ease: [0.17, 0.67, 0.83, 0.67]};
+const variants = {
+	initial: {y: 20, opacity: 0},
+	enter: {y: 0, opacity: 1, transition},
+	exit: {y: -20, opacity: 0, transition}
+};
+
+function	WithLayout(props: AppProps): ReactElement {
+	const	{Component, pageProps, router} = props;
+
+	function handleExitComplete(): void {
+		if (typeof window !== 'undefined') {
+			window.scrollTo({top: 0});
+		}
+	}
+
+	return (
+		<div id={'app'} className={'mx-auto mb-0 flex max-w-6xl'}>
+			<div className={'flex min-h-[100vh] w-full flex-col'}>
+				<Header />
+				<AnimatePresence exitBeforeEnter onExitComplete={handleExitComplete}>
+					<motion.div
+						key={router.asPath}
+						initial={'initial'}
+						animate={'enter'}
+						exit={'exit'}
+						className={'h-full'}
+						variants={variants}>
+						<Component
+							router={props.router}
+							{...pageProps} />
+					</motion.div>
+				</AnimatePresence>
+			</div>
+		</div>
+	);
+}
 
 function	AppHead(): ReactElement {
 	return (
@@ -62,58 +100,11 @@ function	AppHead(): ReactElement {
 	);
 }
 
-function	AppHeader(): ReactElement {
-	const	[shouldDisplayPrice, set_shouldDisplayPrice] = React.useState(true);
-	const	{data: YFIBalance} = useBalance({
-		for: '0x7a1057e6e9093da9c1d4c1d049609b6889fc4c67',
-		token: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e'
-	});
-
-	return (
-		<Header>
-			<div className={'justify-between pr-4 w-full flex-row-center'}>
-				<Link href={'/'}>
-					<div className={'flex flex-row items-center space-x-4 cursor-pointer'}>
-						<LogoYearn />
-						<h1>{process.env.WEBSITE_TITLE}</h1>
-					</div>
-				</Link>
-				<div className={'hidden flex-row items-center space-x-6 md:flex'}>
-					<div
-						className={'cursor-pointer'}
-						onClick={(): void => set_shouldDisplayPrice(!shouldDisplayPrice)}>
-						{shouldDisplayPrice ? (
-							<p className={'text-primary-500'}>
-								{`YFI $ ${YFIBalance.normalizedPrice}`}
-							</p>
-						) : (
-							<p className={'text-primary-500'}>
-								{`Balance: ${YFIBalance.normalized} YFI`}
-							</p>
-						)}
-					</div>
-				</div>
-			</div>
-		</Header>
-	);
-}
-
 function	AppWrapper(props: AppProps): ReactElement {
-	const	{Component, pageProps, router} = props;
-
 	return (
 		<>
 			<AppHead />
-			<div id={'app'} className={'grid flex-col grid-cols-12 gap-x-4 mx-auto mb-0 max-w-6xl md:flex-row'}>
-				<div className={'flex flex-col col-span-12 px-4 w-full min-h-[100vh]'}>
-					<AppHeader />
-					<Component
-						key={router.route}
-						router={props.router}
-						{...pageProps} />
-					<Footer />
-				</div>
-			</div>
+			<WithLayout {...props} />
 		</>
 	);
 }
@@ -124,17 +115,20 @@ function	MyApp(props: AppProps): ReactElement {
 	return (
 		<WithYearn
 			options={{
-				web3: {
-					shouldUseWallets: true,
-					shouldUseStrictChainMode: false,
-					defaultChainID: 1,
-					supportedChainID: [1, 250, 42161, 1337, 31337]
+				ui: {
+					shouldUseThemes: false
 				}
 			}}>
-			<AppWrapper
-				Component={Component}
-				pageProps={pageProps}
-				router={props.router} />
+			<WalletContextApp>
+				<YearnContextApp>
+					<CurveContextApp>
+						<AppWrapper
+							Component={Component}
+							pageProps={pageProps}
+							router={props.router} />
+					</CurveContextApp>
+				</YearnContextApp>
+			</WalletContextApp>
 		</WithYearn>
 	);
 }

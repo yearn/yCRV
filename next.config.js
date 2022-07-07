@@ -1,13 +1,11 @@
 const dotenv = require('dotenv-webpack');
 
 module.exports = ({
-	experimental: {
-		concurrentFeatures: true
-	},
 	plugins: [new dotenv()],
 	images: {
 		domains: [
-			'rawcdn.githack.com'
+			'rawcdn.githack.com',
+			'raw.githubusercontent.com'
 		]
 	},
 	env: {
@@ -35,6 +33,15 @@ module.exports = ({
 			42161: process.env.RPC_URL_ARBITRUM
 		},
 		ALCHEMY_KEY: process.env.ALCHEMY_KEY,
-		INFURA_KEY: process.env.INFURA_KEY
+		INFURA_KEY: process.env.INFURA_KEY,
+
+		BASE_YEARN_ASSETS_URI: 'https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/',
+
+		CRV_TOKEN_ADDRESS: '0xD533a949740bb3306d119CC777fa900bA034cd52',
+		YVBOOST_TOKEN_ADDRESS: '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a',
+		YVECRV_TOKEN_ADDRESS: '0xc5bDdf9843308380375a611c18B50Fb9341f502A',
+		CVXCRV_TOKEN_ADDRESS: '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7',
+		THREECRV_TOKEN_ADDRESS: '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490',
+		ZAP_YEARN_VE_CRV_ADDRESS: '0x9CfEBa9E3124ae4bA296b6DFE5bE770CF2bEcD58'
 	}
 });
