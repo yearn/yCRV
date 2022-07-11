@@ -1,14 +1,14 @@
 export const CardVariantsInner = {
-	rest: {
-		width: 416,
-		height: 752,
-		padding: '48px',
-		boxShadow: '0px 0px 0px 0px hsla(0, 0%, 0%, 0)',
+	rest: (isFocused: boolean): unknown => ({
+		width: isFocused ? 448 : 416,
+		height: isFocused ? 784 : 752,
+		padding: isFocused ? '64px' : '48px',
+		boxShadow: isFocused ? '0px 4px 28px 0px hsla(0, 0%, 0%, 0.25)' : '0px 0px 0px 0px hsla(0, 0%, 0%, 0)',
 		transition: {
 			duration: 0.6,
 			ease: [0.7, -0.4, 0.4, 1.4]
 		}
-	},
+	}),
 	hover: {
 		width: 448,
 		height: 784,
@@ -22,13 +22,13 @@ export const CardVariantsInner = {
 };
 
 export const CardVariants = {
-	rest: {
-		width: 440,
+	rest: (isFocused: boolean): unknown => ({
+		width: isFocused ? 448 : 440,
 		transition: {
 			duration: 0.6,
 			ease: [0.7, -0.4, 0.4, 1.4]
 		}
-	},
+	}),
 	hover: {
 		width: 448,
 		transition: {

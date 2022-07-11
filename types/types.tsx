@@ -110,3 +110,8 @@ export type TDropdownProps = {
 		| React.Dispatch<React.SetStateAction<TDropdownOption>>
 		| ((option: TDropdownOption) => void);
 };
+
+export type	TNormalizedBN = {
+	raw: BigNumber,
+	normalized: number | '',
+}

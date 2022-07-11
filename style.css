@@ -58,6 +58,9 @@
 * {@apply font-aeonik;}
 body {@apply text-neutral-900;}
 
+#nprogress .bar {@apply bg-neutral-900}
+#nprogress .spinner-icon {@apply border-t-neutral-900 border-l-neutral-900}
+
 :root,
 :root body[data-theme="light"] {
 	& .yearn--button {
@@ -139,4 +142,9 @@ body {@apply text-neutral-900;}
 }
 .yveCRV--zap-modal ~ .yearn--modal {
 	@apply sm:max-w-md;
+}
+
+.animate-pulse-half {
+	animation-delay: 1s !important;
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

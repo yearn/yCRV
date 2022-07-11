@@ -1,17 +1,21 @@
-import	React, {ReactElement, useContext, createContext}		from	'react';
-import	{BigNumber, ethers}										from	'ethers';
-import	{Contract}												from	'ethcall';
-import	{useWeb3}												from	'@yearn-finance/web-lib/contexts';
-import	{toAddress, providers, format}							from	'@yearn-finance/web-lib/utils';
-import	{useBalances}											from	'@yearn-finance/web-lib/hooks';
-import	YVECRV_ABI												from	'utils/abi/yveCRV.abi';
-import type * as TWalletTypes									from	'contexts/useWallet.d';
-import type {TClaimable}										from	'types/types';
+import	React, {ReactElement, useContext, createContext}			from	'react';
+import	{BigNumber, ethers}											from	'ethers';
+import	{Contract}													from	'ethcall';
+import	NProgress													from	'nprogress';
+import	{useWeb3}													from	'@yearn-finance/web-lib/contexts';
+import	{toAddress, providers, format, ABI, performBatchedUpdates}	from	'@yearn-finance/web-lib/utils';
+import	{useBalances, useClientEffect}								from	'@yearn-finance/web-lib/hooks';
+import	YVECRV_ABI													from	'utils/abi/yveCRV.abi';
+import	{allowanceKey}												from	'utils';
+import type * as TWalletTypes										from	'contexts/useWallet.d';
+import type {TClaimable}											from	'types/types';
 
 const	defaultProps = {
 	balances: {},
+	allowances: {[ethers.constants.AddressZero]: ethers.constants.Zero},
 	yveCRVClaimable: {raw: ethers.constants.Zero, normalized: 0},
-	useWalletNonce: 0
+	useWalletNonce: 0,
+	refresh: async (): Promise<void> => undefined
 };
 
 const	defaultData = {
@@ -30,19 +34,29 @@ const	defaultData = {
 ******************************************************************************/
 const	WalletContext = createContext<TWalletTypes.TWalletContext>(defaultProps);
 export const WalletContextApp = ({children}: {children: ReactElement}): ReactElement => {
+	const	[nonce] = React.useState<number>(0);
 	const	{provider, address, isActive} = useWeb3();
-	const	{data} = useBalances({
-		key: 0,
+	const	{data, update: updateBalances, isLoading} = useBalances({
+		key: nonce,
 		tokens: [
 			{token: process.env.YVBOOST_TOKEN_ADDRESS},
-			{token: process.env.YVECRV_TOKEN_ADDRESS, for: '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a'},
-			{token: process.env.CRV_TOKEN_ADDRESS, for: '0x32d03db62e464c9168e41028ffa6e9a05d8c6451'},
-			{token: process.env.THREECRV_TOKEN_ADDRESS, for: '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a'},
-			{token: process.env.CVXCRV_TOKEN_ADDRESS, for: '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a'}
+			{token: process.env.YVECRV_TOKEN_ADDRESS},
+			{token: process.env.YVECRV_POOL_LP_ADDRESS},
+			{token: process.env.CRV_TOKEN_ADDRESS},
+			{token: process.env.THREECRV_TOKEN_ADDRESS},
+			{token: process.env.CVXCRV_TOKEN_ADDRESS}
 		]
 	});
-	const	[nonce] = React.useState<number>(0);
 	const	[yveCRVClaimable, set_yveCRVClaimable] = React.useState<TClaimable>({raw: ethers.constants.Zero, normalized: 0});
+	const	[allowances, set_allowances] = React.useState<{[key: string]: BigNumber}>({[ethers.constants.AddressZero]: ethers.constants.Zero});
+
+	useClientEffect((): () => void => {
+		if (isLoading)
+			NProgress.start();
+		else 
+			NProgress.done();
+		return (): unknown => NProgress.done();
+	}, [isLoading]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Once the wallet is connected and a provider is available, we can fetch
@@ -54,20 +68,40 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		}
 		const	currentProvider = provider || providers.getProvider(1);
 		const	ethcallProvider = await providers.newEthCallProvider(currentProvider);
-		const	userAddress = '0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a' || address;
-		const	calls = [];
-
+		const	userAddress = address;
 		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		calls.push(yveCRVContract.claimable(userAddress));
+		const	crvContract = new Contract(process.env.CRV_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
+		const	cvxcrvContract = new Contract(process.env.CVXCRV_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
 
-		const	[claimable] = await ethcallProvider.tryAll(calls) as [BigNumber];
+		const	[
+			claimable,
+			yveCRVAllowanceZap, crvAllowanceZap, cvxcrvAllowanceZap,
+			yveCRVAllowanceLP, crvAllowanceLP
+		] = await ethcallProvider.tryAll([
+			yveCRVContract.claimable('0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a' || userAddress),
+			yveCRVContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
+			crvContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
+			cvxcrvContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
+			yveCRVContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS),
+			crvContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS)
+		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
-		set_yveCRVClaimable({
-			raw: claimable,
-			normalized: format.toNormalizedValue(claimable, 18)
+		performBatchedUpdates((): void => {
+			set_yveCRVClaimable({
+				raw: claimable,
+				normalized: format.toNormalizedValue(claimable, 18)
+			});
+			set_allowances({
+				// ZAP_YEARN_VE_CRV_ADDRESS
+				[allowanceKey(process.env.YVECRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: yveCRVAllowanceZap,
+				[allowanceKey(process.env.CRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]:  crvAllowanceZap,
+				[allowanceKey(process.env.CVXCRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: cvxcrvAllowanceZap,
+				// YVECRV_POOL_LP_ADDRESS
+				[allowanceKey(process.env.YVECRV_TOKEN_ADDRESS, process.env.YVECRV_POOL_LP_ADDRESS)]: yveCRVAllowanceLP,
+				[allowanceKey(process.env.CRV_TOKEN_ADDRESS, process.env.YVECRV_POOL_LP_ADDRESS)]:  crvAllowanceLP
+			});
 		});
 	}, [provider, address, isActive]);
-
 	React.useEffect((): void => {
 		getExtraData();
 	}, [getExtraData]);
@@ -81,11 +115,19 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 				balances: {
 					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: data[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)] || defaultData,
 					[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: data[toAddress(process.env.YVECRV_TOKEN_ADDRESS)] || defaultData,
+					[toAddress(process.env.YVECRV_POOL_LP_ADDRESS)]: data[toAddress(process.env.YVECRV_POOL_LP_ADDRESS)] || defaultData,
 					[toAddress(process.env.CRV_TOKEN_ADDRESS)]: data[toAddress(process.env.CRV_TOKEN_ADDRESS)] || defaultData,
 					[toAddress(process.env.THREECRV_TOKEN_ADDRESS)]: data[toAddress(process.env.THREECRV_TOKEN_ADDRESS)] || defaultData,
 					[toAddress(process.env.CVXCRV_TOKEN_ADDRESS)]: data[toAddress(process.env.CVXCRV_TOKEN_ADDRESS)] || defaultData
 				},
 				yveCRVClaimable,
+				allowances,
+				refresh: async (): Promise<void> => {
+					await Promise.all([
+						updateBalances(),
+						getExtraData()
+					]);
+				},
 				useWalletNonce: nonce
 			}}>
 			{children}

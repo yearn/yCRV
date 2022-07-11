@@ -15,6 +15,8 @@ export type	TBalances = {
 
 export type	TWalletContext = {
 	balances: TBalances,
+	allowances: {[key: string]: BigNumber},
 	yveCRVClaimable: TClaimable;
-	useWalletNonce: number
+	useWalletNonce: number,
+	refresh: () => Promise<void>
 }
