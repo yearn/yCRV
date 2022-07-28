@@ -37,7 +37,7 @@ function	Header(): ReactElement {
 							{'New Vaults'}
 						</p>
 					</Link>
-					<Link href={'/'}>
+					<Link href={'/about'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/about' ? 'active' : '' }`}>
 							{'About'}
 						</p>
