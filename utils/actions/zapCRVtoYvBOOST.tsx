@@ -1,21 +1,26 @@
 import	{BigNumber, ethers} from	'ethers';
 
-export async function	StaticZapCRVtoYvBOOST(
+export async function	calcExpectedOut(
 	provider: ethers.providers.Web3Provider,
+	inputToken: string,
+	outputToken: string,
 	amount: BigNumber
 ): Promise<BigNumber> {
 	const	signer = provider.getSigner();
-	const	address = await signer.getAddress();
 
-
+	console.log({
+		inputToken,
+		outputToken,
+		amount: amount.toString()
+	});
 	try {
 		const	contract = new ethers.Contract(
 			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
-			['function zapCRVtoYvBOOST(uint256 _amount, uint256 _minOut, address _recipient) external returns (uint256)'],
+			['function calc_expected_out(address _input, address _output, uint256 _amount) external view returns (uint256)'],
 			signer
 		);
-		const	receivedAmount = await contract.callStatic.zapCRVtoYvBOOST(amount, 10e18, address);
-		return receivedAmount;
+		const	expectedOutput = await contract.calc_expected_out(inputToken, outputToken, amount);
+		return expectedOutput;
 	} catch(error) {
 		console.error(error);
 		return ethers.constants.Zero;

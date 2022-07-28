@@ -1,16 +1,19 @@
 import	React, {useContext, createContext}		from	'react';
 import	useSWR									from	'swr';
 import	axios									from	'axios';
+import	{ethers}								from	'ethers';
 import	{toAddress}								from	'@yearn-finance/web-lib/utils';
 import	type {TYearnVault}						from	'types/types';
 
 export type	TYearnContext = {
 	yveCRVData: TYearnVault | undefined,
-	yvBoostData: TYearnVault | undefined
+	yvBoostData: TYearnVault | undefined,
+	vaults: {[key: string]: TYearnVault | undefined},
 }
 const	defaultProps: TYearnContext = {
 	yveCRVData: undefined,
-	yvBoostData: undefined
+	yvBoostData: undefined,
+	vaults: {[ethers.constants.AddressZero]: undefined}
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,7 +37,11 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	return (
 		<YearnContext.Provider value={{
 			yveCRVData: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
-			yvBoostData: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS))
+			yvBoostData: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
+			vaults: {
+				[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
+				[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS))
+			}
 		}}>
 			{children}
 		</YearnContext.Provider>

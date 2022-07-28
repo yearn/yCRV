@@ -38,6 +38,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 	const	{provider, address, isActive} = useWeb3();
 	const	{data, update: updateBalances, isLoading} = useBalances({
 		key: nonce,
+		provider: provider || providers.getProvider(1),
 		tokens: [
 			{token: process.env.YVBOOST_TOKEN_ADDRESS},
 			{token: process.env.YVECRV_TOKEN_ADDRESS},
@@ -72,19 +73,21 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
 		const	crvContract = new Contract(process.env.CRV_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
 		const	cvxcrvContract = new Contract(process.env.CVXCRV_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
+		const	yvBoostContract = new Contract(process.env.YVBOOST_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
 
 		const	[
 			claimable,
-			yveCRVAllowanceZap, crvAllowanceZap, cvxcrvAllowanceZap,
+			yveCRVAllowanceZap, crvAllowanceZap, cvxcrvAllowanceZap, yvBoostAllowanceZap,
 			yveCRVAllowanceLP, crvAllowanceLP
 		] = await ethcallProvider.tryAll([
-			yveCRVContract.claimable('0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a' || userAddress),
+			yveCRVContract.claimable(userAddress),
 			yveCRVContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 			crvContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 			cvxcrvContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
+			yvBoostContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 			yveCRVContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS),
 			crvContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS)
-		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
 		performBatchedUpdates((): void => {
 			set_yveCRVClaimable({
@@ -96,6 +99,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 				[allowanceKey(process.env.YVECRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: yveCRVAllowanceZap,
 				[allowanceKey(process.env.CRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]:  crvAllowanceZap,
 				[allowanceKey(process.env.CVXCRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: cvxcrvAllowanceZap,
+				[allowanceKey(process.env.YVBOOST_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: yvBoostAllowanceZap,
 				// YVECRV_POOL_LP_ADDRESS
 				[allowanceKey(process.env.YVECRV_TOKEN_ADDRESS, process.env.YVECRV_POOL_LP_ADDRESS)]: yveCRVAllowanceLP,
 				[allowanceKey(process.env.CRV_TOKEN_ADDRESS, process.env.YVECRV_POOL_LP_ADDRESS)]:  crvAllowanceLP

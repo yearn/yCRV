@@ -29,7 +29,7 @@ function	Header(): ReactElement {
 				<nav className={'flex w-1/3 flex-row items-center space-x-3 md:space-x-6'}>
 					<Link href={'/'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/' ? 'active' : '' }`}>
-							{'Swag & Rock'}
+							{'Main'}
 						</p>
 					</Link>
 					<Link href={'/new-vaults'}>

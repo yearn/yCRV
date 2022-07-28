@@ -1,16 +1,19 @@
 import	React, {ReactElement}						from	'react';
 import	Image										from	'next/image';
 import	{motion}									from	'framer-motion';
-import	{ethers}									from	'ethers';
+import	{BigNumber, ethers}							from	'ethers';
+import	useSWR										from	'swr';
 import	{Button, Input}								from	'@yearn-finance/web-lib/components';
 import	{format, performBatchedUpdates, toAddress,
-	Transaction, defaultTxStatus}					from	'@yearn-finance/web-lib/utils';
+	Transaction, defaultTxStatus, providers}		from	'@yearn-finance/web-lib/utils';
 import	{useWeb3}									from	'@yearn-finance/web-lib/contexts';
+import	{Loader}									from	'@yearn-finance/web-lib/icons';
 import	{useWallet}									from	'contexts/useWallet';
 import	{useYearn}									from	'contexts/useYearn';
 import	{Dropdown}									from	'components/TokenDropdown';
 import	{CardVariantsInner, CardVariants}			from	'utils/animations';
 import	{approveERC20}								from	'utils/actions/approveToken';
+import	{calcExpectedOut}							from	'utils/actions/zapCRVtoYvBOOST';
 import	{max, allowanceKey}							from	'utils';
 import	{TDropdownOption, TNormalizedBN}			from	'types/types';
 
@@ -43,15 +46,48 @@ const	options: TDropdownOption[] = [{
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CVXCRV_TOKEN_ADDRESS)}/logo-128.png`} />
 	)
+}, {
+	label: 'yvBOOST',
+	value: toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string),
+	icon: (
+		<Image
+			width={24}
+			height={24}
+			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YVBOOST_TOKEN_ADDRESS)}/logo-128.png`} />
+	)
 }];
 
-function	CardYvBoost(): ReactElement {
+function	CardMigrate(): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{balances, allowances, refresh} = useWallet();
 	const	{yvBoostData} = useYearn();
 	const	[selectedOption, set_selectedOption] = React.useState(options[0]);
 	const	[amount, set_amount] = React.useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 	const	[txStatusApprove, set_txStatusApprove] = React.useState(defaultTxStatus);
+
+	const estimateOutFetcher = React.useCallback(async (_input: string, _amount: BigNumber): Promise<BigNumber> => {
+		const	timeBefore = new Date().getTime();
+		const	currentProvider = provider || providers.getProvider(1337);
+		const	estimateOut = await calcExpectedOut(
+			currentProvider,
+			_input,
+			'0x1b5f844A68E12143ce0f509Af4f015564998f92F', //yCRV
+			_amount
+		);
+		const	timeAfter = new Date().getTime();
+		//Let's make it like some complexe stuff are processing
+		if (timeAfter - timeBefore < 1000) {
+			await new Promise((resolve): void => {
+				setTimeout(resolve, 1000 - (timeAfter - timeBefore));
+			});
+		}
+		return (estimateOut);
+	}, [provider]);
+
+	const	{data: estimateOut} = useSWR(
+		isActive && amount.raw.gt(0) ? [selectedOption.value, amount.raw] : null, estimateOutFetcher,
+		{refreshInterval: 10000, shouldRetryOnError: false}
+	);
 
 	const	maxAmount = React.useMemo((): TNormalizedBN => {
 		if (!isActive) {
@@ -89,6 +125,7 @@ function	CardYvBoost(): ReactElement {
 		return (
 			<Button
 				onClick={onApproveZap}
+				// onClick={onEstimateZap}
 				className={'w-full'}
 				isBusy={txStatusApprove.pending}
 				isDisabled={!isActive || amount.raw.isZero()}>
@@ -102,11 +139,11 @@ function	CardYvBoost(): ReactElement {
 			initial={'rest'} whileHover={'hover'} animate={'rest'}
 			variants={CardVariants as any}
 			custom={!txStatusApprove.none}
-			className={'flex h-[784px] w-[440px] items-center justify-end'}>
+			className={'flex h-[784px] w-[592px] items-center justify-end'}>
 			<motion.div
 				variants={CardVariantsInner as any}
 				custom={!txStatusApprove.none}
-				className={'h-[752px] w-[416px] bg-neutral-100 p-12'}>
+				className={'h-[752px] w-[560px] bg-neutral-100 p-12'}>
 				<div aria-label={'card title'} className={'flex flex-col pb-8'}>
 					<h2 className={'text-3xl font-bold'}>{'Rock'}</h2>
 					<h2 className={'text-3xl font-bold'}>{'with yvBoost'}</h2>
@@ -190,8 +227,16 @@ function	CardYvBoost(): ReactElement {
 					<div>
 						<label className={'yveCRV--input mb-4'}>
 							<p className={'text-base text-neutral-600'}>{'You will receive'}</p>
-							<div className={'h-10 bg-neutral-0 p-2 text-base font-bold'}>
-								{'7451'}
+
+							<div className={'relative h-10 bg-neutral-0 p-2 text-base font-bold'}>
+								{amount.raw.isZero() ? '-' : (
+									<p className={`${!estimateOut ? 'invisible' : ''}`}>
+										{estimateOut ? format.bigNumberAsAmount(estimateOut, 18, 8, 'yCRV') : ''}
+									</p>
+								)}
+								<div className={`pointer-events-none absolute inset-0 flex h-full flex-row items-center space-x-1 p-2 ${(amount.raw.isZero()) || estimateOut ? 'invisible' : 'visible'}`}>
+									<Loader className={'h-4 w-4 animate-spin text-neutral-400'} />
+								</div>
 							</div>
 						</label>
 					</div>
@@ -203,10 +248,6 @@ function	CardYvBoost(): ReactElement {
 					</div>
 					<div className={'mb-3'}>
 						{renderButton()}
-						{/* onApproveZap */}
-						{/* <Button className={'w-full'}>
-							{'Stake'}
-						</Button> */}
 					</div>
 				</div>
 
@@ -215,4 +256,4 @@ function	CardYvBoost(): ReactElement {
 	);
 }
 
-export default CardYvBoost;
+export default CardMigrate;

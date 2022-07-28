@@ -59,7 +59,7 @@
 body {@apply text-neutral-900;}
 
 #nprogress .bar {@apply bg-neutral-900}
-#nprogress .spinner-icon {@apply border-t-neutral-900 border-l-neutral-900}
+#nprogress .spinner-icon {@apply hidden}
 
 :root,
 :root body[data-theme="light"] {

@@ -12,18 +12,18 @@ import	{useWallet}									from	'contexts/useWallet';
 import	{useYearn}									from	'contexts/useYearn';
 import	{approveERC20}								from	'utils/actions/approveToken';
 import	{CardVariantsInner, CardVariants}			from	'utils/animations';
-import	{OPTIONS}									from	'utils/zapOptions';
+import	{LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO}	from	'utils/zapOptions';
 import	{max, allowanceKey}							from	'utils';
 import	{TDropdownOption, TNormalizedBN}			from	'types/types';
 
-function	CardZap(): ReactElement {
+function	CardMigrateLegacy(): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{balances, allowances, refresh} = useWallet();
 	const	{vaults} = useYearn();
 	const	[txStatusApprove, set_txStatusApprove] = React.useState(defaultTxStatus);
 	const	[txStatusZap, set_txStatusZap] = React.useState(defaultTxStatus);
-	const	[selectedOptionFrom, set_selectedOptionFrom] = React.useState(OPTIONS[0]);
-	const	[selectedOptionTo, set_selectedOptionTo] = React.useState(OPTIONS[1]);
+	const	[selectedOptionFrom, set_selectedOptionFrom] = React.useState(LEGACY_OPTIONS_FROM[0]);
+	const	[selectedOptionTo, set_selectedOptionTo] = React.useState(LEGACY_OPTIONS_TO[0]);
 	const	[amount, set_amount] = React.useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 
 	const expectedOutFetcher = React.useCallback(async (
@@ -63,7 +63,7 @@ function	CardZap(): ReactElement {
 		}).perform();
 	}
 
-	async function	onZap(): Promise<void> {
+	async function	onMigrate(): Promise<void> {
 		new Transaction(provider, async (): Promise<boolean> => false, set_txStatusZap).populate(
 			toAddress(selectedOptionFrom.value as string), //_input_token
 			toAddress(selectedOptionTo.value as string), //_output_token
@@ -91,11 +91,11 @@ function	CardZap(): ReactElement {
 
 		return (
 			<Button
-				onClick={onZap}
+				onClick={onMigrate}
 				className={'w-full'}
 				isBusy={txStatusZap.pending}
 				isDisabled={!isActive || (amount.raw).isZero()}>
-				{'Zap'}
+				{'Migrate'}
 			</Button>
 		);
 	}
@@ -111,25 +111,22 @@ function	CardZap(): ReactElement {
 				custom={!txStatusApprove.none || !txStatusZap.none}
 				className={'h-[701px] w-[560px] bg-neutral-100 p-12'}>
 				<div aria-label={'card title'} className={'flex flex-col pb-8'}>
-					<h2 className={'text-3xl font-bold'}>{'Supercharge your'}</h2>
-					<h2 className={'text-3xl font-bold'}>{'yield with yCRV'}</h2>
+					<h2 className={'text-3xl font-bold'}>{'Out with the old,'}</h2>
+					<h2 className={'text-3xl font-bold'}>{'in with the new'}</h2>
 				</div>
 				<div aria-label={'card description'} className={'w-[98%] pb-10'}>
-					<p className={'text-neutral-600'}>{'Swap any yCRV ecosystem for any other (or from any token period). Maybe you want to swap for a higher yield, or maybe you just like swapping. It’s ok, we don’t judge.'}</p>
+					<p className={'text-neutral-600'}>{'yveCRV and yvBOOST are no longer supported (RIP), but you can easily migrate them to our new and improved tokens. Simply swap below and start earning that sweet sweet yield. '}</p>
 				</div>
 
 				<div className={'grid grid-cols-2 gap-4'}>
 					<label className={'relative z-20 flex flex-col space-y-1'}>
-						<p className={'text-base text-neutral-600'}>{'Swap from'}</p>
+						<p className={'text-base text-neutral-600'}>{'Select Legacy Token'}</p>
 						<Dropdown
-							defaultOption={OPTIONS[0]}
-							options={OPTIONS}
+							defaultOption={LEGACY_OPTIONS_FROM[0]}
+							options={LEGACY_OPTIONS_FROM}
 							selected={selectedOptionFrom}
 							onSelect={(option: TDropdownOption): void => {
 								performBatchedUpdates((): void => {
-									if (option.value === selectedOptionTo.value) {
-										set_selectedOptionTo(OPTIONS.find((o: TDropdownOption): boolean => o.value !== option.value) as TDropdownOption);
-									}
 									set_selectedOptionFrom(option);
 									set_amount({
 										raw: balances[toAddress(option.value as string)]?.raw || ethers.constants.Zero,
@@ -163,10 +160,10 @@ function	CardZap(): ReactElement {
 
 				<div className={'mb-8 grid grid-cols-2 gap-4'}>
 					<label className={'relative z-10 flex flex-col space-y-1'}>
-						<p className={'text-base text-neutral-600'}>{'Swap to'}</p>
+						<p className={'text-base text-neutral-600'}>{'Migrate To'}</p>
 						<Dropdown
-							defaultOption={OPTIONS[1]}
-							options={OPTIONS.filter((option: TDropdownOption): boolean => option.value !== selectedOptionFrom.value)}
+							defaultOption={LEGACY_OPTIONS_TO[0]}
+							options={LEGACY_OPTIONS_TO}
 							selected={selectedOptionTo}
 							onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
 						<p className={'pl-2 !text-xs font-normal text-neutral-600'}>
@@ -194,4 +191,4 @@ function	CardZap(): ReactElement {
 	);
 }
 
-export default CardZap;
+export default CardMigrateLegacy;
