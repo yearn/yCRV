@@ -47,14 +47,14 @@ function	NewVault(): ReactElement {
 
 	return (
 		<section className={'mt-4 flex w-full flex-row items-center justify-center'}>
-			<div className={'w-full bg-neutral-100 p-12'}>
+			<div className={'w-full bg-neutral-100 p-4 md:p-12'}>
 				<div aria-label={'new vault card title'} className={'flex flex-col pb-6'}>
 					<h2 className={'pb-2 text-3xl font-bold'}>{'Add new Vault'}</h2>
 					<p>{'Get 69% discount on fee using new vaults'}</p>
 				</div>
 
 				<div aria-label={'vault selection'} className={'flex flex-col pb-[52px]'}>
-					<div className={'grid grid-cols-6 gap-x-8 gap-y-5'}>
+					<div className={'grid grid-cols-1 gap-x-0 gap-y-5 md:grid-cols-6 md:gap-x-8'}>
 						<label className={'yearn--input relative z-10 col-span-2'}>
 							<p className={'text-base text-neutral-600'}>{'Select token'}</p>
 							<Dropdown

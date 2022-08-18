@@ -2,36 +2,36 @@ import	React, {ReactElement}			from	'react';
 
 function	About(): ReactElement {
 	return (
-		<section className={'mt-4 grid w-full grid-cols-2 gap-10'}>
-			<div className={'w-full bg-neutral-100 p-12'} style={{boxShadow: '0px 4px 28px 0px hsla(0, 0%, 0%, 0.25)'}}>
-				<div aria-label={'card title'} className={'flex flex-col pb-8'}>
+		<section className={'mt-4 grid w-full grid-cols-1 gap-10 md:grid-cols-2'}>
+			<div className={'w-full bg-neutral-100 p-10'}>
+				<div aria-label={'Win the curve wars with Yearn'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'Win the curve wars'}</h2>
 					<h2 className={'text-3xl font-bold'}>{'with Yearn.'}</h2>
 				</div>
-				<div aria-label={'card description'}>
+				<div aria-label={'Win the curve wars with Yearn details'}>
 					<p className={'text-neutral-600'}>{'yveCRV and yvBOOST are no longer supported (RIP), but you can easily migrate them to our new and improved tokens. Simply swap below and start earning that sweet sweet yield. '}</p>
 				</div>
 			</div>
 
 
-			<div className={'w-full bg-neutral-100 p-12'} style={{boxShadow: '0px 4px 28px 0px hsla(0, 0%, 0%, 0.25)'}}>
-				<div aria-label={'card title'} className={'flex flex-col pb-8'}>
+			<div className={'w-full bg-neutral-100 p-10'}>
+				<div aria-label={'Swap anytime for better yield'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'Swap anytime for'}</h2>
 					<h2 className={'text-3xl font-bold'}>{'better yield.'}</h2>
 				</div>
-				<div aria-label={'card description'}>
+				<div aria-label={'Swap anytime for better yield details'}>
 					<p className={'pb-4 text-neutral-600'}>{'If you have st-yCRV and notice that lp-yCRV is generating better yield, you can swap anytime on the main page. Or vice versa.'}</p>
 					<p className={'text-neutral-600'}>{'You get more yield, and a fun swap experience. Win win.'}</p>
 				</div>
 			</div>
 
 
-			<div className={'w-full bg-neutral-100 p-12'} style={{boxShadow: '0px 4px 28px 0px hsla(0, 0%, 0%, 0.25)'}}>
-				<div aria-label={'card title'} className={'flex flex-col pb-8'}>
+			<div className={'w-full bg-neutral-100 p-10'}>
+				<div aria-label={'Better tokens, better yield'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'Better tokens,'}</h2>
 					<h2 className={'text-3xl font-bold'}>{'better yield.'}</h2>
 				</div>
-				<div aria-label={'card description'}>
+				<div aria-label={'Better tokens, better yield details'}>
 					<p className={'pb-4 text-neutral-600'}>{'By simplifying our product (and naming conventions) we can focus on getting users the best ‘hands off’ yield around.'}</p>
 					<p className={'pb-4 text-neutral-600'}>
 						<span className={'text-neutral-900'}>{'yCRV'}</span>
@@ -46,12 +46,12 @@ function	About(): ReactElement {
 			</div>
 
 
-			<div className={'w-full bg-neutral-100 p-12'} style={{boxShadow: '0px 4px 28px 0px hsla(0, 0%, 0%, 0.25)'}}>
-				<div aria-label={'card title'} className={'flex flex-col pb-8'}>
+			<div className={'w-full bg-neutral-100 p-10'}>
+				<div aria-label={'“But ser... I have yveCRV and yvBOOST”'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'“But ser... I have yveCRV'}</h2>
 					<h2 className={'text-3xl font-bold'}>{'and yvBOOST”'}</h2>
 				</div>
-				<div aria-label={'card description'}>
+				<div aria-label={'“But ser... I have yveCRV and yvBOOST” details'}>
 					<p className={'pb-4 text-neutral-600'}>
 						{'Streamlining and simplifying our products means that '}
 						<span className={'text-neutral-900'}>{'yveCRV'}</span>
@@ -67,6 +67,24 @@ function	About(): ReactElement {
 						{' or '}
 						<span className={'text-neutral-900'}>{'lp-yCRV'}</span>
 						{' on the main page.'}
+					</p>
+				</div>
+			</div>
+
+			<div className={'w-full bg-neutral-100 p-10'}>
+				<div aria-label={'Don’t get caught slippin’'} className={'flex flex-col pb-6'}>
+					<h2 className={'text-3xl font-bold'}>{'Don’t get '}</h2>
+					<h2 className={'text-3xl font-bold'}>{'caught slippin’'}</h2>
+				</div>
+				<div aria-label={'Don’t get caught slippin’ details'}>
+					<p className={'pb-4 text-neutral-600'}>
+						{'Slippage is set to 1% and hidden by default to streamline the experience for the average user.'}
+					</p>
+					<p className={'pb-4 text-neutral-600'}>
+						{'For advanced apes users worried about MEV we advise using flashbots rpc.'}
+					</p>
+					<p className={'text-neutral-600'}>
+						{'If the above sentence causes your brain to wrinkle and eyes to glaze over, then you do not need to worry about this step. '}
 					</p>
 				</div>
 			</div>

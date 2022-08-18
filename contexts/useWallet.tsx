@@ -9,6 +9,7 @@ import	YVECRV_ABI													from	'utils/abi/yveCRV.abi';
 import	{allowanceKey}												from	'utils';
 import type * as TWalletTypes										from	'contexts/useWallet.d';
 import type {TClaimable}											from	'types/types';
+import VAULT_ABI from 'utils/abi/vault.abi';
 
 const	defaultProps = {
 	balances: {},
@@ -75,11 +76,16 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		const	cvxcrvContract = new Contract(process.env.CVXCRV_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
 		const	yvBoostContract = new Contract(process.env.YVBOOST_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
 
+		const	YVDAI = '0xdA816459F1AB5631232FE5e97a05BBBb94970c95';
+		const	vault = new Contract(YVDAI, VAULT_ABI);
+
 		const	[
+			pricePerShare,
 			claimable,
 			yveCRVAllowanceZap, crvAllowanceZap, cvxcrvAllowanceZap, yvBoostAllowanceZap,
 			yveCRVAllowanceLP, crvAllowanceLP
 		] = await ethcallProvider.tryAll([
+			vault.pricePerShare(),
 			yveCRVContract.claimable(userAddress),
 			yveCRVContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 			crvContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
@@ -87,8 +93,16 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 			yvBoostContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 			yveCRVContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS),
 			crvContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS)
-		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
+		const	inputValue = BigNumber.from(10000000000000000000n);
+		console.log({
+			inputValue: inputValue.toString(),
+			pps: pricePerShare.toString()
+		});
+		const	expectedShares = inputValue.mul(BigNumber.from(10).pow(18)).div(pricePerShare);
+		console.log(expectedShares.toString());
+  
 		performBatchedUpdates((): void => {
 			set_yveCRVClaimable({
 				raw: claimable,
