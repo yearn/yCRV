@@ -105,7 +105,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 				<h2 className={'text-3xl font-bold'}>{'yield with yCRV'}</h2>
 			</div>
 			<div aria-label={'card description'} className={'w-[98%] pb-10'}>
-				<p className={'text-neutral-600'}>{'Swap any yCRV ecosystem for any other (or from any token period). Maybe you want to swap for a higher yield, or maybe you just like swapping. It’s ok, we don’t judge.'}</p>
+				<p className={'text-neutral-600'}>{'Swap between any two tokens in the yCRV ecosystem (or from any token period). Maybe you want to swap for a higher yield, or maybe you just like swapping. It’s ok, we don’t judge.'}</p>
 			</div>
 
 			<div className={'grid grid-cols-2 gap-4'}>
@@ -142,7 +142,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 				</div>
 			</div>
 
-			<div className={'mt-8 mb-10 hidden grid-cols-2 gap-4 md:grid'}>
+			<div className={'mt-2 mb-4 hidden grid-cols-2 gap-4 md:grid lg:mt-8 lg:mb-10'}>
 				<div className={'flex items-center justify-center'}>
 					<ArrowDown />
 				</div>
@@ -192,7 +192,7 @@ function	CardZapWrapper(): ReactElement {
 			<motion.div
 				initial={'rest'} whileHover={'hover'} animate={'rest'}
 				variants={CardVariants as any}
-				className={'hidden h-[733px] w-[592px] items-center justify-end md:flex'}
+				className={'hidden h-[733px] w-[592px] items-center justify-end lg:flex'}
 				custom={!txStatusApprove.none || !txStatusZap.none}>
 				<motion.div
 					variants={CardVariantsInner as any}
@@ -205,7 +205,7 @@ function	CardZapWrapper(): ReactElement {
 						set_txStatusZap={set_txStatusZap} />
 				</motion.div>
 			</motion.div>
-			<div className={'mt-2 w-full bg-neutral-100 p-4 md:hidden'}>
+			<div className={'w-full bg-neutral-100 p-4 md:p-8 lg:hidden'}>
 				<CardZap
 					txStatusApprove={txStatusApprove}
 					txStatusZap={txStatusZap}

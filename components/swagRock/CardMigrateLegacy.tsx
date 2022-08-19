@@ -139,7 +139,7 @@ function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, s
 				</div>
 			</div>
 
-			<div className={'mt-8 mb-10 hidden grid-cols-2 gap-4 md:grid'}>
+			<div className={'mt-2 mb-4 hidden grid-cols-2 gap-4 md:grid lg:mt-8 lg:mb-10'}>
 				<div className={'flex items-center justify-center'}>
 					<ArrowDown />
 				</div>
@@ -189,7 +189,7 @@ function	CardMigrateLegacyWrapper(): ReactElement {
 			<motion.div
 				initial={'rest'} whileHover={'hover'} animate={'rest'}
 				variants={CardVariants as any}
-				className={'hidden h-[733px] w-[592px] items-center justify-start md:flex'}
+				className={'hidden h-[733px] w-[592px] items-center justify-start lg:flex'}
 				custom={!txStatusApprove.none || !txStatusZap.none}>
 				<motion.div
 					variants={CardVariantsInner as any}
@@ -202,7 +202,7 @@ function	CardMigrateLegacyWrapper(): ReactElement {
 						set_txStatusZap={set_txStatusZap} />
 				</motion.div>
 			</motion.div>
-			<div className={'w-full bg-neutral-100 p-4 md:hidden'}>
+			<div className={'w-full bg-neutral-100 p-4 md:p-8 lg:hidden'}>
 				<CardMigrateLegacy
 					txStatusApprove={txStatusApprove}
 					txStatusZap={txStatusZap}

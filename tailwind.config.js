@@ -25,6 +25,9 @@ module.exports = {
 			height: {
 				'inherit': 'inherit'
 			},
+			screens: {
+				'lg': '1200px'
+			},
 			fontSize: {
 				'3xl': ['32px', '40px'],
 				'8xl': ['88px', '104px']
