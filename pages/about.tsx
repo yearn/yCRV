@@ -9,7 +9,7 @@ function	About(): ReactElement {
 					<h2 className={'text-3xl font-bold'}>{'with Yearn.'}</h2>
 				</div>
 				<div aria-label={'Win the curve wars with Yearn details'}>
-					<p className={'text-neutral-600'}>{'yveCRV and yvBOOST are no longer supported (RIP), but you can easily migrate them to our new and improved tokens. Simply swap below and start earning that sweet sweet yield. '}</p>
+					<p className={'text-neutral-600'}>{'We’ve completely overhauled our suite of curve products; refining, improving, and simplifying everything. The result? Our users get the highest yields, in the most streamlined way possible. Lfg.'}</p>
 				</div>
 			</div>
 
