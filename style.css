@@ -9,6 +9,13 @@
 	font-family: 'Aeonik', sans-serif;
 }
 
+:focus {
+    outline-width: 0px;
+    outline-offset: 0px;
+	outline: none;
+    outline-color: transparent;
+}
+
 * {@apply font-aeonik;}
 body {@apply text-neutral-900;}
 

@@ -131,7 +131,7 @@ function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, s
 				<div className={'flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Amount'}</p>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
-						<b className={'overflow-x-scroll'}>{amount.normalized}</b>
+						<b className={'overflow-x-scroll scrollbar-none'}>{amount.normalized}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{`$${format.amount((amount?.normalized || 0) * (balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0), 2, 2)}`}
@@ -163,7 +163,7 @@ function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, s
 				<div className={'flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'You will receive'}</p>
 					<div className={'flex h-10 items-center text-clip bg-neutral-300 p-2'}>
-						<b className={'overflow-x-scroll'}>{format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18)}</b>
+						<b className={'overflow-x-scroll scrollbar-none'}>{format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18)}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{`$${format.amount((format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0) * (balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0), 2, 2)}`}
