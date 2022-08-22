@@ -12,7 +12,7 @@ import	{useWallet}									from	'contexts/useWallet';
 import	{useYearn}									from	'contexts/useYearn';
 import	{approveERC20}								from	'utils/actions/approveToken';
 import	{CardVariantsInner, CardVariants}			from	'utils/animations';
-import	{OPTIONS}									from	'utils/zapOptions';
+import	{ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO}			from	'utils/zapOptions';
 import	{max, allowanceKey}							from	'utils';
 import	{TDropdownOption, TNormalizedBN}			from	'types/types';
 
@@ -20,8 +20,8 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 	const	{provider, isActive} = useWeb3();
 	const	{balances, allowances, refresh} = useWallet();
 	const	{vaults} = useYearn();
-	const	[selectedOptionFrom, set_selectedOptionFrom] = React.useState(OPTIONS[0]);
-	const	[selectedOptionTo, set_selectedOptionTo] = React.useState(OPTIONS[1]);
+	const	[selectedOptionFrom, set_selectedOptionFrom] = React.useState(ZAP_OPTIONS_FROM[0]);
+	const	[selectedOptionTo, set_selectedOptionTo] = React.useState(ZAP_OPTIONS_TO[1]);
 	const	[amount, set_amount] = React.useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 
 	const expectedOutFetcher = React.useCallback(async (
@@ -112,13 +112,13 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 				<label className={'relative z-20 flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Swap from'}</p>
 					<Dropdown
-						defaultOption={OPTIONS[0]}
-						options={OPTIONS}
+						defaultOption={ZAP_OPTIONS_FROM[0]}
+						options={ZAP_OPTIONS_FROM}
 						selected={selectedOptionFrom}
 						onSelect={(option: TDropdownOption): void => {
 							performBatchedUpdates((): void => {
 								if (option.value === selectedOptionTo.value) {
-									set_selectedOptionTo(OPTIONS.find((o: TDropdownOption): boolean => o.value !== option.value) as TDropdownOption);
+									set_selectedOptionTo(ZAP_OPTIONS_TO.find((o: TDropdownOption): boolean => o.value !== option.value) as TDropdownOption);
 								}
 								set_selectedOptionFrom(option);
 								set_amount({
@@ -155,8 +155,8 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 				<label className={'relative z-10 flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Swap to'}</p>
 					<Dropdown
-						defaultOption={OPTIONS[1]}
-						options={OPTIONS.filter((option: TDropdownOption): boolean => option.value !== selectedOptionFrom.value)}
+						defaultOption={ZAP_OPTIONS_TO[1]}
+						options={ZAP_OPTIONS_TO.filter((option: TDropdownOption): boolean => option.value !== selectedOptionFrom.value)}
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
 					<p className={'!text-green-600 pl-2 !text-xs font-normal'}>

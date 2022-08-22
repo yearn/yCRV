@@ -58,20 +58,43 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 			loading={'eager'}
 			priority />
 	)
-}, {
-	label: 'vl-yCRV',
-	value: toAddress(process.env.VLYCRV_TOKEN_ADDRESS as string),
+} 
+// {
+// 	label: 'vl-yCRV',
+// 	value: toAddress(process.env.VLYCRV_TOKEN_ADDRESS as string),
+// 	icon: (
+// 		<Image
+// 			width={24}
+// 			height={24}
+// 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.VLYCRV_TOKEN_ADDRESS)}/logo-128.png`}
+// 			loading={'eager'}
+// 			priority />
+// 	)
+// }
+];
+
+const	ZAP_OPTIONS_FROM: TDropdownOption[] = [{
+	label: 'CRV',
+	value: toAddress(process.env.CRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
 			width={24}
 			height={24}
-			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.VLYCRV_TOKEN_ADDRESS)}/logo-128.png`}
-			loading={'eager'}
-			priority />
+			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CRV_TOKEN_ADDRESS)}/logo-128.png`} />
 	)
-}];
+}, {
+	label: 'CVXCRV',
+	value: toAddress(process.env.CVXCRV_TOKEN_ADDRESS as string),
+	icon: (
+		<Image
+			width={24}
+			height={24}
+			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CVXCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+	)
+}, ...LEGACY_OPTIONS_TO];
 
-const	OPTIONS: TDropdownOption[] = [{
+
+const	ZAP_OPTIONS_TO: TDropdownOption[] = [{
 	label: 'CRV',
 	value: toAddress(process.env.CRV_TOKEN_ADDRESS as string),
 	icon: (
@@ -82,4 +105,5 @@ const	OPTIONS: TDropdownOption[] = [{
 	)
 }, ...LEGACY_OPTIONS_TO];
 
-export {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, OPTIONS};
+
+export {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO};
