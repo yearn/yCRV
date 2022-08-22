@@ -104,7 +104,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 				<h2 className={'text-3xl font-bold'}>{'Supercharge your'}</h2>
 				<h2 className={'text-3xl font-bold'}>{'yield with yCRV'}</h2>
 			</div>
-			<div aria-label={'card description'} className={'w-[98%] pb-10'}>
+			<div aria-label={'card description'} className={'w-full pb-10 md:w-[96%]'}>
 				<p className={'text-neutral-600'}>{'Swap between any two tokens in the yCRV ecosystem (or from any token period). Maybe you want to swap for a higher yield, or maybe you just like swapping. It’s ok, we don’t judge.'}</p>
 			</div>
 
