@@ -6,6 +6,7 @@ import	{LinkOut} 						from	'@yearn-finance/web-lib/icons';
 import	{Dropdown}						from	'components/TokenDropdown';
 import	{TCurveGauges, TDropdownOption}	from	'types/types';
 import	useCurve						from	'contexts/useCurve';
+import ListOfVaults from 'components/ListOfVaults';
 
 type	TOptionValue = {
 	name: string
@@ -46,7 +47,7 @@ function	NewVault(): ReactElement {
 	}, [gauges]);
 
 	return (
-		<section className={'mt-4 flex w-full flex-row items-center justify-center'}>
+		<section className={'mt-4 flex w-full flex-col items-center justify-center'}>
 			<div className={'w-full bg-neutral-100 p-4 md:p-12'}>
 				<div aria-label={'new vault card title'} className={'flex flex-col pb-6'}>
 					<h2 className={'pb-2 text-3xl font-bold'}>{'Add new Vault'}</h2>
@@ -124,6 +125,7 @@ function	NewVault(): ReactElement {
 					</div>
 				</div>
 			</div>
+			<ListOfVaults />
 		</section>
 	);
 }
