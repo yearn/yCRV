@@ -13,6 +13,7 @@ function	Meta(): ReactElement {
 				<meta name={'description'} content={meta.name} />
 				<meta name={'msapplication-TileColor'} content={meta.title_color} />
 				<meta name={'theme-color'} content={meta.theme_color} />
+				<meta name={'git-url'} content={meta.github} />
 
 				<meta name={'application-name'} content={meta.name} />
 				<meta name={'apple-mobile-web-app-title'} content={meta.name} />
