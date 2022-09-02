@@ -105,7 +105,7 @@ function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, s
 				<h2 className={'text-3xl font-bold'}>{'in with the new'}</h2>
 			</div>
 			<div aria-label={'card description'} className={'w-[98%] pb-10'}>
-				<p className={'text-neutral-600'}>{'yveCRV and yvBOOST are no longer supported (RIP), but you can easily migrate them to our new and improved tokens. Simply swap below and start earning that sweet sweet yield. '}</p>
+				<p className={'text-neutral-600'}>{'yveCRV and yvBOOST are no longer supported (RIP), but you can easily migrate them to our new and improved tokens. Simply convert below and start earning that sweet sweet yield.'}</p>
 			</div>
 
 			<div className={'grid grid-cols-2 gap-4'}>
@@ -124,7 +124,7 @@ function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, s
 								});
 							});
 						}} />
-					<p className={'text-green-600 pl-2 !text-xs font-normal'}>
+					<p className={'pl-2 !text-xs font-normal text-green-600'}>
 						{`APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`}
 					</p>
 				</label>
@@ -156,7 +156,7 @@ function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, s
 						options={LEGACY_OPTIONS_TO}
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
-					<p className={'text-green-600 pl-2 !text-xs font-normal'}>
+					<p className={'pl-2 !text-xs font-normal text-green-600'}>
 						{`APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`}
 					</p>
 				</label>

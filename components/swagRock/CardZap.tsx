@@ -105,7 +105,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 				<h2 className={'text-3xl font-bold'}>{'yield with yCRV'}</h2>
 			</div>
 			<div aria-label={'card description'} className={'w-full pb-10 md:w-[96%]'}>
-				<p className={'text-neutral-600'}>{'Swap between any two tokens in the yCRV ecosystem (or from any token period). Maybe you want to swap for a higher yield, or maybe you just like swapping. It’s ok, we don’t judge.'}</p>
+				<p className={'text-neutral-600'}>{'Swap any token within the yCRV ecosystem for any other. Maybe you want to swap for a higher yield, or maybe you just like swapping. It’s ok, we don’t judge.'}</p>
 			</div>
 
 			<div className={'grid grid-cols-2 gap-4'}>
@@ -127,7 +127,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 								});
 							});
 						}} />
-					<p className={'!text-green-600 pl-2 !text-xs font-normal'}>
+					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
 						{`APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`}
 					</p>
 				</label>
@@ -159,7 +159,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 						options={ZAP_OPTIONS_TO.filter((option: TDropdownOption): boolean => option.value !== selectedOptionFrom.value)}
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
-					<p className={'!text-green-600 pl-2 !text-xs font-normal'}>
+					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
 						{`APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`}
 					</p>
 				</label>
