@@ -51,20 +51,36 @@ function	ListOfVaults(): ReactElement {
 		
 	const columns = React.useMemo((): unknown[] => [
 		{Header: 'Asset', accessor: 'asset', className: 'cell-start pr-8', sortType: 'basic'},
-		{Header: 'TVL', accessor: 'tvl', className: 'cell-end pr-8', sortType: 'basic'},
-		{Header: 'Total incoming rewards', accessor: 'tir', className: 'cell-end pr-8', sortType: 'basic'},
-		{Header: 'Available to stake', accessor: 'availableToStake', className: 'cell-end pr-8', sortType: 'basic'},
-		{Header: 'Staked', accessor: 'staked', className: 'cell-end pr-20', sortType: 'basic'},
-		{Header: '', accessor: 'button', className: 'cell-end pl-1.5', disableSortBy: true, Cell: ({value}: {value: string}): ReactNode => (
-			<button
-				className={'flex h-8 items-center justify-center border border-neutral-900 px-7'}
-				onClick={(event: any): void => {
-					event.stopPropagation();
-					window.open(`https://etherscan.io/address/${value}`, '_blank');
-				}}>
-				{'Stake'}
-			</button>
-		)}
+		{
+			Header: 'TVL', accessor: 'tvl', className: 'cell-end pr-8', sortType: 'basic',
+			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+		},
+		{
+			Header: 'Total incoming rewards', accessor: 'tir', className: 'cell-end pr-8', sortType: 'basic',
+			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+		},
+		{
+			Header: 'Available to stake', accessor: 'availableToStake', className: 'cell-end pr-8', sortType: 'basic',
+			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+		},
+		{
+			Header: 'Staked', accessor: 'staked', className: 'cell-end pr-20', sortType: 'basic',
+			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+
+		},
+		{
+			Header: '', accessor: 'button', className: 'cell-end pl-1.5', disableSortBy: true,
+			Cell: ({value}: {value: string}): ReactNode => (
+				<button
+					className={'flex h-8 items-center justify-center border border-neutral-900 px-7'}
+					onClick={(event: any): void => {
+						event.stopPropagation();
+						window.open(`https://etherscan.io/address/${value}`, '_blank');
+					}}>
+					{'Stake'}
+				</button>
+			)
+		}
 	], []);
 
 	const {
@@ -160,9 +176,7 @@ function	ListOfVaults(): ReactElement {
 
 													</div> : null}
 													<div>
-														{typeof(cell.value) === 'number' ? (
-															`$${format.amount(cell.value, 2, 2)}`
-														) : cell.render('Cell')}
+														{cell.render('Cell')}
 														{cell.column.Header === 'Total incoming rewards' ? (
 															<p className={'text-xs text-neutral-500'}>{'~ every 4d'}</p>
 														) : <p className={'invisible text-xs opacity-0'}>{'-'}</p>}
