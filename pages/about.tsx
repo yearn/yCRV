@@ -1,8 +1,8 @@
-import	React, {ReactElement}			from	'react';
+import React, {ReactElement} from 'react';
 
 function	About(): ReactElement {
 	return (
-		<section className={'mt-4 grid w-full grid-cols-1 gap-10 md:grid-cols-2'}>
+		<section className={'mt-4 grid w-full grid-cols-1 gap-10 pb-10 md:grid-cols-2'}>
 			<div className={'w-full bg-neutral-100 p-10'}>
 				<div aria-label={'Win the curve wars with Yearn'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'Win the curve wars'}</h2>
@@ -81,7 +81,9 @@ function	About(): ReactElement {
 						{'Slippage is set to 1% and hidden by default to streamline the experience for the average user.'}
 					</p>
 					<p className={'pb-4 text-neutral-600'}>
-						{'For advanced apes users worried about MEV we advise using flashbots rpc.'}
+						{'For advanced apes users worried about MEV we advise using '}
+						<a href={'https://docs.flashbots.net/flashbots-protect/rpc/quick-start/'} target={'_blank'} className={'text-neutral-900 underline'} rel={'noreferrer'}>{'flashbots'}</a>
+						{' rpc.'}
 					</p>
 					<p className={'text-neutral-600'}>
 						{'If the above sentence causes your brain to wrinkle and eyes to glaze over, then you do not need to worry about this step. '}

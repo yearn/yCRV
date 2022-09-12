@@ -1,11 +1,11 @@
-import	React, {ReactElement}			from	'react';
-import	{useSettings}					from	'@yearn-finance/web-lib/contexts';
-import	{performBatchedUpdates}			from	'@yearn-finance/web-lib/utils';
-import	{Button}						from	'@yearn-finance/web-lib/components';
-import	{LinkOut} 						from	'@yearn-finance/web-lib/icons';
-import	{Dropdown}						from	'components/TokenDropdown';
-import	{TCurveGauges, TDropdownOption}	from	'types/types';
-import	useCurve						from	'contexts/useCurve';
+import React, {ReactElement, useMemo, useState} from 'react';
+import {useSettings} from '@yearn-finance/web-lib/contexts';
+import {performBatchedUpdates} from '@yearn-finance/web-lib/utils';
+import {Button} from '@yearn-finance/web-lib/components';
+import {LinkOut}  from '@yearn-finance/web-lib/icons';
+import {Dropdown} from 'components/TokenDropdown';
+import {TCurveGauges, TDropdownOption} from 'types/types';
+import {useCurve} from 'contexts/useCurve';
 import ListOfVaults from 'components/ListOfVaults';
 
 type	TOptionValue = {
@@ -28,9 +28,9 @@ const	defaultOption: TDropdownOption = {
 function	NewVault(): ReactElement {
 	const	{networks} = useSettings();
 	const	{gauges} = useCurve();
-	const	[selectedOption, set_selectedOption] = React.useState(defaultOption);
+	const	[selectedOption, set_selectedOption] = useState(defaultOption);
 
-	const	gaugesOptions = React.useMemo((): TDropdownOption[] => {
+	const	gaugesOptions = useMemo((): TDropdownOption[] => {
 		return (
 			gauges
 				.filter((item: TCurveGauges): boolean => !item.side_chain && !item.is_killed && !item.factory)

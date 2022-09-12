@@ -1,30 +1,30 @@
-import	React, {ReactElement}						from	'react';
-import	{motion}									from	'framer-motion';
-import	{BigNumber, ethers}							from	'ethers';
-import	useSWR										from	'swr';
-import	{Button}									from	'@yearn-finance/web-lib/components';
-import	{format, providers, toAddress, Transaction,
-	defaultTxStatus, performBatchedUpdates}			from	'@yearn-finance/web-lib/utils';
-import	{useWeb3}									from	'@yearn-finance/web-lib/contexts';
-import	{Dropdown}									from	'components/TokenDropdown';
-import	ArrowDown									from	'components/icons/ArrowDown';
-import	{useWallet}									from	'contexts/useWallet';
-import	{useYearn}									from	'contexts/useYearn';
-import	{approveERC20}								from	'utils/actions/approveToken';
-import	{CardVariantsInner, CardVariants}			from	'utils/animations';
-import	{LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO}	from	'utils/zapOptions';
-import	{max, allowanceKey}							from	'utils';
-import	{TDropdownOption, TNormalizedBN}			from	'types/types';
+import React, {ReactElement, useCallback, useState} from 'react';
+import {motion} from 'framer-motion';
+import {BigNumber, ethers} from 'ethers';
+import useSWR from 'swr';
+import {Button} from '@yearn-finance/web-lib/components';
+import {Transaction, defaultTxStatus, format, performBatchedUpdates,
+	providers, toAddress} from '@yearn-finance/web-lib/utils';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
+import {Dropdown} from 'components/TokenDropdown';
+import ArrowDown from 'components/icons/ArrowDown';
+import {useWallet} from 'contexts/useWallet';
+import {useYearn} from 'contexts/useYearn';
+import {approveERC20} from 'utils/actions/approveToken';
+import {CardVariants, CardVariantsInner} from 'utils/animations';
+import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
+import {allowanceKey, max} from 'utils';
+import {TDropdownOption, TNormalizedBN} from 'types/types';
 
 function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatusZap}: any): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{balances, allowances, refresh} = useWallet();
 	const	{vaults} = useYearn();
-	const	[selectedOptionFrom, set_selectedOptionFrom] = React.useState(LEGACY_OPTIONS_FROM[0]);
-	const	[selectedOptionTo, set_selectedOptionTo] = React.useState(LEGACY_OPTIONS_TO[0]);
-	const	[amount, set_amount] = React.useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
+	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(LEGACY_OPTIONS_FROM[0]);
+	const	[selectedOptionTo, set_selectedOptionTo] = useState(LEGACY_OPTIONS_TO[0]);
+	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 
-	const expectedOutFetcher = React.useCallback(async (
+	const expectedOutFetcher = useCallback(async (
 		_inputToken: string,
 		_outputToken: string,
 		_amountIn: BigNumber
@@ -181,8 +181,8 @@ function	CardMigrateLegacy({txStatusApprove, set_txStatusApprove, txStatusZap, s
 }
 
 function	CardMigrateLegacyWrapper(): ReactElement {
-	const	[txStatusApprove, set_txStatusApprove] = React.useState(defaultTxStatus);
-	const	[txStatusZap, set_txStatusZap] = React.useState(defaultTxStatus);
+	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
+	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 
 	return (
 		<div>

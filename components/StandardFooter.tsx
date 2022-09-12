@@ -1,12 +1,12 @@
-import	React, {ReactElement}		from	'react';
-import	Link						from	'next/link';
-import	{SwitchTheme}				from	'@yearn-finance/web-lib/components';
-import	{useUI}						from	'@yearn-finance/web-lib/contexts';
-import	{SocialTwitter, SocialGithub, SocialDiscord, SocialMedium}	from	'@yearn-finance/web-lib/icons';
-import	meta						from	'public/manifest.json';
+import React, {ReactElement} from 'react';
+import Link from 'next/link';
+import meta from 'public/manifest.json';
+import {SwitchTheme} from '@yearn-finance/web-lib/components';
+import {useUI} from '@yearn-finance/web-lib/contexts';
+import {SocialDiscord, SocialGithub, SocialMedium, SocialTwitter} from '@yearn-finance/web-lib/icons';
 
-function	Footer(): ReactElement {
-	const	{theme, switchTheme} = useUI();
+function Footer(): ReactElement {
+	const {theme, switchTheme} = useUI();
 
 	return (
 		<footer className={'mx-auto mt-auto hidden w-full max-w-6xl flex-row items-center py-8 md:flex'}>

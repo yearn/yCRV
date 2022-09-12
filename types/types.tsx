@@ -1,7 +1,7 @@
-import {ReactElement} from	'react';
+import {ReactElement} from 'react';
 import {BigNumber} from 'ethers';
 
-export type	TYearnVault = {
+export type TYearnVault = {
     inception: number,
     address: string,
     symbol: string,

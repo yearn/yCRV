@@ -1,4 +1,4 @@
-import	React, {ReactElement}		from	'react';
+import React, {ReactElement} from 'react';
 
 function	IconArrow(props: React.SVGProps<SVGSVGElement>): ReactElement {
 	return (

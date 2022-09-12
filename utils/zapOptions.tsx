@@ -1,13 +1,14 @@
-import	React					from	'react';
-import	Image					from	'next/image';
-import	{toAddress}				from	'@yearn-finance/web-lib/utils';
-import	{TDropdownOption}		from	'types/types';
+import React from 'react';
+import Image from 'next/image';
+import {toAddress} from '@yearn-finance/web-lib/utils';
+import {TDropdownOption} from 'types/types';
 
 const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [{
 	label: 'yveCRV',
 	value: toAddress(process.env.YVECRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'yveCRV'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YVECRV_TOKEN_ADDRESS)}/logo-128.png`}
@@ -19,6 +20,7 @@ const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [{
 	value: toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'yvBOOST'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YVBOOST_TOKEN_ADDRESS)}/logo-128.png`} />
@@ -30,6 +32,7 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 	value: toAddress(process.env.YCRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'yCRV'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_TOKEN_ADDRESS)}/logo-128.png`}
@@ -41,6 +44,7 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 	value: toAddress(process.env.STYCRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'st-yCRV'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.STYCRV_TOKEN_ADDRESS)}/logo-128.png`}
@@ -52,6 +56,7 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 	value: toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'lp-yCRV'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.LPYCRV_TOKEN_ADDRESS)}/logo-128.png`}
@@ -64,6 +69,7 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 // 	value: toAddress(process.env.VLYCRV_TOKEN_ADDRESS as string),
 // 	icon: (
 // 		<Image
+// 			alt={'vl-yCRV'}
 // 			width={24}
 // 			height={24}
 // 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.VLYCRV_TOKEN_ADDRESS)}/logo-128.png`}
@@ -78,6 +84,7 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [{
 	value: toAddress(process.env.CRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'CRV'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CRV_TOKEN_ADDRESS)}/logo-128.png`} />
@@ -87,6 +94,7 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [{
 	value: toAddress(process.env.CVXCRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'CVXCRV'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CVXCRV_TOKEN_ADDRESS)}/logo-128.png`} />
@@ -99,6 +107,7 @@ const	ZAP_OPTIONS_TO: TDropdownOption[] = [{
 	value: toAddress(process.env.CRV_TOKEN_ADDRESS as string),
 	icon: (
 		<Image
+			alt={'CRV'}
 			width={24}
 			height={24}
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CRV_TOKEN_ADDRESS)}/logo-128.png`} />

@@ -1,9 +1,9 @@
-import	React, {useContext, createContext}		from	'react';
-import	useSWR									from	'swr';
-import	axios									from	'axios';
-import	{ethers}								from	'ethers';
-import	{toAddress}								from	'@yearn-finance/web-lib/utils';
-import	type {TYearnVault}						from	'types/types';
+import React, {createContext, useContext} from 'react';
+import useSWR from 'swr';
+import axios from 'axios';
+import {ethers} from 'ethers';
+import {toAddress} from '@yearn-finance/web-lib/utils';
+import type {TYearnVault} from 'types/types';
 
 export type	TYearnContext = {
 	yveCRVData: TYearnVault | undefined,

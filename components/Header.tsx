@@ -1,19 +1,19 @@
-import	React, {ReactElement}		from	'react';
-import	Link						from	'next/link';
-import	{useRouter}					from	'next/router';
-import	{useWeb3}					from	'@yearn-finance/web-lib/contexts';
-import	{truncateHex}				from	'@yearn-finance/web-lib/utils';
-import	{ModalMobileMenu}			from	'@yearn-finance/web-lib/components';
-import	LogoYearn					from	'components/icons/LogoYearn';
+import React, {ReactElement, useEffect, useState} from 'react';
+import Link from 'next/link';
+import {useRouter} from 'next/router';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
+import {truncateHex} from '@yearn-finance/web-lib/utils';
+import {ModalMobileMenu} from '@yearn-finance/web-lib/components';
+import LogoYearn from 'components/icons/LogoYearn';
 
 
 function	Header(): ReactElement {
 	const	router = useRouter();
 	const	{isActive, address, ens, openLoginModal, onDesactivate, onSwitchChain} = useWeb3();
-	const	[hasMobileMenu, set_hasMobileMenu] = React.useState(false);
-	const	[walletIdentity, set_walletIdentity] = React.useState('Connect Wallet');
+	const	[hasMobileMenu, set_hasMobileMenu] = useState(false);
+	const	[walletIdentity, set_walletIdentity] = useState('Connect Wallet');
 
-	React.useEffect((): void => {
+	useEffect((): void => {
 		if (!isActive && address) {
 			set_walletIdentity('Invalid Network');
 		} else if (ens) {

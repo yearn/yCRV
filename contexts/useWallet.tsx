@@ -1,14 +1,14 @@
-import	React, {ReactElement, useContext, createContext}			from	'react';
-import	{BigNumber, ethers}											from	'ethers';
-import	{Contract}													from	'ethcall';
-import	NProgress													from	'nprogress';
-import	{useWeb3}													from	'@yearn-finance/web-lib/contexts';
-import	{toAddress, providers, format, ABI, performBatchedUpdates}	from	'@yearn-finance/web-lib/utils';
-import	{useBalances, useClientEffect}								from	'@yearn-finance/web-lib/hooks';
-import	YVECRV_ABI													from	'utils/abi/yveCRV.abi';
-import	{allowanceKey}												from	'utils';
-import type * as TWalletTypes										from	'contexts/useWallet.d';
-import type {TClaimable}											from	'types/types';
+import React, {ReactElement, createContext, useCallback, useContext, useEffect, useState} from 'react';
+import {BigNumber, ethers} from 'ethers';
+import {Contract} from 'ethcall';
+import NProgress from 'nprogress';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
+import {ABI, format, performBatchedUpdates, providers, toAddress} from '@yearn-finance/web-lib/utils';
+import {useBalances, useClientEffect} from '@yearn-finance/web-lib/hooks';
+import YVECRV_ABI from 'utils/abi/yveCRV.abi';
+import {allowanceKey} from 'utils';
+import type * as TWalletTypes from 'contexts/useWallet.d';
+import type {TClaimable} from 'types/types';
 import VAULT_ABI from 'utils/abi/vault.abi';
 
 const	defaultProps = {
@@ -35,7 +35,7 @@ const	defaultData = {
 ******************************************************************************/
 const	WalletContext = createContext<TWalletTypes.TWalletContext>(defaultProps);
 export const WalletContextApp = ({children}: {children: ReactElement}): ReactElement => {
-	const	[nonce] = React.useState<number>(0);
+	const	[nonce] = useState<number>(0);
 	const	{provider, address, isActive} = useWeb3();
 	const	{data, update: updateBalances, isLoading} = useBalances({
 		key: nonce,
@@ -49,8 +49,8 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 			{token: process.env.CVXCRV_TOKEN_ADDRESS}
 		]
 	});
-	const	[yveCRVClaimable, set_yveCRVClaimable] = React.useState<TClaimable>({raw: ethers.constants.Zero, normalized: 0});
-	const	[allowances, set_allowances] = React.useState<{[key: string]: BigNumber}>({[ethers.constants.AddressZero]: ethers.constants.Zero});
+	const	[yveCRVClaimable, set_yveCRVClaimable] = useState<TClaimable>({raw: ethers.constants.Zero, normalized: 0});
+	const	[allowances, set_allowances] = useState<{[key: string]: BigNumber}>({[ethers.constants.AddressZero]: ethers.constants.Zero});
 
 	useClientEffect((): () => void => {
 		if (isLoading)
@@ -64,7 +64,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 	**	Once the wallet is connected and a provider is available, we can fetch
 	**	the informations for a specific wallet about the claimable amount
 	***************************************************************************/
-	const getExtraData = React.useCallback(async (): Promise<void> => {
+	const getExtraData = useCallback(async (): Promise<void> => {
 		if (!isActive || !provider) {
 			return;
 		}
@@ -120,7 +120,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 			});
 		});
 	}, [provider, address, isActive]);
-	React.useEffect((): void => {
+	useEffect((): void => {
 		getExtraData();
 	}, [getExtraData]);
 

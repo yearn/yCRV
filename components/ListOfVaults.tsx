@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import	React, {ReactElement, ReactNode}				from	'react';
-import	Link											from	'next/link';
-import	{useTable, usePagination, useSortBy}			from	'react-table';
-import	{Chevron}										from	'@yearn-finance/web-lib/icons';
-import	{format}										from	'@yearn-finance/web-lib/utils';
-import	IconChevronPlain								from	'components/icons/IconChevronPlain';
+import React, {ReactElement, ReactNode, useMemo} from 'react';
+import Link from 'next/link';
+import {usePagination, useSortBy, useTable} from 'react-table';
+import {Chevron} from '@yearn-finance/web-lib/icons';
+import {format} from '@yearn-finance/web-lib/utils';
+import IconChevronPlain from 'components/icons/IconChevronPlain';
 
-type		TWorkLogs = {
+type	TWorkLogs = {
 	asset: string,
 	tvl: number,
 	tir: number,
@@ -15,7 +15,7 @@ type		TWorkLogs = {
 	button: string
 }
 function	ListOfVaults(): ReactElement {
-	const data = React.useMemo((): TWorkLogs[] => ([
+	const data = useMemo((): TWorkLogs[] => ([
 		{
 			asset: 'Curve KP3R-ETH',
 			tvl: 69420420.42,
@@ -49,7 +49,7 @@ function	ListOfVaults(): ReactElement {
 		// }))
 	), []);
 		
-	const columns = React.useMemo((): unknown[] => [
+	const columns = useMemo((): unknown[] => [
 		{Header: 'Asset', accessor: 'asset', className: 'cell-start pr-8', sortType: 'basic'},
 		{
 			Header: 'TVL', accessor: 'tvl', className: 'cell-end pr-8', sortType: 'basic',

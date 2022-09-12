@@ -1,6 +1,6 @@
-import	React, {ReactElement}	from	'react';
-import	CardZap					from	'components/swagRock/CardZap';
-import	CardMigrateLegacy		from	'components/swagRock/CardMigrateLegacy';
+import React, {ReactElement} from 'react';
+import CardZap from 'components/swagRock/CardZap';
+import CardMigrateLegacy from 'components/swagRock/CardMigrateLegacy';
 
 function	Index(): ReactElement {
 	return (

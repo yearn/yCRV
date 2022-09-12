@@ -1,9 +1,9 @@
-import	React, {useContext, createContext}		from	'react';
-import	useSWR									from	'swr';
-import	axios									from	'axios';
-import	type {TCurveGauges}						from	'types/types';
+import React, {createContext, useContext} from 'react';
+import useSWR from 'swr';
+import axios from 'axios';
+import type {TCurveGauges} from 'types/types';
 
-export type	TCurveContext = {
+export type TCurveContext = {
 	gauges: TCurveGauges[],
 }
 const	defaultProps: TCurveContext = {

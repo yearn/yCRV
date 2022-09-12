@@ -1,10 +1,10 @@
-import	React, {ReactElement}	from	'react';
-import	{Menu, Transition}		from	'@headlessui/react';
-import	IconChevron				from	'components/icons/IconChevron';
-import type {TDropdownProps}	from	'types/types';
+import React, {Fragment, ReactElement, cloneElement, useRef} from 'react';
+import {Menu, Transition} from '@headlessui/react';
+import IconChevron from 'components/icons/IconChevron';
+import type {TDropdownProps} from 'types/types';
 
 function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}: TDropdownProps): ReactElement {
-	const	buttonRef = React.useRef<HTMLButtonElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
 	return (
 		<div>
 			<Menu as={'menu'} className={'relative inline-block w-full text-left'}>
@@ -14,7 +14,7 @@ function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}
 							ref={buttonRef}
 							className={'flex h-10 w-full items-center justify-between border border-neutral-600 p-2 text-base text-neutral-900'}>
 							<div className={'flex flex-row items-center'}>
-								{selected?.icon ? React.cloneElement(selected.icon) : null}
+								{selected?.icon ? cloneElement(selected.icon) : null}
 								<p className={`${selected.icon ? 'pl-2' : 'pl-0'} ${(!selected?.label && !defaultOption?.label) ? 'italic text-neutral-600' : 'text-neutral-900'} font-normal`}>
 									{selected?.label || defaultOption?.label || placeholder}
 								</p>
@@ -22,7 +22,7 @@ function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}
 							<IconChevron className={`ml-3 h-6 w-6 transition-transform ${open ? '-rotate-180' : 'rotate-0'}`} />
 						</Menu.Button>
 						<Transition
-							as={React.Fragment}
+							as={Fragment}
 							show={open}
 							enter={'transition duration-100 ease-out'}
 							enterFrom={'transform scale-95 opacity-0'}
@@ -41,7 +41,7 @@ function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}
 												}}
 												data-active={active}
 												className={'yveCRV--dropdown-menu-item'}>
-												{option?.icon ? React.cloneElement(option.icon) : null}
+												{option?.icon ? cloneElement(option.icon) : null}
 												<p className={`${option.icon ? 'pl-2' : 'pl-0'} font-normal text-neutral-900`}>
 													{option.label}
 												</p>

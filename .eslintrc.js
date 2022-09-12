@@ -10,21 +10,23 @@ module.exports = {
 		'plugin:react/recommended',
 		'plugin:react-hooks/recommended',
 		'plugin:tailwindcss/recommended',
-		'plugin:@typescript-eslint/recommended'
+		'plugin:@typescript-eslint/recommended',
+		'next/core-web-vitals'
 	],
 	'parser': '@typescript-eslint/parser',
 	'parserOptions': {
 		'ecmaFeatures': {
 			'jsx': true
 		},
-		'ecmaVersion': 12,
+		'ecmaVersion': 2022,
 		'sourceType': 'module',
 		'project': ['./tsconfig.json']
 	},
 	'plugins': [
 		'@typescript-eslint',
 		'react',
-		'tailwindcss'
+		'tailwindcss',
+		'unused-imports'
 	],
 	'settings': {
 		'react': {
@@ -45,7 +47,18 @@ module.exports = {
 		'array-bracket-spacing': [2, 'never'],
 		'react/jsx-curly-brace-presence': ['error', {'props': 'always', 'children': 'always'}],
 		'semi': 'error',
+		'import/no-named-as-default-member': 2,
 		'tailwindcss/no-custom-classname': 0,
+		'unused-imports/no-unused-imports': 'error',
+		'unused-imports/no-unused-vars': ['warn', {
+			'vars': 'all',
+			'varsIgnorePattern': '^_',
+			'args': 'after-used',
+			'argsIgnorePattern': '^_'
+		}],
+		'sort-imports': ['error', {
+			'ignoreDeclarationSort': true
+		}],
 		'@typescript-eslint/no-var-requires': 0,
 		'@typescript-eslint/no-unused-vars': 2,
 		'@typescript-eslint/array-type': ['error', {'default': 'array'}],

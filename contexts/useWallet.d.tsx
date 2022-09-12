@@ -1,5 +1,5 @@
-import 	{BigNumber}			from	'ethers';
-import type {TClaimable}	from	'types/types';
+import {BigNumber} from 'ethers';
+import type {TClaimable} from 'types/types';
 
 export type	TBalances = {
 	[address: string]: {

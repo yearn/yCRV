@@ -1,5 +1,5 @@
-import	{toAddress}	from	'@yearn-finance/web-lib/utils';
-import	{BigNumber} from	'ethers';
+import {toAddress} from '@yearn-finance/web-lib/utils';
+import {BigNumber} from 'ethers';
 
 export function	max(input: BigNumber, balance: BigNumber): BigNumber {
 	if (input.gt(balance)) {
