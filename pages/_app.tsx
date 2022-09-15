@@ -25,13 +25,13 @@ function	TextAnimation(): ReactElement {
 			<Script src={'/textanimation.js'} />
 			<div className={'text'}>
 				<p className={'wordWrapper'}> 
-					{/* <span className={'word'}>{'Gigantic'}</span> */}
-					{/* <span className={'word'}>{'Seismic'}</span> */}
+					<span className={'word'}>{'Gigantic'}</span>
+					<span className={'word'}>{'Seismic'}</span>
 					<span className={'word'}>{'Substantial'}</span>
-					{/* <span className={'word'}>{'Immense'}</span> */}
-					{/* <span className={'word'}>{'Colossal'}</span> */}
-					{/* <span className={'word'}>{'Humongous'}</span> */}
-					{/* <span className={'word'}>{'Giant'}</span> */}
+					<span className={'word'}>{'Immense'}</span>
+					<span className={'word'}>{'Colossal'}</span>
+					<span className={'word'}>{'Humongous'}</span>
+					<span className={'word'}>{'Giant'}</span>
 					<span className={'word'}>{'Stupendous'}</span>
 					<span className={'word'}>{'Jumbo'}</span>
 				</p>
