@@ -53,6 +53,6 @@ function splitLetters(word) {
 
 setTimeout(() => {
 	changeWord();
-	setInterval(changeWord, 4000);
+	setInterval(changeWord, 3000);
 }, 3000);
 

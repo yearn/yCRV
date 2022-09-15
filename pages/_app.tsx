@@ -24,17 +24,16 @@ function	TextAnimation(): ReactElement {
 		<>
 			<Script src={'/textanimation.js'} />
 			<div className={'text'}>
-				<p>
-					<span className={'word'}>{'Gigantic'}</span>
-					<span className={'word'}>{'Seismic'}</span>
+				<p className={'wordWrapper'}> 
+					{/* <span className={'word'}>{'Gigantic'}</span> */}
+					{/* <span className={'word'}>{'Seismic'}</span> */}
 					<span className={'word'}>{'Substantial'}</span>
-					<span className={'word'}>{'Immense'}</span>
-					<span className={'word'}>{'Colossal'}</span>
-					<span className={'word'}>{'Humongous'}</span>
-					<span className={'word'}>{'Giant'}</span>
+					{/* <span className={'word'}>{'Immense'}</span> */}
+					{/* <span className={'word'}>{'Colossal'}</span> */}
+					{/* <span className={'word'}>{'Humongous'}</span> */}
+					{/* <span className={'word'}>{'Giant'}</span> */}
 					<span className={'word'}>{'Stupendous'}</span>
 					<span className={'word'}>{'Jumbo'}</span>
-
 				</p>
 			</div>
 		</>
@@ -57,16 +56,18 @@ function	WithLayout(props: AppProps): ReactElement {
 						className={'h-full'}
 						variants={variants}>
 						<div className={'mx-auto mt-20 mb-44 flex w-full max-w-6xl flex-col items-center justify-center'}>
-							<div className={'relative h-[104px] w-[600px]'}>
+							<div className={'relative h-12 w-[600px] md:h-[104px]'}>
 								<TextAnimation />
 							</div>
 							<div className={'mt-8 mb-6'}>
-								<p className={'text-2xl'}>{'whatever word you choose, get supercharged yields on CRV with Yearn.'}</p>
+								<p className={'text-center text-lg md:text-2xl'}>{'whatever word you choose, get supercharged yields on CRV with Yearn.'}</p>
 							</div>
 							<div>
 								<Button
+									as={'a'}
+									href={'#swap'}
 									className={'w-full'}>
-									{'Take me to the yield'}
+									{'To the yield!'}
 								</Button>
 							</div>
 						</div>

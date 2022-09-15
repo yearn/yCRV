@@ -22,6 +22,11 @@ body {@apply text-neutral-900;}
 #nprogress .bar {@apply bg-neutral-900}
 #nprogress .spinner-icon {@apply hidden}
 
+#swap {
+	@apply scroll-mt-12 mb-0 md:mb-96;
+}
+
+
 :root,
 :root body[data-theme="light"] {
 	& .yearn--button {
@@ -119,50 +124,31 @@ body {@apply text-neutral-900;}
 	}
 }
 
-
-
-
-
-
-
-
-
-
-.text {
-  width: 450px;
-  height: 40px;
+.wordWrapper {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0;
 }
-
-p {
-  display: inline-block;
-  vertical-align: top;
-  margin: 0;
-}
-
 .word {
-	@apply absolute text-neutral-900 font-bold text-8xl uppercase text-center flex justify-center items-center;
+	@apply absolute text-neutral-900 font-bold text-5xl md:text-8xl uppercase text-center flex justify-center items-center;
 	width: 600px;
 	opacity: 0;
 }
-
 .letter {
-  display: inline-block;
-  position: relative;
-  float: left;
-  transform: translateZ(25px);
-  transform-origin: 50% 50% 25px;
+	display: inline-block;
+	position: relative;
+	float: left;
+	transform: translateZ(25px);
+	transform-origin: 50% 50% 25px;
 }
-
 .letter.out {
-  transform: rotateX(90deg);
-  transition: transform 0.32s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+	transform: rotateX(90deg);
+	transition: transform 0.32s cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
-
 .letter.behind {
-  transform: rotateX(-90deg);
+	transform: rotateX(-90deg);
 }
-
 .letter.in {
-  transform: rotateX(0deg);
-  transition: transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	transform: rotateX(0deg);
+	transition: transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
