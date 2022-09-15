@@ -98,6 +98,13 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 		);
 	}
 
+	function	renderCounterValue(amount: number, price: number): string {
+		if (!amount || !price) {
+			return ('$0.00');
+		}
+		return (`$${format.amount((amount || 0) * (price || 0), 2, 2)}`);
+	}
+
 	return (
 		<>
 			<div aria-label={'card title'} className={'flex flex-col pb-8'}>
@@ -128,7 +135,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 							});
 						}} />
 					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
-						{`APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`}
+						{vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy ? `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%` : '0.00%'}
 					</p>
 				</label>
 				<div className={'flex flex-col space-y-1'}>
@@ -137,7 +144,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 						<b className={'overflow-x-scroll scrollbar-none'}>{amount.normalized}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{`$${format.amount((amount?.normalized || 0) * (balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0), 2, 2)}`}
+						{renderCounterValue(amount?.normalized || 0, balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0)}
 					</p>
 				</div>
 			</div>
@@ -160,7 +167,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
 					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
-						{`APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`}
+						{vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy ? `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%` : '0.00%'}
 					</p>
 				</label>
 				<div className={'flex flex-col space-y-1'}>
@@ -169,7 +176,7 @@ function	CardZap({txStatusApprove, set_txStatusApprove, txStatusZap, set_txStatu
 						<b className={'overflow-x-scroll scrollbar-none'}>{format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18)}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{`$${format.amount((format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0) * (balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0), 2, 2)}`}
+						{renderCounterValue(format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0, balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0)}
 					</p>
 				</div>
 			</div>
