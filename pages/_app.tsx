@@ -60,7 +60,7 @@ function	WithLayout(props: AppProps): ReactElement {
 								<TextAnimation />
 							</div>
 							<div className={'mt-8 mb-6'}>
-								<p className={'text-center text-lg md:text-2xl'}>{'whatever word you choose, get supercharged yields on CRV with Yearn.'}</p>
+								<p className={'text-center text-lg md:text-2xl'}>{'Whatever word you choose, get supercharged yields on CRV with Yearn.'}</p>
 							</div>
 							<div>
 								<Button
