@@ -43,6 +43,15 @@ function	TextAnimation(): ReactElement {
 function	WithLayout(props: AppProps): ReactElement {
 	const	{Component, pageProps, router} = props;
 
+	const isNop = false;
+	if (isNop) {
+		return (
+			<Component
+				router={props.router}
+				{...pageProps} />
+		);
+	}
+
 	return (
 		<div id={'app'} className={'mx-auto mb-0 flex max-w-6xl'}>
 			<div className={'flex min-h-[100vh] w-full flex-col'}>
@@ -71,9 +80,9 @@ function	WithLayout(props: AppProps): ReactElement {
 								</Button>
 							</div>
 						</div>
-						<Component
+						{/* <Component
 							router={props.router}
-							{...pageProps} />
+							{...pageProps} /> */}
 					</motion.div>
 				</AnimatePresence>
 			</div>
@@ -101,6 +110,16 @@ function	MyApp(props: AppProps): ReactElement {
 								Component={Component}
 								pageProps={pageProps}
 								router={props.router} />
+							<div id={'app'} className={'mx-auto mb-0 flex max-w-6xl'}>
+								<div className={'flex min-h-[100vh] w-full flex-col'}>
+									<div className={'fixed top-0 z-10 w-full max-w-6xl'}>
+										<Header />
+									</div>
+									<div className={'absolute inset-0 flex items-center justify-center bg-black'}>
+										<h1 className={'mb-40 animate-pulse text-6xl font-bold text-white'}>{'R.I.P ALPHA'}</h1>
+									</div>
+								</div>
+							</div>
 						</>
 					</CurveContextApp>
 				</YearnContextApp>

@@ -29,6 +29,8 @@ body {@apply text-neutral-900;}
 
 :root,
 :root body[data-theme="light"] {
+	& .yearn--searchBox-wrapper {
+	}
 	& .yearn--button {
 		@apply px-5 h-10;
 
@@ -62,10 +64,12 @@ body {@apply text-neutral-900;}
 }
 
 .yveCRV--nav-link {
-	@apply relative cursor-pointer transition-colors text-neutral-500 hover:text-neutral-900 font-normal;
+	@apply relative cursor-pointer transition-colors text-neutral-0 hover:text-neutral-0 font-normal;
+	/*@apply relative cursor-pointer transition-colors text-neutral-500 hover:text-neutral-900 font-normal;*/
 	
 	&.active {
-		@apply text-neutral-900 font-bold;
+		/*@apply text-neutral-900 font-bold;*/
+		@apply text-neutral-0 font-bold;
 	}
 }
 .yveCRV--input {
