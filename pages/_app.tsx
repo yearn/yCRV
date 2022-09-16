@@ -94,6 +94,16 @@ function	WithLayout(props: AppProps): ReactElement {
 function	MyApp(props: AppProps): ReactElement {
 	const	{Component, pageProps} = props;
 	
+	const isNop = false;
+	if (isNop) {
+		return (
+			<WithLayout
+				Component={Component}
+				pageProps={pageProps}
+				router={props.router} />
+		);
+	}
+
 	return (
 		<WithYearn
 			options={{
@@ -106,17 +116,13 @@ function	MyApp(props: AppProps): ReactElement {
 					<CurveContextApp>
 						<>
 							<Meta />
-							<WithLayout
-								Component={Component}
-								pageProps={pageProps}
-								router={props.router} />
 							<div id={'app'} className={'mx-auto mb-0 flex max-w-6xl'}>
 								<div className={'flex min-h-[100vh] w-full flex-col'}>
-									<div className={'fixed top-0 z-10 w-full max-w-6xl'}>
+									<div className={'fixed top-0 left-0 z-10 w-full max-w-6xl'}>
 										<Header />
 									</div>
 									<div className={'absolute inset-0 flex items-center justify-center bg-black'}>
-										<h1 className={'mb-40 animate-pulse text-6xl font-bold text-white'}>{'R.I.P ALPHA'}</h1>
+										<h1 className={'mb-40 animate-pulse text-4xl font-bold text-white md:text-6xl'}>{'R.I.P. ALPHA'}</h1>
 									</div>
 								</div>
 							</div>
