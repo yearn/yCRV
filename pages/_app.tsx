@@ -118,7 +118,7 @@ function	MyApp(props: AppProps): ReactElement {
 							<Meta />
 							<div id={'app'} className={'mx-auto mb-0 flex max-w-6xl'}>
 								<div className={'flex min-h-[100vh] w-full flex-col'}>
-									<div className={'fixed top-0 left-0 z-10 w-full max-w-6xl'}>
+									<div className={'fixed inset-x-0 top-0 z-10 mx-auto w-full max-w-6xl'}>
 										<Header />
 									</div>
 									<div className={'absolute inset-0 flex items-center justify-center bg-black'}>
