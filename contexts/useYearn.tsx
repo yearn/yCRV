@@ -6,20 +6,22 @@ import {toAddress} from '@yearn-finance/web-lib/utils';
 import type {TYearnVault} from 'types/types';
 
 export type	TYearnContext = {
-	yveCRVData: TYearnVault | undefined,
-	yvBoostData: TYearnVault | undefined,
 	vaults: {[key: string]: TYearnVault | undefined},
 }
 const	defaultProps: TYearnContext = {
-	yveCRVData: undefined,
-	yvBoostData: undefined,
 	vaults: {[ethers.constants.AddressZero]: undefined}
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetcher = async (url: string): Promise<any> => axios.get(url).then((res): any => res.data.filter((item: TYearnVault): boolean => (
+	toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)
+	|| toAddress(item.address) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)
+	|| toAddress(item.address) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+)));
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fetcherLegacy = async (url: string): Promise<any> => axios.get(url).then((res): any => res.data.filter((item: TYearnVault): boolean => (
 	toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)
-	|| toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)
 )));
 
 const	YearnContext = createContext<TYearnContext>(defaultProps);
@@ -29,18 +31,21 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	**	we need to fetch the data from the API, especially to get the
 	**	apy.net_apy
 	***************************************************************************/
-	const	{data} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcher);
+	const	{data: yveCRVdata} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcherLegacy);
+	const	{data} = useSWR('https://ydaemon.yearn.finance/1/vaults/all', fetcher);
+
+	console.log(data, yveCRVdata);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Setup and render the Context provider to use in the app.
 	***************************************************************************/
 	return (
 		<YearnContext.Provider value={{
-			yveCRVData: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
-			yvBoostData: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
 			vaults: {
+				[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
 				[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
-				[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS))
+				[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)),
+				[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS))
 			}
 		}}>
 			{children}

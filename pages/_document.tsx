@@ -1,24 +1,46 @@
 import React, {ReactElement} from 'react';
-import Document, {DocumentContext, Head, Html, Main, NextScript} from 'next/document';
+import Document, {DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript} from 'next/document';
 
-type TInitialProps = {
-    html: string;
-    head?: (JSX.Element | null)[] | undefined;
-    styles?: React.ReactElement[] | React.ReactFragment | undefined;
-}
+const modeScript = `
+  let darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+  updateMode()
+  darkModeMediaQuery.addEventListener('change', updateModeWithoutTransitions)
+  window.addEventListener('storage', updateModeWithoutTransitions)
+
+  function updateMode() {
+    let isSystemDarkMode = darkModeMediaQuery.matches
+    let isDarkMode = window.localStorage.isDarkMode === 'true' || (!('isDarkMode' in window.localStorage) && isSystemDarkMode)
+
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+
+    if (isDarkMode === isSystemDarkMode) {
+      delete window.localStorage.isDarkMode
+    }
+  }
+
+  function updateModeWithoutTransitions() {
+    updateMode()
+  }
+`;
 
 class MyDocument extends Document {
-	static async getInitialProps(ctx: DocumentContext): Promise<TInitialProps> {
+	static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
 		const initialProps = await Document.getInitialProps(ctx);
-		return {...initialProps} as any; // eslint-disable-line
+		return {...initialProps};
 	}
 
 	render(): ReactElement {
 		return (
 			<Html lang={'en'}>
 				<Head>
+					<script dangerouslySetInnerHTML={{__html: modeScript}} />
 				</Head>
-				<body className={'bg-neutral-0 transition-colors duration-150'} data-theme={'light'}>
+				<body className={'bg-neutral-0 transition-colors duration-150'}>
 					<Main />
 					<NextScript />
 				</body>

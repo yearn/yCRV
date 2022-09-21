@@ -2,7 +2,7 @@ import React, {ReactElement} from 'react';
 
 function	About(): ReactElement {
 	return (
-		<section className={'mt-4 grid w-full grid-cols-1 gap-10 pb-10 md:grid-cols-2'}>
+		<section className={'mt-4 grid w-full grid-cols-1 gap-10 pb-10 md:mt-20 md:grid-cols-2'}>
 			<div className={'w-full bg-neutral-100 p-10'}>
 				<div aria-label={'Win the curve wars with Yearn'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'Win the curve wars'}</h2>
@@ -20,7 +20,13 @@ function	About(): ReactElement {
 					<h2 className={'text-3xl font-bold'}>{'better yield.'}</h2>
 				</div>
 				<div aria-label={'Swap anytime for better yield details'}>
-					<p className={'pb-4 text-neutral-600'}>{'If you have st-yCRV and notice that lp-yCRV is generating better yield, you can swap anytime on the main page. Or vice versa.'}</p>
+					<p className={'pb-4 text-neutral-600'}>
+						{'If you have '}
+						<span className={'text-neutral-900'}>{'st-yCRV'}</span>
+						{' and notice that '}
+						<span className={'text-neutral-900'}>{'lp-yCRV'}</span>
+						{' is generating better yield, you can swap anytime on the main page. Or vice versa.'}
+					</p>
 					<p className={'text-neutral-600'}>{'You get more yield, and a fun swap experience. Win win.'}</p>
 				</div>
 			</div>

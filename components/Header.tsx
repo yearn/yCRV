@@ -5,6 +5,7 @@ import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {truncateHex} from '@yearn-finance/web-lib/utils';
 import {ModalMobileMenu} from '@yearn-finance/web-lib/components';
 import LogoYearn from 'components/icons/LogoYearn';
+import BalanceReminderPopover from './BalanceReminderPopover';
 
 
 function	Header(): ReactElement {
@@ -27,7 +28,7 @@ function	Header(): ReactElement {
 
 	return (
 		<>
-			<header className={'flex flex-row items-center justify-between pt-4 pb-9 text-xs sm:text-sm md:mb-0 md:text-base'}>
+			<header className={'fixed top-0 z-50 mb-5 flex w-full max-w-[1200px] flex-row items-center justify-between bg-neutral-0 py-4 text-xs sm:text-sm md:mb-0 md:text-base'}>
 				<nav className={'hidden w-1/3 flex-row items-center space-x-3 md:flex md:space-x-6'}>
 					<Link href={'/'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/' ? 'active' : '' }`}>
@@ -62,18 +63,23 @@ function	Header(): ReactElement {
 						</div>
 					</Link>
 				</div>
-				<div className={'flex w-1/3 justify-end'} onClick={(): void => {
-					if (isActive) {
-						onDesactivate();
-					} else if (!isActive && address) {
-						onSwitchChain(1, true);
-					} else {
-						openLoginModal();
-					}
-				}}>
-					<p className={'yveCRV--nav-link text-sm'}>
-						{walletIdentity}
-					</p>
+				<div className={'flex w-1/3 items-center justify-end space-x-4'}>
+					<div onClick={(): void => {
+						if (isActive) {
+							onDesactivate();
+						} else if (!isActive && address) {
+							onSwitchChain(1, true);
+						} else {
+							openLoginModal();
+						}
+					}}>
+						<p className={'yveCRV--nav-link text-sm'}>
+							{walletIdentity}
+						</p>
+					</div>
+					<div>
+						{isActive ? <BalanceReminderPopover /> : <div />}
+					</div>
 				</div>
 			</header>
 			<ModalMobileMenu

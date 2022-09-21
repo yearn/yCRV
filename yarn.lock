@@ -2625,10 +2625,10 @@
     "@web3-react/types" "^8.0.20-beta.0"
     eventemitter3 "^4.0.7"
 
-"@yearn-finance/web-lib@^0.13.18":
-  version "0.13.18"
-  resolved "https://registry.yarnpkg.com/@yearn-finance/web-lib/-/web-lib-0.13.18.tgz#f39e720b862b7f756e35d797336825e88580955b"
-  integrity sha512-WxStvnW/hur4QDs/qudVNJAeCpupkn/xt+DB55zrcHZD+RKDoBVWN2VEB3PO9oIpN0sqRYHCS2mHJRNZKdwP1g==
+"@yearn-finance/web-lib@^0.13.22":
+  version "0.13.22"
+  resolved "https://registry.yarnpkg.com/@yearn-finance/web-lib/-/web-lib-0.13.22.tgz#b72a3c34e029be494a2a0ffde5f61ccebcfeb0fa"
+  integrity sha512-4fWeX9yP1ZF0+mt5wYexFddY6hjWwm/+bq4pkm2Zcjig8c6mftSRMsMvs3NYgoJKzJZLffM32mzkCT5VIrV9EA==
   dependencies:
     "@coinbase/wallet-sdk" "^3.4.2"
     "@ethersproject/experimental" "^5.6.3"
@@ -3861,10 +3861,10 @@ eslint-plugin-react@^7.31.8:
     semver "^6.3.0"
     string.prototype.matchall "^4.0.7"
 
-eslint-plugin-tailwindcss@^3.6.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.6.1.tgz#c5a73a8dca13fcb69ad810f060f7f7ce672e3041"
-  integrity sha512-a44pb62X6wS3j5hLqedsroYrSyOuSZ7PaTl08gJVoChzHlgyZRVpDMCw17Kj6q2zQuDqqRbNZuo8VyNWlGlVLA==
+eslint-plugin-tailwindcss@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.6.2.tgz#56ce5722b2972ed45cb4c0bc7062d37b0cfd4995"
+  integrity sha512-C9Ka3w6W9F5l/3ZDLnkdbqmeujc1vE+p5drjP1Z1UyxgoE1Nh4/f8oQ4XC45PrZsS0Nyv0YKXNH8/dn/FJZKsQ==
   dependencies:
     fast-glob "^3.2.5"
     postcss "^8.4.4"
@@ -6811,10 +6811,10 @@ tr46@~0.0.3:
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
 
-ts-loader@^9.3.1:
-  version "9.3.1"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-9.3.1.tgz#fe25cca56e3e71c1087fe48dc67f4df8c59b22d4"
-  integrity sha512-OkyShkcZTsTwyS3Kt7a4rsT/t2qvEVQuKCTg4LJmpj9fhFR7ukGdZwV6Qq3tRUkqcXtfGpPR7+hFKHCG/0d3Lw==
+ts-loader@^9.4.0:
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-9.4.0.tgz#b3f4b4d8553f3a15bef512f123fb488669a2ffc6"
+  integrity sha512-0G3UMhk1bjgsgiwF4rnZRAeTi69j9XMDtmDDMghGSqlWESIAS3LFgJe//GYfE4vcjbyzuURLB9Us2RZIWp2clQ==
   dependencies:
     chalk "^4.1.0"
     enhanced-resolve "^5.0.0"

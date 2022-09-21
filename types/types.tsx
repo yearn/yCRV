@@ -55,6 +55,9 @@ export type TYearnVault = {
 		name: string,
 		description: string,
     }],
+	details: {
+		apyTypeOverride: string,
+	},
     endorsed: boolean,
     version: string,
     decimals: number,

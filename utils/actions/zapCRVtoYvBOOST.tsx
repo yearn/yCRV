@@ -8,11 +8,6 @@ export async function	calcExpectedOut(
 ): Promise<BigNumber> {
 	const	signer = provider.getSigner();
 
-	console.log({
-		inputToken,
-		outputToken,
-		amount: amount.toString()
-	});
 	try {
 		const	contract = new ethers.Contract(
 			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
@@ -28,8 +23,10 @@ export async function	calcExpectedOut(
 }
 
 
-export async function	ZapCRVtoYvBOOST(
+export async function	zap(
 	provider: ethers.providers.Web3Provider,
+	inputToken: string,
+	outputToken: string,
 	amount: BigNumber,
 	minAmount: BigNumber
 ): Promise<boolean> {
@@ -39,13 +36,19 @@ export async function	ZapCRVtoYvBOOST(
 	try {
 		const	contract = new ethers.Contract(
 			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
-			['function zapCRVtoYvBOOST(uint256 _amount, uint256 _minOut, address _recipient) external returns (uint256)'],
+			['function zap(address _input, address _output, uint256 _amount, uint256 _minOut, address _recipient) external returns (uint256)'],
 			signer
 		);
 		const	SLIPPAGE = 0.1;
 		const	minAmountStr = Number(ethers.utils.formatUnits(minAmount, 18));
 		const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - SLIPPAGE)).toFixed(18), 18);
-		const	transaction = await contract.zapCRVtoYvBOOST(amount, minAmountWithSlippage, address);
+		const	transaction = await contract.zap(
+			inputToken,
+			outputToken,
+			amount,
+			minAmountWithSlippage,
+			address
+		);
 		const	transactionResult = await transaction.wait();
 		if (transactionResult.status === 0) {
 			console.error('Fail to perform transaction');

@@ -2,7 +2,7 @@
 	"name": "yveCRV",
 	"short_name": "yveCRV",
 	"description": "The best crv yields in defi. *mic drop*",
-	"iconPath": "./favicons/apple-icon.png",
+	"iconPath": "./favicons/favicon.svg",
 	"locale": "en-US",
 	"uri": "https://yvecrv.ycorpo.com/",
 	"og": "https://yvecrv.ycorpo.com/og.png",
