@@ -161,7 +161,6 @@ function	ListOfVaults(): ReactElement {
 							<Link key={row.getRowProps().key} href={`/jobs/${row.values.linkOut}`}>
 								<tr {...row.getRowProps()} className={'cursor-pointer transition-colors hover:bg-white'}>
 									{row.cells.map((cell: any): ReactElement => {
-										console.log(cell);
 										return (
 											<td
 												key={cell.getCellProps().key}

@@ -31,7 +31,7 @@ function	CardZap({
 }: TCardZapProps): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{balances, allowances, useWalletNonce, refresh} = useWallet();
-	const	{vaults} = useYearn();
+	const	{vaults, ycrvPrice} = useYearn();
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(ZAP_OPTIONS_FROM[0]);
 	const	[selectedOptionTo, set_selectedOptionTo] = useState(ZAP_OPTIONS_TO[1]);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
@@ -147,28 +147,27 @@ function	CardZap({
 		);
 	}
 
-
-	const	isFromVault = useMemo((): boolean => Boolean(vaults?.[toAddress(selectedOptionFrom.value as string)]), [vaults, selectedOptionFrom]);
-	const	isToVault = useMemo((): boolean => Boolean(vaults?.[toAddress(selectedOptionTo.value as string)]), [vaults, selectedOptionTo]);
-	const	toVaultAPY = useMemo((): string => {
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new')
-			return 'APY -';
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new')
-			return 'APY -';
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
-			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
-		return 'APY 0.00%';
-	}, [vaults, selectedOptionTo]);
 	const	fromVaultAPY = useMemo((): string => {
-		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.type === 'new')
+		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]
+			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.details?.apyTypeOverride === 'new') {
 			return 'APY -';
-		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.details?.apyTypeOverride === 'new')
-			return 'APY -';
+		}
 		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy)
 			return `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionFrom]);
 
+	const	toVaultAPY = useMemo((): string => {
+		if (!vaults?.[toAddress(selectedOptionTo.value as string)]
+			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new') {
+			return 'APY -';
+		}
+		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
+			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+		return 'APY 0.00%';
+	}, [vaults, selectedOptionTo]);
 
 	return (
 		<>
@@ -199,7 +198,7 @@ function	CardZap({
 								});
 							});
 						}} />
-					<p className={`pl-2 !text-xs font-normal !text-green-600 ${isFromVault ? 'visible' : 'invisible'}`}>
+					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
 						{fromVaultAPY}
 					</p>
 				</label>
@@ -209,7 +208,12 @@ function	CardZap({
 						<b className={'overflow-x-scroll scrollbar-none'}>{amount.normalized}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{getCounterValue(amount?.normalized || 0, balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0)}
+						{getCounterValue(
+							amount?.normalized || 0,
+							toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+								? ycrvPrice || 0
+								: balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0
+						)}
 					</p>
 				</div>
 			</div>
@@ -231,7 +235,7 @@ function	CardZap({
 						options={ZAP_OPTIONS_TO.filter((option: TDropdownOption): boolean => option.value !== selectedOptionFrom.value)}
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
-					<p className={`pl-2 !text-xs font-normal !text-green-600 ${isToVault ? 'visible' : 'invisible'}`}>
+					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
 						{toVaultAPY}
 					</p>
 				</label>
@@ -241,7 +245,12 @@ function	CardZap({
 						<b className={'overflow-x-scroll scrollbar-none'}>{format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18)}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{getCounterValue(format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0, balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0)}
+						{getCounterValue(
+							format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0,
+							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+								? ycrvPrice || 0
+								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0
+						)}
 					</p>
 				</div>
 			</div>

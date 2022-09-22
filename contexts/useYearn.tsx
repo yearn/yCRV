@@ -6,11 +6,16 @@ import {toAddress} from '@yearn-finance/web-lib/utils';
 import type {TYearnVault} from 'types/types';
 
 export type	TYearnContext = {
+	ycrvPrice: number,
 	vaults: {[key: string]: TYearnVault | undefined},
 }
 const	defaultProps: TYearnContext = {
+	ycrvPrice: 0,
 	vaults: {[ethers.constants.AddressZero]: undefined}
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const baseFetcher = async (url: string): Promise<any> => axios.get(url).then((res): any => res.data);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetcher = async (url: string): Promise<any> => axios.get(url).then((res): any => res.data.filter((item: TYearnVault): boolean => (
@@ -32,15 +37,15 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	**	apy.net_apy
 	***************************************************************************/
 	const	{data: yveCRVdata} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcherLegacy);
-	const	{data} = useSWR('https://ydaemon.yearn.finance/1/vaults/all', fetcher);
-
-	console.log(data, yveCRVdata);
+	const	{data: ycrvPrice} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/${process.env.YCRV_TOKEN_ADDRESS}?humanized=true`, baseFetcher);
+	const	{data} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/all`, fetcher);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Setup and render the Context provider to use in the app.
 	***************************************************************************/
 	return (
 		<YearnContext.Provider value={{
+			ycrvPrice: ycrvPrice,
 			vaults: {
 				[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
 				[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),

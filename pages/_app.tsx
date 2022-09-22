@@ -31,7 +31,7 @@ function	WithLayout(props: AppProps): ReactElement {
 						initial={'initial'}
 						animate={'enter'}
 						exit={'exit'}
-						className={'mb-10 mt-0 h-full md:mb-0 md:mt-16'}
+						className={'my-0 h-full md:mb-0 md:mt-16'}
 						variants={variants}>
 						<Component
 							router={props.router}

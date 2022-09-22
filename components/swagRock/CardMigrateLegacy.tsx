@@ -32,7 +32,7 @@ function	CardMigrateLegacy({
 }: TCardMigrateProps): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{balances, allowances, useWalletNonce, refresh} = useWallet();
-	const	{vaults} = useYearn();
+	const	{vaults, ycrvPrice} = useYearn();
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(LEGACY_OPTIONS_FROM[0]);
 	const	[selectedOptionTo, set_selectedOptionTo] = useState(LEGACY_OPTIONS_TO[0]);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
@@ -148,16 +148,28 @@ function	CardMigrateLegacy({
 		);
 	}
 
-	const	isToVault = useMemo((): boolean => Boolean(vaults?.[toAddress(selectedOptionTo.value as string)]), [vaults, selectedOptionTo]);
+	const	fromVaultAPY = useMemo((): string => {
+		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]
+			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.details?.apyTypeOverride === 'new') {
+			return 'APY -';
+		}
+		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy)
+			return `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+		return 'APY 0.00%';
+	}, [vaults, selectedOptionFrom]);
+
 	const	toVaultAPY = useMemo((): string => {
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new')
+		if (!vaults?.[toAddress(selectedOptionTo.value as string)]
+			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new') {
 			return 'APY -';
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new')
-			return 'APY -';
+		}
 		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
 			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionTo]);
+
 	return (
 		<>
 			<div aria-label={'card title'} className={'flex flex-col pb-8'}>
@@ -185,7 +197,7 @@ function	CardMigrateLegacy({
 							});
 						}} />
 					<p className={'pl-2 !text-xs font-normal text-green-600'}>
-						{vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy ? `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%` : '0.00%'}
+						{fromVaultAPY}
 					</p>
 				</label>
 				<div className={'flex flex-col space-y-1'}>
@@ -194,7 +206,12 @@ function	CardMigrateLegacy({
 						<b className={'overflow-x-scroll scrollbar-none'}>{amount.normalized}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{getCounterValue(amount?.normalized || 0, balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0)}
+						{getCounterValue(
+							amount?.normalized || 0,
+							toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+								? ycrvPrice || 0
+								: balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0
+						)}
 					</p>
 				</div>
 			</div>
@@ -216,7 +233,7 @@ function	CardMigrateLegacy({
 						options={LEGACY_OPTIONS_TO}
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
-					<p className={`pl-2 !text-xs font-normal !text-green-600 ${isToVault ? 'visible' : 'invisible'}`}>
+					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
 						{toVaultAPY}
 					</p>
 				</label>
@@ -226,7 +243,12 @@ function	CardMigrateLegacy({
 						<b className={'overflow-x-scroll scrollbar-none'}>{format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18)}</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{getCounterValue(format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0, balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0)}
+						{getCounterValue(
+							format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0,
+							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+								? ycrvPrice || 0
+								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0
+						)}
 					</p>
 				</div>
 			</div>
