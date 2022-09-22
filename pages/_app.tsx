@@ -7,7 +7,6 @@ import {YearnContextApp} from 'contexts/useYearn';
 import {CurveContextApp} from 'contexts/useCurve';
 import Header from 'components/Header';
 import Meta from 'components/Meta';
-
 import	'../style.css';
 
 const transition = {duration: 0.3, ease: [0.17, 0.67, 0.83, 0.67]};
