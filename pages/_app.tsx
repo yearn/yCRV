@@ -17,7 +17,6 @@ const variants = {
 	exit: {y: -20, opacity: 0, transition}
 };
 
-
 function	WithLayout(props: AppProps): ReactElement {
 	const	{Component, pageProps, router} = props;
 
