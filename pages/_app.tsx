@@ -41,7 +41,6 @@ function	WithLayout(props: AppProps): ReactElement {
 	);
 }
 
-
 function	MyApp(props: AppProps): ReactElement {
 	const	{Component, pageProps} = props;
 	
