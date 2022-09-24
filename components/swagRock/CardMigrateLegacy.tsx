@@ -13,7 +13,7 @@ import {approveERC20} from 'utils/actions/approveToken';
 import {zap} from 'utils/actions/zapCRVtoYvBOOST';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
-import {allowanceKey, getCounterValue, max} from 'utils';
+import {allowanceKey, getCounterValue} from 'utils';
 import {TDropdownOption, TNormalizedBN} from 'types/types';
 
 type TCardMigrateProps = {
@@ -104,10 +104,7 @@ function	CardMigrateLegacy({
 		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
 			toAddress(selectedOptionFrom.value as string),
 			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
-			max(
-				amount.raw,
-				balances[toAddress(selectedOptionFrom.value as string)]?.raw || ethers.constants.Zero
-			)
+			ethers.constants.MaxUint256
 		).onSuccess(async (): Promise<void> => {
 			await refresh();
 		}).perform();
