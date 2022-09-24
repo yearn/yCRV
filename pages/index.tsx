@@ -30,7 +30,6 @@ function	TextAnimation(): ReactElement {
 				nw[0].parentElement.style.opacity = 1;
 				animateLetterIn(nw, i);
 			}
-  
 			currentWord = (currentWord == wordArray.length-1) ? 0 : currentWord+1;
 		}
 
