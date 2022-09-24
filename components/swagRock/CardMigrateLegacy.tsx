@@ -252,7 +252,7 @@ function	CardMigrateLegacy({
 					</p>
 				</label>
 				<div className={'flex flex-col space-y-1'}>
-					<p className={'text-base text-neutral-600'}>{'You will receive'}</p>
+					<p className={'text-base text-neutral-600'}>{'You will receive minimum'}</p>
 					<div className={'flex h-10 items-center text-clip bg-neutral-300 p-2'}>
 						<b className={'overflow-x-scroll scrollbar-none'}>
 							{formatWithSlippage(expectedOut || ethers.constants.Zero)}
