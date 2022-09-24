@@ -210,7 +210,9 @@ function	CardMigrateLegacy({
 							amount?.normalized || 0,
 							toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice || 0
+								: balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.tvl?.price
+									|| 0
 						)}
 					</p>
 				</div>
@@ -247,7 +249,9 @@ function	CardMigrateLegacy({
 							format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0,
 							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice || 0
+								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionTo.value as string)]?.tvl?.price
+									|| 0
 						)}
 					</p>
 				</div>
