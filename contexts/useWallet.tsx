@@ -16,7 +16,9 @@ const	defaultProps = {
 	allowances: {[ethers.constants.AddressZero]: ethers.constants.Zero},
 	yveCRVClaimable: {raw: ethers.constants.Zero, normalized: 0},
 	useWalletNonce: 0,
-	refresh: async (): Promise<void> => undefined
+	refresh: async (): Promise<void> => undefined,
+	slippage: 0.6,
+	set_slippage: (): void => undefined
 };
 
 const	defaultData = {
@@ -53,6 +55,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 	});
 	const	[yveCRVClaimable, set_yveCRVClaimable] = useState<TClaimable>({raw: ethers.constants.Zero, normalized: 0});
 	const	[allowances, set_allowances] = useState<{[key: string]: BigNumber}>({[ethers.constants.AddressZero]: ethers.constants.Zero});
+	const	[slippage, set_slippage] = useState<number>(1);
 
 	useClientEffect((): () => void => {
 		if (isLoading)
@@ -146,7 +149,9 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 						getExtraData()
 					]);
 				},
-				useWalletNonce: nonce
+				useWalletNonce: nonce,
+				slippage,
+				set_slippage
 			}}>
 			{children}
 		</WalletContext.Provider>

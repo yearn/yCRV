@@ -30,7 +30,7 @@ function	CardZap({
 	set_txStatusZap
 }: TCardZapProps): ReactElement {
 	const	{provider, isActive} = useWeb3();
-	const	{balances, allowances, useWalletNonce, refresh} = useWallet();
+	const	{balances, allowances, useWalletNonce, refresh, slippage} = useWallet();
 	const	{vaults, ycrvPrice} = useYearn();
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(ZAP_OPTIONS_FROM[0]);
 	const	[selectedOptionTo, set_selectedOptionTo] = useState(ZAP_OPTIONS_TO[1]);
@@ -116,7 +116,8 @@ function	CardZap({
 			toAddress(selectedOptionFrom.value as string), //_input_token
 			toAddress(selectedOptionTo.value as string), //_output_token
 			amount.raw, //amount_in
-			expectedOut //_min_out
+			expectedOut, //_min_out
+			slippage
 		).onSuccess(async (): Promise<void> => {
 			set_amount({raw: ethers.constants.Zero, normalized: 0});
 			await refresh();
@@ -168,6 +169,12 @@ function	CardZap({
 			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionTo]);
+
+	function	formatWithSlippage(value: BigNumber): number {
+		const	minAmountStr = Number(ethers.utils.formatUnits(value || ethers.constants.Zero, 18));
+		const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - (slippage / 100))).toFixed(18), 18);
+		return format.toNormalizedValue(minAmountWithSlippage || ethers.constants.Zero, 18);
+	}
 
 	return (
 		<>
@@ -244,11 +251,13 @@ function	CardZap({
 				<div className={'flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'You will receive'}</p>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
-						<b className={'overflow-x-scroll scrollbar-none'}>{format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18)}</b>
+						<b className={'overflow-x-scroll scrollbar-none'}>
+							{formatWithSlippage(expectedOut || ethers.constants.Zero)}
+						</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
-							format.toNormalizedValue(expectedOut || ethers.constants.Zero, 18) || 0,
+							formatWithSlippage(expectedOut || ethers.constants.Zero) || 0,
 							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
 								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice

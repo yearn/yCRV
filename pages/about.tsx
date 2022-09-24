@@ -1,6 +1,11 @@
-import React, {ReactElement} from 'react';
+import React, {ReactElement, useState} from 'react';
+import {useWallet} from 'contexts/useWallet';
+import {Button} from '@yearn-finance/web-lib/components';
 
 function	About(): ReactElement {
+	const	{slippage, set_slippage} = useWallet();
+	const	[localSlippage, set_localSlippage] = useState(slippage);
+
 	return (
 		<section className={'mt-4 grid w-full grid-cols-1 gap-10 pb-10 md:mt-20 md:grid-cols-2'}>
 			<div className={'w-full bg-neutral-100 p-10'}>
@@ -94,6 +99,36 @@ function	About(): ReactElement {
 					<p className={'text-neutral-600'}>
 						{'If the above sentence causes your brain to wrinkle and eyes to glaze over, then you do not need to worry about this step. '}
 					</p>
+				</div>
+				<div className={'mt-8'}>
+					<p className={'pb-1 text-neutral-900'}>{'Slippage tolerance'}</p>
+					<div className={'flex flex-row space-x-2'}>
+						<div className={'flex h-10 w-40 min-w-[160px] items-center border-2 border-neutral-700 bg-neutral-0 py-4 px-0'}>
+							<input
+								type={'number'}
+								min={0}
+								step={0.1}
+								max={100}
+								className={'h-10 w-full overflow-x-scroll border-none bg-transparent p-2 text-right outline-none scrollbar-none'}
+								value={localSlippage}
+								onChange={(e): void => {
+									set_localSlippage(parseFloat(e.target.value) || 0);
+								}} />
+							<p className={'mt-1 pr-2 text-neutral-900/60'}>{'%'}</p>
+						</div>
+						<button onClick={(): void => set_localSlippage(2)} className={'flex h-10 items-center bg-neutral-300 p-2'}>
+							<p className={'pr-5 text-neutral-900'}>{'2%'}</p>
+						</button>
+						<button onClick={(): void => set_localSlippage(3)} className={'flex h-10 items-center bg-neutral-300 p-2'}>
+							<p className={'pr-5 text-neutral-900'}>{'3%'}</p>
+						</button>
+						<Button
+							disabled={slippage === localSlippage}
+							className={'w-full'}
+							onClick={(): void => set_slippage(localSlippage)}>
+							{'Submit'}
+						</Button>
+					</div>
 				</div>
 			</div>
 		</section>

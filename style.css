@@ -65,3 +65,8 @@
 	transform: rotateX(0deg);
 	transition: transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+[type='text']:focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, textarea:focus, select:focus {
+	outline: none;
+	box-shadow: none;
+}
