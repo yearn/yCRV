@@ -19,10 +19,6 @@ export async function	zap(
 		);
 		const	minAmountStr = Number(ethers.utils.formatUnits(minAmount, 18));
 		const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - (slippage / 100))).toFixed(18), 18);
-		console.log({
-			minAmount: minAmountStr,
-			minAmountWithSlippage: minAmountWithSlippage.toString()
-		});
 		const	transaction = await contract.zap(
 			inputToken,
 			outputToken,

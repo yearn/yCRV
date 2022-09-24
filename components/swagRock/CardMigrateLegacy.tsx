@@ -120,8 +120,8 @@ function	CardMigrateLegacy({
 			expectedOut, //_min_out
 			slippage
 		).onSuccess(async (): Promise<void> => {
-			set_amount({raw: ethers.constants.Zero, normalized: 0});
 			await refresh();
+			set_amount({raw: ethers.constants.Zero, normalized: 0});
 		}).perform();
 	}
 
