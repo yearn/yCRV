@@ -14,8 +14,8 @@ function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}
 							ref={buttonRef}
 							className={'flex h-10 w-full items-center justify-between border border-neutral-600 p-2 text-base text-neutral-900'}>
 							<div className={'flex flex-row items-center'}>
-								{selected?.icon ? cloneElement(selected.icon) : null}
-								<p className={`${selected.icon ? 'pl-2' : 'pl-0'} ${(!selected?.label && !defaultOption?.label) ? 'italic text-neutral-600' : 'text-neutral-900'} font-normal`}>
+								{selected?.icon ? cloneElement(selected.icon) : <div className={'h-6 w-6 rounded-full bg-neutral-500'} />}
+								<p className={`pl-2 ${(!selected?.label && !defaultOption?.label) ? 'text-neutral-400' : 'text-neutral-900'} font-normal`}>
 									{selected?.label || defaultOption?.label || placeholder}
 								</p>
 							</div>

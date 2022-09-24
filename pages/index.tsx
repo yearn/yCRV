@@ -18,6 +18,9 @@ function	TextAnimation(): ReactElement {
 		function changeWord(): void {
 			const cw = wordArray[currentWord];
 			const nw = currentWord == words.length-1 ? wordArray[0] : wordArray[currentWord+1];
+			if (!cw) {
+				return;
+			}
 			for (let i = 0; i < cw.length; i++) {
 				animateLetterOut(cw, i);
 			}
