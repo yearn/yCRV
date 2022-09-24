@@ -40,11 +40,11 @@ function	Header(): ReactElement {
 							{'New Vaults'}
 						</p>
 					</Link> */}
-					<Link href={'/vote'}>
+					{/* <Link href={'/vote'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/vote' ? 'active' : '' }`}>
 							{'Vote'}
 						</p>
-					</Link>
+					</Link> */}
 					<Link href={'/about'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/about' ? 'active' : '' }`}>
 							{'About'}
@@ -106,13 +106,13 @@ function	Header(): ReactElement {
 						</p>
 					</div>
 				</Link> */}
-				<Link href={'/vote'}>
+				{/* <Link href={'/vote'}>
 					<div className={'mobile-nav-item'} onClick={(): void => set_hasMobileMenu(false)}>
 						<p className={'font-bold'}>
 							{'Vote'}
 						</p>
 					</div>
-				</Link>
+				</Link> */}
 				<Link href={'/about'}>
 					<div className={'mobile-nav-item'} onClick={(): void => set_hasMobileMenu(false)}>
 						<p className={'font-bold'}>
