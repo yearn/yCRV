@@ -35,6 +35,7 @@ function	CardMigrateLegacy({
 	const	{vaults, ycrvPrice} = useYearn();
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(LEGACY_OPTIONS_FROM[0]);
 	const	[selectedOptionTo, set_selectedOptionTo] = useState(LEGACY_OPTIONS_TO[0]);
+	const	[shouldLockResetBalances, set_shouldLockResetBalances] = useState(false);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -42,7 +43,7 @@ function	CardMigrateLegacy({
 	** the wallet is connected, or to 0 if the wallet is disconnected.
 	**************************************************************************/
 	useEffect((): void => {
-		if (isActive && amount.raw.eq(0)) {
+		if (isActive && amount.raw.eq(0) && !shouldLockResetBalances) {
 			set_amount({
 				raw: balances[toAddress(selectedOptionFrom.value as string)]?.raw || ethers.constants.Zero,
 				normalized: balances[toAddress(selectedOptionFrom.value as string)]?.normalized || 0
@@ -50,7 +51,7 @@ function	CardMigrateLegacy({
 		} else if (!isActive && amount.raw.gt(0)) {
 			set_amount({raw: ethers.constants.Zero, normalized: 0});
 		}
-	}, [isActive, selectedOptionFrom, balances, amount.raw]);
+	}, [isActive, selectedOptionFrom, balances, amount.raw, shouldLockResetBalances]);
 
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -113,6 +114,7 @@ function	CardMigrateLegacy({
 	}
 
 	async function	onZap(): Promise<void> {
+		set_shouldLockResetBalances(true);
 		new Transaction(provider, zap, set_txStatusZap).populate(
 			toAddress(selectedOptionFrom.value as string), //_input_token
 			toAddress(selectedOptionTo.value as string), //_output_token
@@ -120,8 +122,9 @@ function	CardMigrateLegacy({
 			expectedOut, //_min_out
 			slippage
 		).onSuccess(async (): Promise<void> => {
-			await refresh();
 			set_amount({raw: ethers.constants.Zero, normalized: 0});
+			await refresh();
+			set_shouldLockResetBalances(false);
 		}).perform();
 	}
 
