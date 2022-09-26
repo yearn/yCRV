@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 const withPWA = require('next-pwa')({
-	dest: 'public',
-	disable: process.env.NODE_ENV !== 'production'
+	dest: 'public'
 });
 const {PHASE_EXPORT} = require('next/constants');
 
