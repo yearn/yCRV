@@ -52,23 +52,5 @@ module.exports = (phase) => withPWA({
 		ZAP_YEARN_VE_CRV_ADDRESS: '0x6F3c2647f0C0fBcCbaF74c400D886033F8c6d2E6',
 		
 		VLYCRV_TOKEN_ADDRESS: '0x0000000000000000000000000000000000000004'
-	},
-	async headers() {
-		return [
-			{
-				source: '/',
-				headers: [
-					{
-						key: 'cross-origin-opener-policy',
-						value: 'same-origin'
-					},
-					{
-						key: 'cross-origin-embedder-policy',
-						value: 'require-corp'
-					}
-				]
-			}
-		];
 	}
-
 });
