@@ -28,7 +28,7 @@ function	Header(): ReactElement {
 
 	return (
 		<>
-			<header className={'fixed top-0 z-50 mb-5 flex w-full max-w-[1200px] flex-row items-center justify-between bg-neutral-0 py-4 text-xs sm:text-sm md:mb-0 md:text-base'}>
+			<header className={'gfixed inset-x-0 top-0 z-50 mb-5 flex w-full max-w-[1200px] flex-row items-center justify-between bg-neutral-0 p-4 text-xs sm:text-sm md:inset-x-auto md:mb-0 md:px-0 md:text-base'}>
 				<nav className={'hidden w-1/3 flex-row items-center space-x-3 md:flex md:space-x-6'}>
 					<Link href={'/'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/' ? 'active' : '' }`}>
@@ -68,7 +68,7 @@ function	Header(): ReactElement {
 						</div>
 					</Link>
 				</div>
-				<div className={'flex w-1/3 items-center justify-end space-x-4'}>
+				<div className={'flex w-1/3 items-center justify-end'}>
 					<div onClick={(): void => {
 						if (isActive) {
 							onDesactivate();
@@ -82,9 +82,9 @@ function	Header(): ReactElement {
 							{walletIdentity}
 						</p>
 					</div>
-					<div>
-						{isActive ? <BalanceReminderPopover /> : <div />}
-					</div>
+					{isActive ? <div className={'ml-4'}>
+						<BalanceReminderPopover />
+					</div> : <div />}
 				</div>
 			</header>
 			<ModalMobileMenu
