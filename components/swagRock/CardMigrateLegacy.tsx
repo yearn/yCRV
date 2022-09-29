@@ -161,13 +161,18 @@ function	CardMigrateLegacy({
 	}, [vaults, selectedOptionFrom]);
 
 	const	toVaultAPY = useMemo((): string => {
-		if (!vaults?.[toAddress(selectedOptionTo.value as string)]
-			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
+		if (!vaults?.[toAddress(selectedOptionTo.value as string)]) {
+			return '';
+		}
+
+		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
 			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new') {
 			return 'APY -';
 		}
+
 		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
 			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionTo]);
 

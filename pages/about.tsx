@@ -131,6 +131,31 @@ function	About(): ReactElement {
 					</div>
 				</div>
 			</div>
+
+
+			<div className={'w-full bg-neutral-100 p-10'}>
+				<div aria-label={'‘Mum... where do yields come from?’'} className={'flex flex-col pb-6'}>
+					<h2 className={'text-3xl font-bold'}>{'‘Mum... where do '}</h2>
+					<h2 className={'text-3xl font-bold'}>{'yields come from?’'}</h2>
+				</div>
+				<div aria-label={'‘Mum... where do yields come from?’ details'}>
+					<p className={'pb-6 text-neutral-600'}>
+						{'Well anon, when a gauge and a pool love each other very much...'}
+					</p>
+					<b>{'st-yCRV'}</b>
+					<p className={'pb-4 text-neutral-600'}>
+						{'Part of the yields come from boosted Curve admin fees and part from revenue-optimized gauge voting (so users always benefit from the biggest bribes).'}
+					</p>
+
+					<b>{'lp-yCRV'}</b>
+					<p className={'pb-6 text-neutral-600'}>
+						{'The yields come from farming the CRV/yCRV gauge. '}
+					</p>
+					<p className={'text-neutral-600'}>
+						{'As Yearn holds a large amount of veCRV we are able to optimize bribe revenues and work with other partners to drive outsized yields to both yCRV stakers and LPers.'}
+					</p>
+				</div>
+			</div>
 		</section>
 	);
 }
