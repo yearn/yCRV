@@ -33,7 +33,7 @@ function	CardZap({
 	const	{balances, allowances, useWalletNonce, refresh, slippage} = useWallet();
 	const	{vaults, ycrvPrice} = useYearn();
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(ZAP_OPTIONS_FROM[0]);
-	const	[selectedOptionTo, set_selectedOptionTo] = useState(ZAP_OPTIONS_TO[1]);
+	const	[selectedOptionTo, set_selectedOptionTo] = useState(ZAP_OPTIONS_TO[0]);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -249,7 +249,7 @@ function	CardZap({
 				<label className={'relative z-10 flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Swap to'}</p>
 					<Dropdown
-						defaultOption={ZAP_OPTIONS_TO[1]}
+						defaultOption={ZAP_OPTIONS_TO[0]}
 						options={ZAP_OPTIONS_TO.filter((option: TDropdownOption): boolean => option.value !== selectedOptionFrom.value)}
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
