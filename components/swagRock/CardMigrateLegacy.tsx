@@ -149,17 +149,6 @@ function	CardMigrateLegacy({
 		);
 	}
 
-	const	fromVaultAPY = useMemo((): string => {
-		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]
-			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.details?.apyTypeOverride === 'new') {
-			return 'APY -';
-		}
-		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy)
-			return `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
-		return 'APY 0.00%';
-	}, [vaults, selectedOptionFrom]);
-
 	const	toVaultAPY = useMemo((): string => {
 		if (!vaults?.[toAddress(selectedOptionTo.value as string)]) {
 			return '';
@@ -209,7 +198,7 @@ function	CardMigrateLegacy({
 							});
 						}} />
 					<p className={'pl-2 !text-xs font-normal text-green-600'}>
-						{fromVaultAPY}
+						{'APY 0.00%'}
 					</p>
 				</label>
 				<div className={'flex flex-col space-y-1'}>
