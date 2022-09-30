@@ -4,6 +4,16 @@ import {toAddress} from '@yearn-finance/web-lib/utils';
 import {TDropdownOption} from 'types/types';
 
 const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [{
+	label: 'yvBOOST',
+	value: toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string),
+	icon: (
+		<Image
+			alt={'yvBOOST'}
+			width={24}
+			height={24}
+			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YVBOOST_TOKEN_ADDRESS)}/logo-128.png`} />
+	)
+}, {
 	label: 'yveCRV',
 	value: toAddress(process.env.YVECRV_TOKEN_ADDRESS as string),
 	icon: (
@@ -14,16 +24,6 @@ const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [{
 			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YVECRV_TOKEN_ADDRESS)}/logo-128.png`}
 			loading={'eager'}
 			priority />
-	)
-}, {
-	label: 'yvBOOST',
-	value: toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string),
-	icon: (
-		<Image
-			alt={'yvBOOST'}
-			width={24}
-			height={24}
-			src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YVBOOST_TOKEN_ADDRESS)}/logo-128.png`} />
 	)
 }];
 
