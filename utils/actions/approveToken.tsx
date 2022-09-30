@@ -49,13 +49,6 @@ export async function	approveERC20(
 ): Promise<boolean> {
 	const	signer = provider.getSigner();
 
-	console.log({
-		provider,
-		tokenAddress,
-		spender,
-		amount: amount.toString()
-	});
-
 	try {
 		const	contract = new ethers.Contract(
 			tokenAddress, ['function approve(address _spender, uint256 _value) external'],

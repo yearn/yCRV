@@ -17,11 +17,6 @@ export async function	addLiquidity(
 		const	SLIPPAGE = 0.2;
 		const	minAmountStr = Number(ethers.utils.formatUnits(expectedAmount, 18));
 		const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - SLIPPAGE)).toFixed(18), 18);
-		console.log({
-			amount1: amount1.toString(),
-			amount2: amount2.toString(),
-			minAmountWithSlippage: minAmountWithSlippage.toString()
-		});
 		const	transaction = await contract.add_liquidity([amount1, amount2], minAmountWithSlippage);
 		const	transactionResult = await transaction.wait();
 		if (transactionResult.status === 0) {

@@ -1,13 +1,13 @@
 {
-	"name": "yveCRV",
-	"short_name": "yveCRV",
+	"name": "yCRV",
+	"short_name": "yCRV",
 	"description": "The best crv yields in defi. *mic drop*",
-	"iconPath": "./favicons/apple-icon.png",
+	"iconPath": "./favicons/favicon.svg",
 	"locale": "en-US",
-	"uri": "https://yvecrv.ycorpo.com/",
-	"og": "https://yvecrv.ycorpo.com/og.png",
+	"uri": "https://ycrvdev.yearn.farm/",
+	"og": "https://ycrvdev.yearn.farm/og.png",
 	"twitter": "@iearnfinance",
-	"github": "https://github.com/Majorfi/yveCRV",
+	"github": "https://github.com/Majorfi/yCRV",
 	"icons": [
 		{
 			"src": "./favicons/android-icon-192x192.png",

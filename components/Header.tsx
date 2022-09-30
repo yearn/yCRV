@@ -5,6 +5,7 @@ import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {truncateHex} from '@yearn-finance/web-lib/utils';
 import {ModalMobileMenu} from '@yearn-finance/web-lib/components';
 import LogoYearn from 'components/icons/LogoYearn';
+import BalanceReminderPopover from './BalanceReminderPopover';
 
 
 function	Header(): ReactElement {
@@ -27,8 +28,8 @@ function	Header(): ReactElement {
 
 	return (
 		<>
-			<header className={'flex flex-row items-center justify-between pt-4 pb-9 text-xs sm:text-sm md:mb-0 md:text-base'}>
-				<nav className={'hidden w-1/3 flex-row items-center space-x-3 md:flex md:space-x-6'}>
+			<header className={'gfixed inset-x-0 top-0 z-50 mb-5 flex w-full max-w-[1200px] flex-row items-center justify-between bg-neutral-0 p-4 text-xs sm:text-sm md:inset-x-auto md:mb-0 md:px-0 md:text-base'}>
+				<nav className={'col-s hidden w-1/3 flex-row items-center space-x-3 md:flex md:space-x-6'}>
 					<Link href={'/'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/' ? 'active' : '' }`}>
 							{'Main'}
@@ -37,6 +38,11 @@ function	Header(): ReactElement {
 					{/* <Link href={'/new-vaults'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/new-vaults' ? 'active' : '' }`}>
 							{'New Vaults'}
+						</p>
+					</Link> */}
+					{/* <Link href={'/vote'}>
+						<p className={`yveCRV--nav-link ${router.pathname === '/vote' ? 'active' : '' }`}>
+							{'Vote'}
 						</p>
 					</Link> */}
 					<Link href={'/about'}>
@@ -62,18 +68,23 @@ function	Header(): ReactElement {
 						</div>
 					</Link>
 				</div>
-				<div className={'flex w-1/3 justify-end'} onClick={(): void => {
-					if (isActive) {
-						onDesactivate();
-					} else if (!isActive && address) {
-						onSwitchChain(1, true);
-					} else {
-						openLoginModal();
-					}
-				}}>
-					<p className={'yveCRV--nav-link text-sm'}>
-						{walletIdentity}
-					</p>
+				<div className={'flex w-1/3 items-center justify-end'}>
+					<div onClick={(): void => {
+						if (isActive) {
+							onDesactivate();
+						} else if (!isActive && address) {
+							onSwitchChain(1, true);
+						} else {
+							openLoginModal();
+						}
+					}}>
+						<p className={'yveCRV--nav-link text-sm'}>
+							{walletIdentity}
+						</p>
+					</div>
+					{isActive ? <div className={'ml-4'}>
+						<BalanceReminderPopover />
+					</div> : <div />}
 				</div>
 			</header>
 			<ModalMobileMenu
@@ -92,6 +103,13 @@ function	Header(): ReactElement {
 					<div className={'mobile-nav-item'} onClick={(): void => set_hasMobileMenu(false)}>
 						<p className={'font-bold'}>
 							{'New Vaults'}
+						</p>
+					</div>
+				</Link> */}
+				{/* <Link href={'/vote'}>
+					<div className={'mobile-nav-item'} onClick={(): void => set_hasMobileMenu(false)}>
+						<p className={'font-bold'}>
+							{'Vote'}
 						</p>
 					</div>
 				</Link> */}

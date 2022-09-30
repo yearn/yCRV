@@ -18,5 +18,7 @@ export type	TWalletContext = {
 	allowances: {[key: string]: BigNumber},
 	yveCRVClaimable: TClaimable;
 	useWalletNonce: number,
-	refresh: () => Promise<void>
+	refresh: () => Promise<void>,
+	slippage: number,
+	set_slippage: (slippage: number) => void,
 }
