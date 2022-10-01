@@ -180,9 +180,16 @@ function	CardZap({
 	}, [vaults, selectedOptionTo]);
 
 	function	formatWithSlippage(value: BigNumber): number {
-		const	minAmountStr = Number(ethers.utils.formatUnits(value || ethers.constants.Zero, 18));
-		const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - (slippage / 100))).toFixed(18), 18);
-		return format.toNormalizedValue(minAmountWithSlippage || ethers.constants.Zero, 18);
+		const	hasLP = (
+			toAddress(selectedOptionFrom.value as string) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+			|| toAddress(selectedOptionTo.value as string) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+		);
+		if (hasLP) {
+			const	minAmountStr = Number(ethers.utils.formatUnits(value || ethers.constants.Zero, 18));
+			const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - (slippage / 100))).toFixed(18), 18);
+			return format.toNormalizedValue(minAmountWithSlippage || ethers.constants.Zero, 18);
+		}
+		return format.toNormalizedValue(value || ethers.constants.Zero, 18);
 	}
 
 	return (
