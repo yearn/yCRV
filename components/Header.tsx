@@ -45,6 +45,11 @@ function	Header(): ReactElement {
 							{'Vote'}
 						</p>
 					</Link> */}
+					<Link href={'/zap-in'}>
+						<p className={`yveCRV--nav-link ${router.pathname === '/zap-in' ? 'active' : '' }`}>
+							{'Zap-in'}
+						</p>
+					</Link>
 					<Link href={'/about'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/about' ? 'active' : '' }`}>
 							{'About'}
