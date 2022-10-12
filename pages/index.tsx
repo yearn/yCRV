@@ -1,8 +1,9 @@
 import React, {ReactElement} from 'react';
 import {Button} from '@yearn-finance/web-lib/components';
 import CardZap from 'components/swagRock/CardZap';
-import {useClientEffect} from '@yearn-finance/web-lib';
+import {AlertBanner, useClientEffect} from '@yearn-finance/web-lib';
 import CardAnyZap from 'components/swagRock/CardAnyZap';
+import Link from 'next/link';
 
 function	TextAnimation(): ReactElement {
 	function	onStartAnimation(): void {
@@ -90,11 +91,22 @@ function	TextAnimation(): ReactElement {
 	);
 }
 
+const hasOldTokens = true;
+
 function	Index(): ReactElement {
 	return (
 		<>
-			<div className={'mx-auto mt-20 mb-44 flex w-full max-w-6xl flex-col items-center justify-center'}>
-				<div className={'relative h-12 w-[300px] md:h-[104px] md:w-[600px]'}>
+			<div className={'mx-auto mb-44 flex w-full max-w-6xl flex-col items-center justify-center'}>
+				<AlertBanner
+					title={'You have old tokens'}
+					level={'warning'}
+					isVisible={hasOldTokens}
+					canClose={false}>
+					<p className={'text-center text-lg md:text-2xl'}>
+						<Link href={'/migrate'}>{'Migrate'}</Link>
+					</p>
+				</AlertBanner>
+				<div className={`relative ${hasOldTokens ? 'mt-20' : 'mt-10'} h-12 w-[300px] md:h-[104px] md:w-[600px]`}>
 					<TextAnimation />
 				</div>
 				<div className={'mt-8 mb-6'}>
