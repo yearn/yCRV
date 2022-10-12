@@ -3,18 +3,31 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-empty-pattern */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, {ReactElement, useState} from 'react';
+import React, {ReactElement, useEffect, useState} from 'react';
 import {motion} from 'framer-motion';
 import {Button} from '@yearn-finance/web-lib/components';
 import {defaultTxStatus} from '@yearn-finance/web-lib/utils';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {Dropdown} from 'components/TokenDropdown';
 import ArrowDown from 'components/icons/ArrowDown';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
 import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
+import {getBalances} from 'wido';
 
 type TCardAnyZapProps = {};
 
 function	CardAnyZap({}: TCardAnyZapProps): ReactElement {
+	const	{chainID} = useWeb3();
+
+	const	ADDRESS = '0x6568d65a8CB74A21F8cd7F6832E71Ab1E390f25E';
+
+	useEffect((): void => {
+		const fetchBalances = async (): Promise<void> => {
+			console.log(await getBalances(ADDRESS, [chainID]));
+		};
+
+		fetchBalances();
+	}, [ADDRESS, chainID]);
 
 	function	renderButton(): ReactElement {
 		return (
