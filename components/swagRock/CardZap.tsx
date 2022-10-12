@@ -32,7 +32,7 @@ function	CardZap({
 }: TCardZapProps): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{balances, allowances, useWalletNonce, refresh, slippage} = useWallet();
-	const	{vaults, ycrvPrice} = useYearn();
+	const	{vaults, ycrvPrice, ycrvCurvePoolPrice} = useYearn();
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(ZAP_OPTIONS_FROM[0]);
 	const	[selectedOptionTo, set_selectedOptionTo] = useState(ZAP_OPTIONS_TO[0]);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
@@ -44,8 +44,8 @@ function	CardZap({
 	useEffect((): void => {
 		if (isActive && amount.raw.eq(0)) {
 			set_amount({
-				raw: balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
-				normalized: balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+				raw: balances[toAddress(selectedOptionFrom.value as string)]?.raw || ethers.constants.Zero,
+				normalized: balances[toAddress(selectedOptionFrom.value as string)]?.normalized || 0
 			});
 		} else if (!isActive && amount.raw.gt(0)) {
 			set_amount({raw: ethers.constants.Zero, normalized: 0});
@@ -145,7 +145,7 @@ function	CardZap({
 		if (selectedOptionFrom.zapVia === process.env.LPYCRV_TOKEN_ADDRESS) {
 			// Direct deposit to vault from crv/yCRV Curve LP Token to lp-yCRV Vault
 			new Transaction(provider, deposit, set_txStatusZap).populate(
-				toAddress(selectedOptionTo.value), //destination vault
+				toAddress(selectedOptionTo.value as string), //destination vault
 				amount.raw //amount_in
 			).onSuccess(async (): Promise<void> => {
 				set_amount({raw: ethers.constants.Zero, normalized: 0});
@@ -154,8 +154,8 @@ function	CardZap({
 		} else {
 			// Zap in
 			new Transaction(provider, zap, set_txStatusZap).populate(
-				toAddress(selectedOptionFrom.value), //_input_token
-				toAddress(selectedOptionTo.value), //_output_token
+				toAddress(selectedOptionFrom.value as string), //_input_token
+				toAddress(selectedOptionTo.value as string), //_output_token
 				amount.raw, //amount_in
 				expectedOut, //_min_out
 				slippage
@@ -191,47 +191,47 @@ function	CardZap({
 	}
 
 	const		fromVaultAPY = useMemo((): string => {
-		if (!vaults?.[toAddress(selectedOptionFrom.value)]) {
+		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]) {
 			return '';
 		}
 
-		if (!vaults?.[toAddress(selectedOptionFrom.value)]
-			|| vaults?.[toAddress(selectedOptionFrom.value)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionFrom.value)]?.details?.apyTypeOverride === 'new') {
+		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]
+			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.details?.apyTypeOverride === 'new') {
 			return 'APY -';
 		}
 
-		if (vaults?.[toAddress(selectedOptionFrom.value)]?.apy?.net_apy)
-			return `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy)
+			return `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionFrom]);
 
 	const		toVaultAPY = useMemo((): string => {
-		if (!vaults?.[toAddress(selectedOptionTo.value)]) {
+		if (!vaults?.[toAddress(selectedOptionTo.value as string)]) {
 			return '';
 		}
 
-		if (!vaults?.[toAddress(selectedOptionTo.value)]
-			|| vaults?.[toAddress(selectedOptionTo.value)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionTo.value)]?.details?.apyTypeOverride === 'new') {
+		if (!vaults?.[toAddress(selectedOptionTo.value as string)]
+			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new') {
 			return 'APY -';
 		}
 
-		if (vaults?.[toAddress(selectedOptionTo.value)]?.apy?.net_apy)
-			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
+			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionTo]);
 
 	function	formatWithSlippage(value: BigNumber): number {
 		const	hasLP = (
-			toAddress(selectedOptionFrom.value) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
-			|| toAddress(selectedOptionTo.value) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+			toAddress(selectedOptionFrom.value as string) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+			|| toAddress(selectedOptionTo.value as string) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
 		);
 		const	isDirectDeposit = (
-			toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
-			|| toAddress(selectedOptionTo.value) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+			toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+			|| toAddress(selectedOptionTo.value as string) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
 		);
 
 		if (hasLP && !isDirectDeposit) {
@@ -266,8 +266,8 @@ function	CardZap({
 								}
 								set_selectedOptionFrom(option);
 								set_amount({
-									raw: balances[toAddress(option.value)]?.raw || ethers.constants.Zero,
-									normalized: balances[toAddress(option.value)]?.normalized || 0
+									raw: balances[toAddress(option.value as string)]?.raw || ethers.constants.Zero,
+									normalized: balances[toAddress(option.value as string)]?.normalized || 0
 								});
 							});
 						}} />
@@ -283,10 +283,12 @@ function	CardZap({
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
 							amount?.normalized || 0,
-							toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+							toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
-									|| vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price
+								: toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+									? ycrvCurvePoolPrice || 0
+									: balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.tvl?.price
 									|| 0
 						)}
 					</p>
@@ -327,10 +329,10 @@ function	CardZap({
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
 							formatWithSlippage(expectedOut || ethers.constants.Zero) || 0,
-							toAddress(selectedOptionTo.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionTo.value)]?.normalizedPrice
-									|| vaults?.[toAddress(selectedOptionTo.value)]?.tvl?.price
+								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionTo.value as string)]?.tvl?.price
 									|| 0
 						)}
 					</p>
