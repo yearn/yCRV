@@ -6,24 +6,37 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import {motion} from 'framer-motion';
 import {Button} from '@yearn-finance/web-lib/components';
-import {defaultTxStatus} from '@yearn-finance/web-lib/utils';
+import {defaultTxStatus, toAddress} from '@yearn-finance/web-lib/utils';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {Dropdown} from 'components/TokenDropdown';
 import ArrowDown from 'components/icons/ArrowDown';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
-import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
+import {ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {getBalances} from 'wido';
+import {TDropdownOption} from 'types/types';
+import Image from 'next/image';
 
 type TCardAnyZapProps = {};
 
 function	CardAnyZap({}: TCardAnyZapProps): ReactElement {
 	const	{chainID} = useWeb3();
+	const [options, set_options] = useState<TDropdownOption[]>([]);
 
 	const	ADDRESS = '0x6568d65a8CB74A21F8cd7F6832E71Ab1E390f25E';
 
 	useEffect((): void => {
 		const fetchBalances = async (): Promise<void> => {
-			console.log(await getBalances(ADDRESS, [chainID]));
+			const tokens = await getBalances(ADDRESS, [chainID]);
+			set_options(tokens.map((token): TDropdownOption => ({
+				label: token.name,
+				value: toAddress(token.address),
+				icon: (
+					<Image
+						alt={token.name}
+						width={24}
+						height={24}
+						src={token.logoURI} />
+				)})));
 		};
 
 		fetchBalances();
@@ -54,8 +67,8 @@ function	CardAnyZap({}: TCardAnyZapProps): ReactElement {
 				<label className={'relative z-20 flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Swap from'}</p>
 					<Dropdown
-						defaultOption={ZAP_OPTIONS_FROM[0]}
-						options={ZAP_OPTIONS_FROM}
+						defaultOption={options[0]}
+						options={options}
 						selected={{label: 'label', value: 'value'}}
 						onSelect={(): void => {}} />
 					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
