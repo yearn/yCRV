@@ -45,6 +45,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		tokens: [
 			{token: process.env.YVBOOST_TOKEN_ADDRESS},
 			{token: process.env.YCRV_TOKEN_ADDRESS},
+			{token: process.env.YCRV_CURVE_POOL_ADDRESS},
 			{token: process.env.STYCRV_TOKEN_ADDRESS},
 			{token: process.env.LPYCRV_TOKEN_ADDRESS},
 			{token: process.env.YVECRV_TOKEN_ADDRESS},
@@ -82,12 +83,14 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
 		const	crvContract = new Contract(process.env.CRV_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
 		const	yvBoostContract = new Contract(process.env.YVBOOST_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
+		const	yCRVPoolContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS as string, YVECRV_ABI);
 
 		const	[
 			claimable,
 			yCRVAllowanceZap, styCRVAllowanceZap, lpyCRVAllowanceZap,
 			yveCRVAllowanceZap, crvAllowanceZap, yvBoostAllowanceZap,
-			yveCRVAllowanceLP, crvAllowanceLP
+			yveCRVAllowanceLP, crvAllowanceLP,
+			yCRVPoolAllowanceVault
 		] = await ethcallProvider.tryAll([
 			yveCRVContract.claimable(userAddress),
 			yCRVContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
@@ -97,8 +100,9 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 			crvContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 			yvBoostContract.allowance(userAddress, process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 			yveCRVContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS),
-			crvContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS)
-		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+			crvContract.allowance(userAddress, process.env.YVECRV_POOL_LP_ADDRESS),
+			yCRVPoolContract.allowance(userAddress, process.env.LPYCRV_TOKEN_ADDRESS)
+		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
 		performBatchedUpdates((): void => {
 			set_yveCRVClaimable({
@@ -110,6 +114,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 				[allowanceKey(process.env.YCRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: yCRVAllowanceZap,
 				[allowanceKey(process.env.STYCRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: styCRVAllowanceZap,
 				[allowanceKey(process.env.LPYCRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: lpyCRVAllowanceZap,
+				[allowanceKey(process.env.YCRV_CURVE_POOL_ADDRESS, process.env.LPYCRV_TOKEN_ADDRESS)]: yCRVPoolAllowanceVault,
 				// CRV ECOSYSTEM
 				[allowanceKey(process.env.YVECRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]: yveCRVAllowanceZap,
 				[allowanceKey(process.env.CRV_TOKEN_ADDRESS, process.env.ZAP_YEARN_VE_CRV_ADDRESS)]:  crvAllowanceZap,
@@ -134,6 +139,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 					[toAddress(process.env.YCRV_TOKEN_ADDRESS)]: data[toAddress(process.env.YCRV_TOKEN_ADDRESS)] || defaultData,
 					[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: data[toAddress(process.env.STYCRV_TOKEN_ADDRESS)] || defaultData,
 					[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: data[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)] || defaultData,
+					[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)]: data[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)] || defaultData,
 					// CRV ECOSYSTEM
 					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: data[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)] || defaultData,
 					[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: data[toAddress(process.env.YVECRV_TOKEN_ADDRESS)] || defaultData,

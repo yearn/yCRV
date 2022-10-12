@@ -6,6 +6,7 @@ import {TDropdownOption} from 'types/types';
 const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [{
 	label: 'yvBOOST',
 	value: toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string),
+	zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
 	icon: (
 		<Image
 			alt={'yvBOOST'}
@@ -16,6 +17,7 @@ const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [{
 }, {
 	label: 'yveCRV',
 	value: toAddress(process.env.YVECRV_TOKEN_ADDRESS as string),
+	zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
 	icon: (
 		<Image
 			alt={'yveCRV'}
@@ -30,6 +32,7 @@ const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [{
 const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 	label: 'st-yCRV',
 	value: toAddress(process.env.STYCRV_TOKEN_ADDRESS as string),
+	zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
 	icon: (
 		<Image
 			alt={'st-yCRV'}
@@ -42,6 +45,7 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 }, {
 	label: 'yCRV',
 	value: toAddress(process.env.YCRV_TOKEN_ADDRESS as string),
+	zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
 	icon: (
 		<Image
 			alt={'yCRV'}
@@ -55,6 +59,7 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [{
 {
 	label: 'lp-yCRV',
 	value: toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
+	zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
 	icon: (
 		<Image
 			alt={'lp-yCRV'}
@@ -84,6 +89,7 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 	{
 		label: 'CRV',
 		value: toAddress(process.env.CRV_TOKEN_ADDRESS as string),
+		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
 		icon: (
 			<Image
 				alt={'CRV'}
@@ -92,10 +98,36 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 				src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CRV_TOKEN_ADDRESS)}/logo-128.png`} />
 		)
 	},
-	...LEGACY_OPTIONS_TO];
+	...LEGACY_OPTIONS_TO,
+	{
+		label: 'Curve CRV/yCRV',
+		value: toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string),
+		zapVia: toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
+		icon: (
+			<div className={'relative flex h-6 w-9 flex-row'}>
+				<div>
+					<Image
+						alt={'CRV'}
+						width={24}
+						height={24}
+						src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CRV_TOKEN_ADDRESS)}/logo-128.png`} />
+				</div>
+				<div className={'absolute right-0'}>
+					<Image
+						alt={'yCRV'}
+						width={24}
+						height={24}
+						src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+				</div>
+			</div>
+		)
+	}
+];
 
 
-const	ZAP_OPTIONS_TO: TDropdownOption[] = [...LEGACY_OPTIONS_TO];
+const	ZAP_OPTIONS_TO: TDropdownOption[] = [
+	...LEGACY_OPTIONS_TO
+];
 
 
 export {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO};

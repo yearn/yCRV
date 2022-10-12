@@ -10,7 +10,8 @@ import ArrowDown from 'components/icons/ArrowDown';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
 import {approveERC20} from 'utils/actions/approveToken';
-import {zap} from 'utils/actions/zapCRVtoYvBOOST';
+import {zap} from 'utils/actions/zap';
+import {deposit} from 'utils/actions/deposit';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
 import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {allowanceKey, getCounterValue} from 'utils';
@@ -43,8 +44,8 @@ function	CardZap({
 	useEffect((): void => {
 		if (isActive && amount.raw.eq(0)) {
 			set_amount({
-				raw: balances[toAddress(selectedOptionFrom.value as string)]?.raw || ethers.constants.Zero,
-				normalized: balances[toAddress(selectedOptionFrom.value as string)]?.normalized || 0
+				raw: balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+				normalized: balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
 			});
 		} else if (!isActive && amount.raw.gt(0)) {
 			set_amount({raw: ethers.constants.Zero, normalized: 0});
@@ -58,9 +59,23 @@ function	CardZap({
 	**************************************************************************/
 	const	allowanceFrom = useMemo((): BigNumber => {
 		useWalletNonce; // remove warning
-		return allowances[allowanceKey(selectedOptionFrom.value as string, process.env.ZAP_YEARN_VE_CRV_ADDRESS)] || ethers.constants.Zero;
-	}, [allowances, useWalletNonce, selectedOptionFrom.value]);
+		return allowances[allowanceKey(selectedOptionFrom.value, selectedOptionFrom.zapVia)] || ethers.constants.Zero;
+	}, [allowances, useWalletNonce, selectedOptionFrom.value, selectedOptionFrom.zapVia]);
 
+
+	/* 🔵 - Yearn Finance ******************************************************
+	** useMemo to get the current possible TO vaults path for the current FROM
+	**************************************************************************/
+	const	possibleTo = useMemo((): TDropdownOption[] => {
+		if (selectedOptionFrom.value === process.env.YCRV_CURVE_POOL_ADDRESS) {
+			const possibleOptions = ZAP_OPTIONS_TO.filter((option): boolean => option.value === process.env.LPYCRV_TOKEN_ADDRESS as string);
+			if (selectedOptionTo.value !== process.env.LPYCRV_TOKEN_ADDRESS) {
+				set_selectedOptionTo(possibleOptions[0]);
+			}
+			return possibleOptions;
+		}
+		return ZAP_OPTIONS_TO.filter((option): boolean => option.value !== selectedOptionFrom.value as string);
+	}, [selectedOptionFrom.value, selectedOptionTo.value, ZAP_OPTIONS_TO]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** Perform a smartContract call to the ZAP contract to get the expected
@@ -73,16 +88,34 @@ function	CardZap({
 		_amountIn: BigNumber
 	): Promise<BigNumber> => {
 		const	currentProvider = provider || providers.getProvider(1);
-		const	contract = new ethers.Contract(
-			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
-			['function calc_expected_out(address, address, uint256) public view returns (uint256)'],
-			currentProvider
-		);
-		try {
-			const	_expectedOut = await contract.calc_expected_out(_inputToken, _outputToken, _amountIn) || ethers.constants.Zero;
-			return _expectedOut;
-		} catch (error) {
-			return (ethers.constants.Zero);
+
+		if (_inputToken === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string)) {
+			// Direct deposit to vault from crv/yCRV Curve LP Token to lp-yCRV Vault
+			const	contract = new ethers.Contract(
+				process.env.LPYCRV_TOKEN_ADDRESS as string,
+				['function pricePerShare() public view returns (uint256)'],
+				currentProvider
+			);
+			try {
+				const	pps = await contract.pricePerShare() || ethers.constants.Zero;
+				const	_expectedOut = _amountIn.mul(pps).div(ethers.constants.WeiPerEther);
+				return _expectedOut;
+			} catch (error) {
+				return (ethers.constants.Zero);
+			}
+		} else {
+			// Zap in
+			const	contract = new ethers.Contract(
+				process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
+				['function calc_expected_out(address, address, uint256) public view returns (uint256)'],
+				currentProvider
+			);
+			try {
+				const	_expectedOut = await contract.calc_expected_out(_inputToken, _outputToken, _amountIn) || ethers.constants.Zero;
+				return _expectedOut;
+			} catch (error) {
+				return (ethers.constants.Zero);
+			}
 		}
 	}, [provider]);
 
@@ -100,8 +133,8 @@ function	CardZap({
 
 	async function	onApproveFrom(): Promise<void> {
 		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
-			toAddress(selectedOptionFrom.value as string),
-			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
+			selectedOptionFrom.value,
+			selectedOptionFrom.zapVia,
 			ethers.constants.MaxUint256
 		).onSuccess(async (): Promise<void> => {
 			await refresh();
@@ -109,16 +142,28 @@ function	CardZap({
 	}
 
 	async function	onZap(): Promise<void> {
-		new Transaction(provider, zap, set_txStatusZap).populate(
-			toAddress(selectedOptionFrom.value as string), //_input_token
-			toAddress(selectedOptionTo.value as string), //_output_token
-			amount.raw, //amount_in
-			expectedOut, //_min_out
-			slippage
-		).onSuccess(async (): Promise<void> => {
-			set_amount({raw: ethers.constants.Zero, normalized: 0});
-			await refresh();
-		}).perform();
+		if (selectedOptionFrom.zapVia === process.env.LPYCRV_TOKEN_ADDRESS) {
+			// Direct deposit to vault from crv/yCRV Curve LP Token to lp-yCRV Vault
+			new Transaction(provider, deposit, set_txStatusZap).populate(
+				toAddress(selectedOptionTo.value), //destination vault
+				amount.raw //amount_in
+			).onSuccess(async (): Promise<void> => {
+				set_amount({raw: ethers.constants.Zero, normalized: 0});
+				await refresh();
+			}).perform();
+		} else {
+			// Zap in
+			new Transaction(provider, zap, set_txStatusZap).populate(
+				toAddress(selectedOptionFrom.value), //_input_token
+				toAddress(selectedOptionTo.value), //_output_token
+				amount.raw, //amount_in
+				expectedOut, //_min_out
+				slippage
+			).onSuccess(async (): Promise<void> => {
+				set_amount({raw: ethers.constants.Zero, normalized: 0});
+				await refresh();
+			}).perform();
+		}
 	}
 
 	function	renderButton(): ReactElement {
@@ -145,46 +190,51 @@ function	CardZap({
 		);
 	}
 
-	const	fromVaultAPY = useMemo((): string => {
-		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]) {
+	const		fromVaultAPY = useMemo((): string => {
+		if (!vaults?.[toAddress(selectedOptionFrom.value)]) {
 			return '';
 		}
 
-		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]
-			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.details?.apyTypeOverride === 'new') {
+		if (!vaults?.[toAddress(selectedOptionFrom.value)]
+			|| vaults?.[toAddress(selectedOptionFrom.value)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionFrom.value)]?.details?.apyTypeOverride === 'new') {
 			return 'APY -';
 		}
 
-		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy)
-			return `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+		if (vaults?.[toAddress(selectedOptionFrom.value)]?.apy?.net_apy)
+			return `APY ${format.amount((vaults?.[toAddress(selectedOptionFrom.value)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionFrom]);
 
-	const	toVaultAPY = useMemo((): string => {
-		if (!vaults?.[toAddress(selectedOptionTo.value as string)]) {
+	const		toVaultAPY = useMemo((): string => {
+		if (!vaults?.[toAddress(selectedOptionTo.value)]) {
 			return '';
 		}
 
-		if (!vaults?.[toAddress(selectedOptionTo.value as string)]
-			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new') {
+		if (!vaults?.[toAddress(selectedOptionTo.value)]
+			|| vaults?.[toAddress(selectedOptionTo.value)]?.apy?.type === 'new'
+			|| vaults?.[toAddress(selectedOptionTo.value)]?.details?.apyTypeOverride === 'new') {
 			return 'APY -';
 		}
 
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
-			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+		if (vaults?.[toAddress(selectedOptionTo.value)]?.apy?.net_apy)
+			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionTo]);
 
 	function	formatWithSlippage(value: BigNumber): number {
 		const	hasLP = (
-			toAddress(selectedOptionFrom.value as string) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
-			|| toAddress(selectedOptionTo.value as string) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+			toAddress(selectedOptionFrom.value) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+			|| toAddress(selectedOptionTo.value) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
 		);
-		if (hasLP) {
+		const	isDirectDeposit = (
+			toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+			|| toAddress(selectedOptionTo.value) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
+		);
+
+		if (hasLP && !isDirectDeposit) {
 			const	minAmountStr = Number(ethers.utils.formatUnits(value || ethers.constants.Zero, 18));
 			const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - (slippage / 100))).toFixed(18), 18);
 			return format.toNormalizedValue(minAmountWithSlippage || ethers.constants.Zero, 18);
@@ -216,8 +266,8 @@ function	CardZap({
 								}
 								set_selectedOptionFrom(option);
 								set_amount({
-									raw: balances[toAddress(option.value as string)]?.raw || ethers.constants.Zero,
-									normalized: balances[toAddress(option.value as string)]?.normalized || 0
+									raw: balances[toAddress(option.value)]?.raw || ethers.constants.Zero,
+									normalized: balances[toAddress(option.value)]?.normalized || 0
 								});
 							});
 						}} />
@@ -233,10 +283,10 @@ function	CardZap({
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
 							amount?.normalized || 0,
-							toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+							toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice
-									|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.tvl?.price
+								: balances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price
 									|| 0
 						)}
 					</p>
@@ -256,8 +306,8 @@ function	CardZap({
 				<label className={'relative z-10 flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Swap to'}</p>
 					<Dropdown
-						defaultOption={ZAP_OPTIONS_TO[0]}
-						options={ZAP_OPTIONS_TO.filter((option: TDropdownOption): boolean => option.value !== selectedOptionFrom.value)}
+						defaultOption={possibleTo[0]}
+						options={possibleTo}
 						selected={selectedOptionTo}
 						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)} />
 					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
@@ -277,10 +327,10 @@ function	CardZap({
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
 							formatWithSlippage(expectedOut || ethers.constants.Zero) || 0,
-							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+							toAddress(selectedOptionTo.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice
-									|| vaults?.[toAddress(selectedOptionTo.value as string)]?.tvl?.price
+								: balances?.[toAddress(selectedOptionTo.value)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionTo.value)]?.tvl?.price
 									|| 0
 						)}
 					</p>

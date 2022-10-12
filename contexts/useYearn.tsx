@@ -7,10 +7,12 @@ import type {TYearnVault} from 'types/types';
 
 export type	TYearnContext = {
 	ycrvPrice: number,
+	ycrvCurvePoolPrice: number,
 	vaults: {[key: string]: TYearnVault | undefined},
 }
 const	defaultProps: TYearnContext = {
 	ycrvPrice: 0,
+	ycrvCurvePoolPrice: 0,
 	vaults: {[ethers.constants.AddressZero]: undefined}
 };
 
@@ -38,6 +40,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	***************************************************************************/
 	const	{data: yveCRVdata} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcherLegacy);
 	const	{data: ycrvPrice} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/${process.env.YCRV_TOKEN_ADDRESS}?humanized=true`, baseFetcher);
+	const	{data: ycrvCurvePoolPrice} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/${process.env.YCRV_CURVE_POOL_ADDRESS}?humanized=true`, baseFetcher);
 	const	{data} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/all`, fetcher);
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -46,6 +49,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	return (
 		<YearnContext.Provider value={{
 			ycrvPrice: ycrvPrice,
+			ycrvCurvePoolPrice: ycrvCurvePoolPrice,
 			vaults: {
 				[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
 				[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
