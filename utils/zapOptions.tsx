@@ -104,22 +104,11 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 		value: toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string),
 		zapVia: toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
 		icon: (
-			<div className={'relative flex h-6 w-9 flex-row'}>
-				<div>
-					<Image
-						alt={'CRV'}
-						width={24}
-						height={24}
-						src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CRV_TOKEN_ADDRESS)}/logo-128.png`} />
-				</div>
-				<div className={'absolute right-0'}>
-					<Image
-						alt={'yCRV'}
-						width={24}
-						height={24}
-						src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_TOKEN_ADDRESS)}/logo-128.png`} />
-				</div>
-			</div>
+			<Image
+				alt={'CRV'}
+				width={24}
+				height={24}
+				src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`} />
 		)
 	}
 ];

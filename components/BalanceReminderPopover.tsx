@@ -154,21 +154,13 @@ export default function BalanceReminderPopover(): ReactElement {
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>
-												<div className={'relative flex h-8 w-12 flex-row items-center'}>
-													<div>
-														<Image
-															alt={'CRV'}
-															width={32}
-															height={32}
-															src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.CRV_TOKEN_ADDRESS)}/logo-128.png`} />
-													</div>
-													<div className={'absolute right-0'}>
-														<Image
-															alt={'yCRV'}
-															width={32}
-															height={32}
-															src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_TOKEN_ADDRESS)}/logo-128.png`} />
-													</div>
+												<div className={'flex w-12'}>
+													<Image
+														alt={'lp-crv/yCRV'}
+														width={32}
+														height={32}
+														quality={90}
+														src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`} />
 												</div>
 												<span className={'ml-2 md:ml-4'}>{'Curve CRV/yCRV'}</span>
 											</span>
