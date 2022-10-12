@@ -45,9 +45,9 @@ function	Header(): ReactElement {
 							{'Vote'}
 						</p>
 					</Link> */}
-					<Link href={'/zap-in'}>
-						<p className={`yveCRV--nav-link ${router.pathname === '/zap-in' ? 'active' : '' }`}>
-							{'Zap-in'}
+					<Link href={'/migrate'}>
+						<p className={`yveCRV--nav-link ${router.pathname === '/migrate' ? 'active' : '' }`}>
+							{'Migrate'}
 						</p>
 					</Link>
 					<Link href={'/about'}>
@@ -87,9 +87,9 @@ function	Header(): ReactElement {
 							{walletIdentity}
 						</p>
 					</div>
-					{isActive ? <div className={'ml-4'}>
+					{isActive && <div className={'ml-4'}>
 						<BalanceReminderPopover />
-					</div> : <div />}
+					</div>}
 				</div>
 			</header>
 			<ModalMobileMenu
