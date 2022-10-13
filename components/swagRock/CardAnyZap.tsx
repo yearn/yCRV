@@ -160,7 +160,7 @@ function CardAnyZap({
 		}
 	}, []);
 
-	const	{data: widoQuoteResponse} = useSWR(isActive && amount.raw.gt(0) ? [
+	const	{data: widoQuoteResponse, isValidating} = useSWR(isActive && amount.raw.gt(0) ? [
 		chainID,
 		selectedOptionFrom?.value,
 		chainID,
@@ -315,7 +315,7 @@ function CardAnyZap({
 					</div>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
 						<b className={'overflow-x-scroll scrollbar-none'}>
-							{formatWithSlippage({
+							{isValidating ? '.' : formatWithSlippage({
 								value: widoQuoteResponse?.toTokenAmount || ethers.constants.Zero,
 								addressFrom: toAddress(selectedOptionFrom?.value as string),
 								addressTo: toAddress(selectedOptionTo?.value as string),
@@ -324,7 +324,7 @@ function CardAnyZap({
 						</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{`$${widoQuoteResponse?.toTokenAmountUsdValue || '0.00'}`}
+						{isValidating ? '.' : `$${widoQuoteResponse?.toTokenAmountUsdValue || '0.00'}`}
 					</p>
 				</div>
 			</div>
