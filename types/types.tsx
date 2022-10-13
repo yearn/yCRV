@@ -117,5 +117,5 @@ export type TDropdownProps = {
 
 export type	TNormalizedBN = {
 	raw: BigNumber,
-	normalized: number | '',
+	normalized: number | string,
 }

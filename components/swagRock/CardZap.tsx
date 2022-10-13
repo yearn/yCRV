@@ -1,4 +1,4 @@
-import React, {Dispatch, ReactElement, SetStateAction, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {ChangeEvent, Dispatch, ReactElement, SetStateAction, useCallback, useEffect, useMemo, useState} from 'react';
 import {motion} from 'framer-motion';
 import {BigNumber, ethers} from 'ethers';
 import useSWR from 'swr';
@@ -35,6 +35,7 @@ function	CardZap({
 	const	{vaults, ycrvPrice, ycrvCurvePoolPrice} = useYearn();
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(ZAP_OPTIONS_FROM[0]);
 	const	[selectedOptionTo, set_selectedOptionTo] = useState(ZAP_OPTIONS_TO[0]);
+	const	[hasTypedSomething, set_hasTypedSomething] = useState(false);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -42,15 +43,18 @@ function	CardZap({
 	** the wallet is connected, or to 0 if the wallet is disconnected.
 	**************************************************************************/
 	useEffect((): void => {
-		if (isActive && amount.raw.eq(0)) {
+		if (isActive && amount.raw.eq(0) && !hasTypedSomething) {
 			set_amount({
 				raw: balances[toAddress(selectedOptionFrom.value as string)]?.raw || ethers.constants.Zero,
 				normalized: balances[toAddress(selectedOptionFrom.value as string)]?.normalized || 0
 			});
 		} else if (!isActive && amount.raw.gt(0)) {
-			set_amount({raw: ethers.constants.Zero, normalized: 0});
+			performBatchedUpdates((): void => {
+				set_amount({raw: ethers.constants.Zero, normalized: 0});
+				set_hasTypedSomething(false);
+			});
 		}
-	}, [isActive, selectedOptionFrom, balances, amount.raw]);
+	}, [isActive, hasTypedSomething, selectedOptionFrom, balances, amount.raw]);
 
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -131,6 +135,11 @@ function	CardZap({
 		amount.raw
 	] : null, expectedOutFetcher, {refreshInterval: 10000, shouldRetryOnError: false});
 
+
+	/* 🔵 - Yearn Finance ******************************************************
+	** Trigger an approve transaction for the selected input token by the 
+	** corresponding ZAP/VAULT contract.
+	**************************************************************************/
 	async function	onApproveFrom(): Promise<void> {
 		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
 			selectedOptionFrom.value,
@@ -141,6 +150,10 @@ function	CardZap({
 		}).perform();
 	}
 
+	/* 🔵 - Yearn Finance ******************************************************
+	** Trigger an zap/deposit transaction for the selected input token by the 
+	** corresponding ZAP/VAULT contract.
+	**************************************************************************/
 	async function	onZap(): Promise<void> {
 		if (selectedOptionFrom.zapVia === process.env.LPYCRV_TOKEN_ADDRESS) {
 			// Direct deposit to vault from crv/yCRV Curve LP Token to lp-yCRV Vault
@@ -166,15 +179,35 @@ function	CardZap({
 		}
 	}
 
+	function	onChangeInputValue(e: ChangeEvent<HTMLInputElement>): void {
+		let		amount = e.target.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+		const	decimals = balances[toAddress(selectedOptionFrom.value as string)]?.decimals || 18;
+		const	amountParts = amount.split('.');
+		if (amountParts.length === 2)
+			amount = amountParts[0] + '.' + amountParts[1].slice(0, decimals);
+		const	raw = ethers.utils.parseUnits(amount || '0', decimals);
+		performBatchedUpdates((): void => {
+			set_amount({raw: raw, normalized: amount as string});
+			set_hasTypedSomething(true);
+		});
+	}
+
 	function	renderButton(): ReactElement {
+		const	balanceForInputToken = balances?.[toAddress(selectedOptionFrom.value as string)]?.raw || ethers.constants.Zero;
+		const	isAboveBalance = amount.raw.gt(balanceForInputToken) || balanceForInputToken.eq(ethers.constants.Zero);
+
 		if (txStatusApprove.pending || (amount.raw).gt(allowanceFrom)) {
 			return (
 				<Button
 					onClick={onApproveFrom}
 					className={'w-full'}
 					isBusy={txStatusApprove.pending}
-					isDisabled={!isActive || (amount.raw).isZero()}>
-					{`Approve ${selectedOptionFrom?.label || 'token'}`}
+					isDisabled={
+						!isActive
+						|| (amount.raw).isZero()
+						|| isAboveBalance
+					}>
+					{isAboveBalance ? 'Insufficient balance' : `Approve ${selectedOptionFrom?.label || 'token'}`}
 				</Button>
 			);	
 		}
@@ -184,8 +217,12 @@ function	CardZap({
 				onClick={onZap}
 				className={'w-full'}
 				isBusy={txStatusZap.pending}
-				isDisabled={!isActive || (amount.raw).isZero()}>
-				{'Swap'}
+				isDisabled={
+					!isActive ||
+					(amount.raw).isZero() ||
+					amount.raw.gt(balanceForInputToken)
+				}>
+				{isAboveBalance && !amount.raw.isZero() ? 'Insufficient balance' : 'Swap'}
 			</Button>
 		);
 	}
@@ -274,7 +311,14 @@ function	CardZap({
 				<div className={'flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Amount'}</p>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
-						<b className={'overflow-x-scroll scrollbar-none'}>{amount.normalized}</b>
+						<div className={'flex h-10 items-center bg-neutral-300 py-4 px-0'}>
+							<input
+								className={`w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none scrollbar-none ${isActive ? '' : 'cursor-not-allowed'}`}
+								type={'text'}
+								disabled={!isActive}
+								value={amount.normalized}
+								onChange={(e: ChangeEvent<HTMLInputElement>): void => onChangeInputValue(e)} />
+						</div>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
