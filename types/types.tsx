@@ -111,8 +111,8 @@ export type TDropdownOption = {
 
 export type TDropdownProps = {
 	options: TDropdownOption[];
-	defaultOption: TDropdownOption;
-	selected: TDropdownOption;
+	defaultOption?: TDropdownOption;
+	selected?: TDropdownOption;
 	placeholder?: string;
 	onSelect:
 		| React.Dispatch<React.SetStateAction<TDropdownOption>>
