@@ -155,7 +155,7 @@ function	CardMigrateLegacy({
 		}
 
 		if (selectedOptionTo.value == toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
-			return '~56.00%';
+			return 'APY ~56.00%';
 		}
 
 		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
