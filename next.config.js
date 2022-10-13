@@ -14,7 +14,16 @@ module.exports = (phase) => withPWA({
 			'rawcdn.githack.com',
 			'raw.githubusercontent.com',
 			'logos.covalenthq.com',
-			'www.covalenthq.com'
+			'www.covalenthq.com',
+			'tokens.1inch.io',
+			'etherscan.com',
+			'etherscan.io',
+			'cryptologos.cc',
+			'storage.googleapis.com',
+			'ftmscan.com',
+			'ethereum-optimism.github.io',
+			'polygonscan.com',
+			'assets.coingecko.com'
 		]
 	},
 	env: {
