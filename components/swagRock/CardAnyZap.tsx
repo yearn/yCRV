@@ -51,8 +51,7 @@ type TBalances = {
 function CardAnyZap({
 	txStatusApprove,
 	set_txStatusApprove,
-	txStatusZap,
-	set_txStatusZap
+	txStatusZap
 }: TCardAnyZapProps): ReactElement {
 	const {chainID, isActive, provider} = useWeb3();
 	const {allowances, useWalletNonce, refresh} = useWallet();
@@ -181,10 +180,6 @@ function CardAnyZap({
 				await refresh(); 
 			})
 			.perform();
-	}
-
-	async function onZap(): Promise<void> {
-		return;
 	}
 
 	function renderButton(): ReactElement {
