@@ -319,12 +319,22 @@ function	CardZap({
 					</div>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
 						<b className={'overflow-x-scroll scrollbar-none'}>
-							{formatWithSlippage(expectedOut || ethers.constants.Zero)}
+							{formatWithSlippage({
+								value: expectedOut || ethers.constants.Zero,
+								addressFrom: toAddress(selectedOptionFrom.value as string),
+								addressTo: toAddress(selectedOptionTo.value as string),
+								slippage
+							})}
 						</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
-							formatWithSlippage(expectedOut || ethers.constants.Zero) || 0,
+							formatWithSlippage({
+								value: expectedOut || ethers.constants.Zero,
+								addressFrom: toAddress(selectedOptionFrom.value as string),
+								addressTo: toAddress(selectedOptionTo.value as string),
+								slippage
+							}) || 0,
 							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
 								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice

@@ -113,10 +113,20 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 	}
 ];
 
-
-const	ZAP_OPTIONS_TO: TDropdownOption[] = [
-	...LEGACY_OPTIONS_TO
-];
+const	ZAP_OPTIONS_TO: TDropdownOption[] = [...LEGACY_OPTIONS_TO,
+	{
+		label: 'Eth (debugging)',
+		value: toAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'),
+		icon: (
+			<Image
+				alt={'eth'}
+				width={24}
+				height={24}
+				src={'https://www.covalenthq.com/static/images/icons/display-icons/ethereum-eth-logo.png'}
+				loading={'eager'}
+				priority />
+		)
+	}];
 
 
 export {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO};
