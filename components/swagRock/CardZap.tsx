@@ -149,11 +149,9 @@ function	CardZap({
 		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]) {
 			return '';
 		}
-
-		if (!vaults?.[toAddress(selectedOptionFrom.value as string)]
-			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.details?.apyTypeOverride === 'new') {
-			return 'APY -';
+		
+		if (selectedOptionFrom.value == toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
+			return '~56.00%';
 		}
 
 		if (vaults?.[toAddress(selectedOptionFrom.value as string)]?.apy?.net_apy)
@@ -162,15 +160,14 @@ function	CardZap({
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionFrom]);
 
+
 	const	toVaultAPY = useMemo((): string => {
 		if (!vaults?.[toAddress(selectedOptionTo.value as string)]) {
 			return '';
 		}
 
-		if (!vaults?.[toAddress(selectedOptionTo.value as string)]
-			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new') {
-			return 'APY -';
+		if (selectedOptionTo.value == toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
+			return '~56.00%';
 		}
 
 		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
