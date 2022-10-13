@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
-	Dispatch,
+	ChangeEvent,
 	ReactElement,
-	SetStateAction,
 	useCallback,
 	useEffect,
 	useMemo,
@@ -11,9 +10,7 @@ import React, {
 import {motion} from 'framer-motion';
 import {BigNumber, ethers} from 'ethers';
 import {Button} from '@yearn-finance/web-lib/components';
-import {TTxStatus,
-	Transaction,
-	defaultTxStatus,
+import {
 	performBatchedUpdates,
 	toAddress
 } from '@yearn-finance/web-lib/utils';
@@ -21,84 +18,108 @@ import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {Dropdown} from 'components/TokenDropdown';
 import ArrowDown from 'components/icons/ArrowDown';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
-import {formatWithSlippage} from 'utils/formatWithSlippage';
 import {ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {ChainId, QuoteResult, Token, getBalances, getSupportedTokens} from 'wido';
-import {TDropdownOption, TNormalizedBN} from 'types/types';
+import {TDropdownOption} from 'types/types';
 import Image from 'next/image';
-import {allowanceKey} from 'utils';
 import {useWallet} from 'contexts/useWallet';
-import {widoApproveERC20} from 'utils/actions/approveToken';
 import {widoQuote} from 'utils/actions/widoQuote';
 import useSWR from 'swr';
+import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
+import {getCounterValue, handleInputChange} from 'utils';
+import {formatWithSlippage} from 'utils/formatWithSlippage';
+import useYearn from 'contexts/useYearn';
 
-type TCardAnyZapProps = {
-	txStatusApprove: TTxStatus;
-	txStatusZap: TTxStatus;
-	set_txStatusApprove: Dispatch<SetStateAction<TTxStatus>>;
-	set_txStatusZap: Dispatch<SetStateAction<TTxStatus>>;
-};
+type	TBalanceData = {
+	address: string
+	decimals: number,
+	symbol: string,
+	raw: BigNumber,
+	normalized: number,
+	normalizedPrice: number,
+}
 
-type TBalances = {
-	[address: string]: {
-		raw: BigNumber;
-		balanceUsdValue: string;
-		decimals: number;
-		normalized: BigNumber;
-	};
-};
+type	TWidoToken = {
+	address: string,
+	balance: string,
+	balanceUsdValue: string,
+	chainId: number,
+	decimals: number,
+	logoURI: string,
+	name: string,
+	symbol: string,
+	usdPrice: number,
+}
 
-function CardAnyZap({
-	txStatusApprove,
-	set_txStatusApprove,
-	txStatusZap
-}: TCardAnyZapProps): ReactElement {
-	const {chainID, isActive, provider} = useWeb3();
-	const {allowances, useWalletNonce, refresh} = useWallet();
+function CardAnyZap(): ReactElement {
+	const	ADDRESS = '0x6568d65a8CB74A21F8cd7F6832E71Ab1E390f25E'; // TODO debugging
+
+	const	{chainID, isActive} = useWeb3();
+	const	{vaults, ycrvPrice, ycrvCurvePoolPrice} = useYearn();
+	const	{balances} = useWallet();
+	const	[widoBalances, set_widoBalances] = useState<TBalanceData[]>([]);
+	const	{
+		txStatusApprove, txStatusZap,
+		selectedOptionFrom, set_selectedOptionFrom,
+		selectedOptionTo, set_selectedOptionTo,
+		amount, set_amount,
+		set_hasTypedSomething,
+		toVaultAPY, expectedOutWithSlippage,
+		allowanceFrom, onApproveFrom, onZap
+	} = useCardTransactor();
 	const [optionsFrom, set_optionsFrom] = useState<TDropdownOption[]>([]);
 	const [optionsTo, set_optionsTo] = useState<TDropdownOption[]>([]);
-	const [selectedOptionFrom, set_selectedOptionFrom] = useState<TDropdownOption>();
-	const [selectedOptionTo, set_selectedOptionTo] = useState<TDropdownOption>();
-	const [balances, set_balances] = useState<TBalances>();
-	const [amount, set_amount] = useState<Pick<TNormalizedBN, 'raw'>>({raw: ethers.constants.Zero});
 	const [quote, set_quote] = useState<QuoteResult>();
 
-	const ADDRESS = '0x6568d65a8CB74A21F8cd7F6832E71Ab1E390f25E'; // TODO debugging
+	
+	const getWidoSupportedTokens = useCallback(async(): Promise<void> => {
+		const _widoSupportedTokensRaw = (await getBalances(ADDRESS, [chainID]));
+		const _widoSupportedTokens = _widoSupportedTokensRaw as unknown as TWidoToken[];
+		set_widoBalances(
+			_widoSupportedTokens.map((token: TWidoToken): TBalanceData => {
+				return {
+					address: toAddress(token.address),
+					decimals: token.decimals,
+					symbol: token.symbol,
+					raw: BigNumber.from(token.balance),
+					normalized: Number(ethers.utils.formatUnits(token.balance, token.decimals)),
+					normalizedPrice: token.usdPrice
+				};
+			})
+		);
+	}, [ADDRESS, chainID]);
 
 	useEffect((): void => {
-		if (isActive && amount.raw.eq(0) && balances) {
-			set_amount({raw: balances[toAddress(selectedOptionFrom?.value as string)]?.raw || ethers.constants.Zero});
-		} else if (!isActive && amount.raw.gt(0)) {
-			set_amount({raw: ethers.constants.Zero});
+		if (isActive) {
+			getWidoSupportedTokens();
 		}
-	}, [isActive, selectedOptionFrom, balances, amount.raw]);
+	}, [isActive, getWidoSupportedTokens]);
+
+	const	allBalances = useMemo((): {[key: string]: TBalanceData} => {
+		const	_balances = balances as unknown as {[key: string]: TBalanceData};
+		const	_allBalances = {..._balances};
+		widoBalances.forEach((token: TBalanceData): void => {
+			_allBalances[token.address] = token;
+		});
+		return _allBalances;
+	}, [balances, widoBalances]);
 
 	useEffect((): void => {
 		const fetchBalances = async (): Promise<void> => {
 			const widoSupportedTokens = await getBalances(ADDRESS, [chainID]);
-			performBatchedUpdates((): void => {
-				set_balances(widoSupportedTokens.reduce((prev, curr): TBalances => ({
-					...prev,
-					[curr.address]: {
-						raw: BigNumber.from(curr.balance),
-						decimals: curr.decimals,
-						balanceUsdValue: curr.balanceUsdValue
-					}}), {})
-				);
-	
-				set_optionsFrom(widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption => ({
-					label: name,
-					value: toAddress(address),
-					icon: (
-						<Image
-							alt={name}
-							width={24}
-							height={24}
-							src={logoURI}
-						/>
-					)
-				})));
-			});
+
+			set_optionsFrom(widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption => ({
+				label: name,
+				value: toAddress(address),
+				icon: (
+					<Image
+						alt={name}
+						width={24}
+						height={24}
+						src={logoURI}
+					/>
+				)
+			})));
 		};
 
 		fetchBalances();
@@ -123,19 +144,6 @@ function CardAnyZap({
 
 		fetchSupportedTokens();
 	}, [chainID]);
-
-	// TODO
-	const allowanceFrom = useMemo((): BigNumber => {
-		useWalletNonce; // remove warning
-		return (
-			allowances[
-				allowanceKey(
-					selectedOptionFrom?.value as string,
-					process.env.ZAP_YEARN_VE_CRV_ADDRESS
-				)
-			] || ethers.constants.Zero
-		);
-	}, [allowances, useWalletNonce, selectedOptionFrom?.value]);
 
 	const widoQuoteFetcher = useCallback(async (
 		fromChainId: ChainId,
@@ -171,19 +179,6 @@ function CardAnyZap({
 		ADDRESS
 	] : null, widoQuoteFetcher, {refreshInterval: 10000, shouldRetryOnError: false});
 
-	async function onApproveFrom(): Promise<void> {
-		new Transaction(provider, widoApproveERC20, set_txStatusApprove)
-			.populate(
-				toAddress(selectedOptionFrom?.value as string),
-				chainID,
-				ethers.constants.MaxUint256
-			)
-			.onSuccess(async (): Promise<void> => {
-				await refresh(); 
-			})
-			.perform();
-	}
-
 	function renderButton(): ReactElement {
 		return (
 			<Button
@@ -200,11 +195,12 @@ function CardAnyZap({
 		if (txStatusApprove.pending || amount.raw.gt(allowanceFrom)) {
 			return (
 				<Button
-					onClick={onApproveFrom}
 					className={'w-full'}
 					isBusy={txStatusApprove.pending}
 					isDisabled={!isActive || amount.raw.isZero()}
-				>
+					onClick={(): void => {
+						onApproveFrom(true);
+					}}>
 					{`Approve ${selectedOptionFrom?.label || 'token'}`}
 				</Button>
 			);
@@ -250,7 +246,10 @@ function CardAnyZap({
 									if (o) set_selectedOptionTo(o);
 								}
 								set_selectedOptionFrom(option);
-								set_amount({raw: balances?.[toAddress(option.value as string)]?.raw || ethers.constants.Zero});
+								set_amount({
+									raw: allBalances?.[toAddress(option.value)]?.raw || ethers.constants.Zero,
+									normalized: allBalances?.[toAddress(option.value)]?.normalized || 0
+								});
 							});
 						}}
 						placeholder={'Select token'}
@@ -262,24 +261,46 @@ function CardAnyZap({
 				<div className={'flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Amount'}</p>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
-						<b className={'overflow-x-scroll scrollbar-none'}>
-							{Number(ethers.utils.formatUnits(
-								balances?.[toAddress(selectedOptionFrom?.value as string)]?.raw || ethers.constants.Zero, 
-								balances?.[toAddress(selectedOptionFrom?.value as string)]?.decimals || 18
-							))}
-						</b>
+						<div className={'flex h-10 flex-row items-center justify-between bg-neutral-300 py-4 px-0'}>
+							<input
+								className={`w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none scrollbar-none ${isActive ? '' : 'cursor-not-allowed'}`}
+								type={'text'}
+								disabled={!isActive}
+								value={amount.normalized}
+								onChange={(e: ChangeEvent<HTMLInputElement>): void => {
+									performBatchedUpdates((): void => {
+										set_amount(handleInputChange(e, allBalances?.[toAddress(selectedOptionFrom.value)]?.decimals || 18));
+										set_hasTypedSomething(true);
+									});
+								}} />
+							<button
+								onClick={(): void => {
+									set_amount({
+										raw: allBalances?.[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+										normalized: allBalances?.[toAddress(selectedOptionFrom.value)]?.normalized || 0
+									});
+								}}
+								className={'cursor-pointer text-sm text-neutral-500 transition-colors hover:text-neutral-900'}>
+								{'max'}
+							</button>
+						</div>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{`$${balances?.[toAddress(selectedOptionFrom?.value as string)]?.balanceUsdValue || '0.00'}`}
+						{getCounterValue(
+							amount?.normalized || 0,
+							toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+								? ycrvPrice || 0
+								: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+									? ycrvCurvePoolPrice || 0
+									: allBalances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price
+									|| 0
+						)}
 					</p>
 				</div>
 			</div>
 
-			<div
-				className={
-					'mt-2 mb-4 hidden grid-cols-2 gap-4 md:grid lg:mt-8 lg:mb-10'
-				}
-			>
+			<div className={'mt-2 mb-4 hidden grid-cols-2 gap-4 md:grid lg:mt-8 lg:mb-10'}>
 				<div className={'flex items-center justify-center'}>
 					<ArrowDown />
 				</div>
@@ -292,18 +313,12 @@ function CardAnyZap({
 				<label className={'relative z-10 flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Swap to'}</p>
 					<Dropdown
-						options={optionsTo.filter(
-							(option: TDropdownOption): boolean =>
-								option.value !== selectedOptionFrom?.value
-						)}
+						options={optionsTo.filter((option: TDropdownOption): boolean =>option.value !== selectedOptionFrom?.value)}
 						selected={selectedOptionTo}
-						onSelect={(option: TDropdownOption): void =>
-							set_selectedOptionTo(option)
-						}
-						placeholder={'Select token'}
-					/>
+						onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)}
+						placeholder={'Select token'} />
 					<p className={'pl-2 !text-xs font-normal !text-green-600'}>
-						{'TODO'}
+						{toVaultAPY}
 					</p>
 				</label>
 				<div className={'flex flex-col space-y-1'}>
@@ -316,17 +331,24 @@ function CardAnyZap({
 						</p>
 					</div>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
-						<b className={'overflow-x-scroll scrollbar-none'}>
-							{isValidating ? '.' : formatWithSlippage({
-								value: widoQuoteResponse?.toTokenAmount || ethers.constants.Zero,
-								addressFrom: toAddress(selectedOptionFrom?.value as string),
-								addressTo: toAddress(selectedOptionTo?.value as string),
-								slippage: Number(widoQuoteResponse?.expectedSlippage || 0)
-							})}
-						</b>
+						{isValidating ?
+							<div className={'relative h-10 w-full'}>
+								<div className={'absolute left-3 flex h-10 items-center justify-center'}>
+									<span className={'loader'} />
+								</div>
+							</div> :
+							<b className={'overflow-x-scroll scrollbar-none'}>
+								{formatWithSlippage({
+									value: widoQuoteResponse?.toTokenAmount || ethers.constants.Zero,
+									addressFrom: toAddress(selectedOptionFrom?.value as string),
+									addressTo: toAddress(selectedOptionTo?.value as string),
+									slippage: Number(widoQuoteResponse?.expectedSlippage || 0)
+								})}
+							</b>
+						}
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{isValidating ? '.' : `$${widoQuoteResponse?.toTokenAmountUsdValue || '0.00'}`}
+						{isValidating ? '$ -' : `$${widoQuoteResponse?.toTokenAmountUsdValue || '0.00'}`}
 					</p>
 				</div>
 			</div>
@@ -339,8 +361,7 @@ function CardAnyZap({
 }
 
 function CardAnyZapWrapper(): ReactElement {
-	const [txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
-	const [txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
+	const {txStatusApprove, txStatusZap} = useCardTransactor();
 
 	return (
 		<div>
@@ -350,31 +371,26 @@ function CardAnyZapWrapper(): ReactElement {
 				animate={'rest'}
 				variants={CardVariants as never}
 				className={'hidden h-[733px] w-[592px] items-center justify-end lg:flex'}
-				custom={!txStatusApprove.none || !txStatusZap.none}
-			>
+				custom={!txStatusApprove.none || !txStatusZap.none}>
 				<motion.div
 					variants={CardVariantsInner as never}
 					custom={!txStatusApprove.none || !txStatusZap.none}
-					className={'h-[701px] w-[560px] bg-neutral-100 p-12'}
-				>
-					<CardAnyZap
-						txStatusApprove={txStatusApprove}
-						txStatusZap={txStatusZap}
-						set_txStatusApprove={set_txStatusApprove}
-						set_txStatusZap={set_txStatusZap}
-					/>
+					className={'h-[701px] w-[560px] bg-neutral-100 p-12'}>
+					<CardAnyZap />
 				</motion.div>
 			</motion.div>
 			<div className={'w-full bg-neutral-100 p-4 md:p-8 lg:hidden'}>
-				<CardAnyZap
-					txStatusApprove={txStatusApprove}
-					txStatusZap={txStatusZap}
-					set_txStatusApprove={set_txStatusApprove}
-					set_txStatusZap={set_txStatusZap}
-				/>
+				<CardAnyZap />
 			</div>
 		</div>
 	);
 }
 
-export default CardAnyZapWrapper;
+function	WithCardTransactor(): ReactElement {
+	return (
+		<CardTransactorContextApp>
+			<CardAnyZapWrapper />
+		</CardTransactorContextApp>
+	);
+}
+export default WithCardTransactor;
