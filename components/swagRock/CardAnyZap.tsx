@@ -324,7 +324,7 @@ function CardAnyZap({
 								value: widoQuoteResponse?.toTokenAmount || ethers.constants.Zero,
 								addressFrom: toAddress(selectedOptionFrom?.value as string),
 								addressTo: toAddress(selectedOptionTo?.value as string),
-								slippage: Number(widoQuoteResponse?.expectedSlippage)
+								slippage: Number(widoQuoteResponse?.expectedSlippage || 0)
 							})}
 						</b>
 					</div>
