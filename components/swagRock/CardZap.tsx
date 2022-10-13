@@ -205,7 +205,7 @@ function	CardZap({
 		return 'APY 0.00%';
 	}, [vaults, selectedOptionFrom]);
 
-	const		toVaultAPY = useMemo((): string =>
+	const		toVaultAPY = useMemo((): string => {
 		if (!vaults?.[toAddress(selectedOptionTo.value as string)]) {
 			return '';
 		}
