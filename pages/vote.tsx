@@ -15,6 +15,7 @@ type	TOptionValue = {
 
 const	defaultOption: TDropdownOption = {
 	label: '',
+	zapVia: '',
 	value: {
 		name: '',
 		tokenAddress: '',
@@ -34,6 +35,7 @@ function	NewVault(): ReactElement {
 				.filter((item: TCurveGauges): boolean => !item.side_chain && !item.is_killed && !item.factory)
 				.map((gauge: TCurveGauges): TDropdownOption => ({
 					label: gauge.name,
+					zapVia: '',
 					icon: (
 						<Image
 							alt={gauge.name}

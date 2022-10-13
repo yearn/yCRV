@@ -52,12 +52,14 @@ export default function BalanceReminderPopover(): ReactElement {
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>
-												<Image
-													alt={'yCRV'}
-													width={32}
-													height={32}
-													quality={90}
-													src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+												<div className={'flex w-12'}>
+													<Image
+														alt={'yCRV'}
+														width={32}
+														height={32}
+														quality={90}
+														src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+												</div>
 												<span className={'ml-2'}>{'yCRV'}</span>
 											</span>
 											<span className={'flex flex-row items-center justify-center tabular-nums text-neutral-900'}>
@@ -84,12 +86,14 @@ export default function BalanceReminderPopover(): ReactElement {
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>
-												<Image
-													alt={'st-yCRV'}
-													width={32}
-													height={32}
-													quality={90}
-													src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.STYCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+												<div className={'flex w-12'}>
+													<Image
+														alt={'st-yCRV'}
+														width={32}
+														height={32}
+														quality={90}
+														src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.STYCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+												</div>
 												<span className={'ml-2'}>{'st-yCRV'}</span>
 											</span>
 											<span className={'flex flex-row items-center justify-center tabular-nums text-neutral-900'}>
@@ -116,12 +120,14 @@ export default function BalanceReminderPopover(): ReactElement {
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>
-												<Image
-													alt={'lp-yCRV'}
-													width={32}
-													height={32}
-													quality={90}
-													src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.LPYCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+												<div className={'flex w-12'}>
+													<Image
+														alt={'lp-yCRV'}
+														width={32}
+														height={32}
+														quality={90}
+														src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.LPYCRV_TOKEN_ADDRESS)}/logo-128.png`} />
+												</div>
 												<span className={'ml-2'}>{'lp-yCRV'}</span>
 											</span>
 											<span className={'flex flex-row items-center justify-center tabular-nums text-neutral-900'}>
@@ -135,6 +141,40 @@ export default function BalanceReminderPopover(): ReactElement {
 															'lp-yCRV',
 															18,
 															`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.LPYCRV_TOKEN_ADDRESS)}/logo-128.png`
+														);
+													}}
+													className={'ml-4 h-4 w-4 cursor-pointer text-neutral-400 transition-colors hover:text-neutral-900'} />
+											</span>
+										</span>
+									</a>
+
+									<a
+										href={`https://etherscan.io/address/${process.env.YCRV_CURVE_POOL_ADDRESS}`}
+										target={'_blank'} rel={'noreferrer'}
+										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
+										<span className={'flex flex-row items-center justify-between'}>
+											<span className={'flex items-center text-neutral-900'}>
+												<div className={'flex w-12'}>
+													<Image
+														alt={'lp-crv/yCRV'}
+														width={32}
+														height={32}
+														quality={90}
+														src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`} />
+												</div>
+												<span className={'ml-2'}>{'Curve CRV/yCRV'}</span>
+											</span>
+											<span className={'flex flex-row items-center justify-center tabular-nums text-neutral-900'}>
+												{format.amount(balances[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)]?.normalized || 0, 2, 4)}
+												<AddToMetamask
+													onClick={(e): void => {
+														e.preventDefault();
+														e.stopPropagation();
+														addTokenToMetamask(
+															process.env.YCRV_CURVE_POOL_ADDRESS as string,
+															'Curve CRV/yCRV LP Token',
+															18,
+															`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`
 														);
 													}}
 													className={'ml-4 h-4 w-4 cursor-pointer text-neutral-400 transition-colors hover:text-neutral-900'} />

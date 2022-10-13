@@ -10,7 +10,7 @@ import ArrowDown from 'components/icons/ArrowDown';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
 import {approveERC20} from 'utils/actions/approveToken';
-import {zap} from 'utils/actions/zapCRVtoYvBOOST';
+import {zap} from 'utils/actions/zap';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
 import {allowanceKey, getCounterValue} from 'utils';
