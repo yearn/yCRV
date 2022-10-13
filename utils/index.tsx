@@ -12,9 +12,9 @@ export function allowanceKey(token: unknown, spender: unknown): string {
 	return `${toAddress(token as string)}_${toAddress(spender as string)}`;
 }
 
-export function	getCounterValue(amount: number, price: number): string {
+export function	getCounterValue(amount: number | string, price: number): string {
 	if (!amount || !price) {
 		return ('$0.00');
 	}
-	return (`$${format.amount((amount || 0) * (price || 0), 2, 2)}`);
+	return (`$${format.amount((Number(amount) || 0) * (price || 0), 2, 2)}`);
 }
