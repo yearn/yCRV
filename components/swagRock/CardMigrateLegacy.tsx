@@ -154,9 +154,8 @@ function	CardMigrateLegacy({
 			return '';
 		}
 
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.type === 'new'
-			|| vaults?.[toAddress(selectedOptionTo.value as string)]?.details?.apyTypeOverride === 'new') {
-			return 'APY -';
+		if (selectedOptionTo.value == toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
+			return 'APY ~56.00%';
 		}
 
 		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
