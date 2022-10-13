@@ -102,7 +102,7 @@ export type TDropdownOption = {
 	icon?: ReactElement;
 	label: string;
 	value: string | unknown;
-	zapVia: string;
+	zapVia?: string;
 };
 
 export type TDropdownProps = {
