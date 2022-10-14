@@ -31,7 +31,7 @@ export function getVaultAPY(vaults: TYearnVaultWrapper, vaultAddress: string): s
 	}
 
 	if (toAddress(vaultAddress) == toAddress(process.env.STYCRV_TOKEN_ADDRESS))
-		return 'APY ~56.00%';
+		return 'APY ~111.15%';
 
 	if (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy)
 		return `APY ${format.amount((vaults?.[toAddress(vaultAddress)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
