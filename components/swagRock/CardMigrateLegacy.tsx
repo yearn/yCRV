@@ -1,139 +1,49 @@
-import React, {Dispatch, ReactElement, SetStateAction, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {ChangeEvent, ReactElement} from 'react';
 import {motion} from 'framer-motion';
-import {BigNumber, ethers} from 'ethers';
-import useSWR from 'swr';
+import {ethers} from 'ethers';
 import {Button} from '@yearn-finance/web-lib/components';
-import {TTxStatus, Transaction, defaultTxStatus, format, performBatchedUpdates, providers, toAddress} from '@yearn-finance/web-lib/utils';
+import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {Dropdown} from 'components/TokenDropdown';
 import ArrowDown from 'components/icons/ArrowDown';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {approveERC20} from 'utils/actions/approveToken';
-import {zap} from 'utils/actions/zap';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
-import {allowanceKey, getCounterValue} from 'utils';
-import {TDropdownOption, TNormalizedBN} from 'types/types';
+import {getCounterValue, handleInputChange} from 'utils';
+import {TDropdownOption} from 'types/types';
+import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
 
-type TCardMigrateProps = {
-	txStatusApprove: TTxStatus;
-	txStatusZap: TTxStatus;
-	set_txStatusApprove: Dispatch<SetStateAction<TTxStatus>>;
-	set_txStatusZap: Dispatch<SetStateAction<TTxStatus>>;
-};
-
-
-function	CardMigrateLegacy({
-	txStatusApprove,
-	set_txStatusApprove,
-	txStatusZap,
-	set_txStatusZap
-}: TCardMigrateProps): ReactElement {
-	const	{provider, isActive} = useWeb3();
-	const	{balances, allowances, useWalletNonce, refresh, slippage} = useWallet();
-	const	{vaults, ycrvPrice} = useYearn();
-	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(LEGACY_OPTIONS_FROM[0]);
-	const	[selectedOptionTo, set_selectedOptionTo] = useState(LEGACY_OPTIONS_TO[0]);
-	const	[shouldLockResetBalances, set_shouldLockResetBalances] = useState(false);
-	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
-
-	/* 🔵 - Yearn Finance ******************************************************
-	** useEffect to set the amount to the max amount of the selected token once
-	** the wallet is connected, or to 0 if the wallet is disconnected.
-	**************************************************************************/
-	useEffect((): void => {
-		if (isActive && amount.raw.eq(0) && !shouldLockResetBalances) {
-			set_amount({
-				raw: balances[toAddress(selectedOptionFrom.value as string)]?.raw || ethers.constants.Zero,
-				normalized: balances[toAddress(selectedOptionFrom.value as string)]?.normalized || 0
-			});
-		} else if (!isActive && amount.raw.gt(0)) {
-			set_amount({raw: ethers.constants.Zero, normalized: 0});
-		}
-	}, [isActive, selectedOptionFrom, balances, amount.raw, shouldLockResetBalances]);
-
-
-	/* 🔵 - Yearn Finance ******************************************************
-	** useMemo to get the allowance of the selected token from the wallet.
-	** useWalletNonce is used to trigger a refresh because of array dependency.
-	**************************************************************************/
-	const	allowanceFrom = useMemo((): BigNumber => {
-		useWalletNonce; // remove warning
-		return allowances[allowanceKey(selectedOptionFrom.value as string, process.env.ZAP_YEARN_VE_CRV_ADDRESS)] || ethers.constants.Zero;
-	}, [allowances, useWalletNonce, selectedOptionFrom.value]);
-
-
-	/* 🔵 - Yearn Finance ******************************************************
-	** Perform a smartContract call to the ZAP contract to get the expected
-	** out for a given in/out pair with a specific amount. This callback is
-	** called every 10s or when amount/in or out changes.
-	**************************************************************************/
-	const expectedOutFetcher = useCallback(async (
-		_inputToken: string,
-		_outputToken: string,
-		_amountIn: BigNumber
-	): Promise<BigNumber> => {
-		const	currentProvider = provider || providers.getProvider(1);
-		const	contract = new ethers.Contract(
-			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
-			['function calc_expected_out(address, address, uint256) public view returns (uint256)'],
-			currentProvider
-		);
-		try {
-			const	_expectedOut = await contract.calc_expected_out(_inputToken, _outputToken, _amountIn) || ethers.constants.Zero;
-			return _expectedOut;
-		} catch (error) {
-			return (ethers.constants.Zero);
-		}
-	}, [provider]);
-
-	/* 🔵 - Yearn Finance ******************************************************
-	** SWR hook to get the expected out for a given in/out pair with a specific
-	** amount. This hook is called every 10s or when amount/in or out changes.
-	** Calls the expectedOutFetcher callback.
-	**************************************************************************/
-	const	{data: expectedOut} = useSWR(isActive && amount.raw.gt(0) ? [
-		selectedOptionFrom.value,
-		selectedOptionTo.value,
-		amount.raw
-	] : null, expectedOutFetcher, {refreshInterval: 10000, shouldRetryOnError: false});
-
-
-	async function	onApproveFrom(): Promise<void> {
-		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
-			toAddress(selectedOptionFrom.value as string),
-			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
-			ethers.constants.MaxUint256
-		).onSuccess(async (): Promise<void> => {
-			await refresh();
-		}).perform();
-	}
-
-	async function	onZap(): Promise<void> {
-		set_shouldLockResetBalances(true);
-		new Transaction(provider, zap, set_txStatusZap).populate(
-			toAddress(selectedOptionFrom.value as string), //_input_token
-			toAddress(selectedOptionTo.value as string), //_output_token
-			amount.raw, //amount_in
-			expectedOut, //_min_out
-			slippage
-		).onSuccess(async (): Promise<void> => {
-			set_amount({raw: ethers.constants.Zero, normalized: 0});
-			await refresh();
-			set_shouldLockResetBalances(false);
-		}).perform();
-	}
+function	CardMigrateLegacy(): ReactElement {
+	const	{isActive} = useWeb3();
+	const	{balances} = useWallet();
+	const	{vaults, ycrvPrice, ycrvCurvePoolPrice} = useYearn();
+	const	{
+		txStatusApprove, txStatusZap,
+		selectedOptionFrom, set_selectedOptionFrom,
+		selectedOptionTo, set_selectedOptionTo,
+		amount, set_amount,
+		set_hasTypedSomething,
+		toVaultAPY, expectedOutWithSlippage,
+		allowanceFrom, onApproveFrom, onZap
+	} = useCardTransactor();
 
 	function	renderButton(): ReactElement {
+		const	balanceForInputToken = balances?.[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero;
+		const	isAboveBalance = amount.raw.gt(balanceForInputToken) || balanceForInputToken.eq(ethers.constants.Zero);
+
 		if (txStatusApprove.pending || (amount.raw).gt(allowanceFrom)) {
 			return (
 				<Button
 					onClick={onApproveFrom}
 					className={'w-full'}
 					isBusy={txStatusApprove.pending}
-					isDisabled={!isActive || (amount.raw).isZero()}>
-					{`Approve ${selectedOptionFrom?.label || 'token'}`}
+					isDisabled={
+						!isActive
+						|| (amount.raw).isZero()
+						|| isAboveBalance
+					}>
+					{isAboveBalance ? 'Insufficient balance' : `Approve ${selectedOptionFrom?.label || 'token'}`}
 				</Button>
 			);	
 		}
@@ -143,31 +53,14 @@ function	CardMigrateLegacy({
 				onClick={onZap}
 				className={'w-full'}
 				isBusy={txStatusZap.pending}
-				isDisabled={!isActive || (amount.raw).isZero()}>
-				{'Migrate'}
+				isDisabled={
+					!isActive ||
+					(amount.raw).isZero() ||
+					amount.raw.gt(balanceForInputToken)
+				}>
+				{isAboveBalance && !amount.raw.isZero() ? 'Insufficient balance' : 'Swap'}
 			</Button>
 		);
-	}
-
-	const	toVaultAPY = useMemo((): string => {
-		if (!vaults?.[toAddress(selectedOptionTo.value as string)]) {
-			return '';
-		}
-
-		if (selectedOptionTo.value == toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
-			return 'APY ~56.00%';
-		}
-
-		if (vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy)
-			return `APY ${format.amount((vaults?.[toAddress(selectedOptionTo.value as string)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
-
-		return 'APY 0.00%';
-	}, [vaults, selectedOptionTo]);
-
-	function	formatWithSlippage(value: BigNumber): number {
-		const	minAmountStr = Number(ethers.utils.formatUnits(value || ethers.constants.Zero, 18));
-		const	minAmountWithSlippage = ethers.utils.parseUnits((minAmountStr * (1 - (slippage / 100))).toFixed(18), 18);
-		return format.toNormalizedValue(minAmountWithSlippage || ethers.constants.Zero, 18);
 	}
 
 	return (
@@ -191,8 +84,8 @@ function	CardMigrateLegacy({
 							performBatchedUpdates((): void => {
 								set_selectedOptionFrom(option);
 								set_amount({
-									raw: balances[toAddress(option.value as string)]?.raw || ethers.constants.Zero,
-									normalized: balances[toAddress(option.value as string)]?.normalized || 0
+									raw: balances[toAddress(option.value)]?.raw || ethers.constants.Zero,
+									normalized: balances[toAddress(option.value)]?.normalized || 0
 								});
 							});
 						}} />
@@ -203,17 +96,39 @@ function	CardMigrateLegacy({
 				<div className={'flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Amount'}</p>
 					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
-						<b className={'overflow-x-scroll scrollbar-none'}>
-							{amount.normalized}
-						</b>
+						<div className={'flex h-10 flex-row items-center justify-between bg-neutral-300 py-4 px-0'}>
+							<input
+								className={`w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none scrollbar-none ${isActive ? '' : 'cursor-not-allowed'}`}
+								type={'text'}
+								disabled={!isActive}
+								value={amount.normalized}
+								onChange={(e: ChangeEvent<HTMLInputElement>): void => {
+									performBatchedUpdates((): void => {
+										set_amount(handleInputChange(e, balances[toAddress(selectedOptionFrom.value)]?.decimals || 18));
+										set_hasTypedSomething(true);
+									});
+								}} />
+							<button
+								onClick={(): void => {
+									set_amount({
+										raw: balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+										normalized: balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+									});
+								}}
+								className={'cursor-pointer text-sm text-neutral-500 transition-colors hover:text-neutral-900'}>
+								{'max'}
+							</button>
+						</div>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
 							amount?.normalized || 0,
-							toAddress(selectedOptionFrom.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+							toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionFrom.value as string)]?.normalizedPrice
-									|| vaults?.[toAddress(selectedOptionFrom.value as string)]?.tvl?.price
+								: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+									? ycrvCurvePoolPrice || 0
+									: balances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price
 									|| 0
 						)}
 					</p>
@@ -248,16 +163,18 @@ function	CardMigrateLegacy({
 					</div>
 					<div className={'flex h-10 items-center text-clip bg-neutral-300 p-2'}>
 						<b className={'overflow-x-scroll scrollbar-none'}>
-							{formatWithSlippage(expectedOut || ethers.constants.Zero)}
+							{expectedOutWithSlippage}
 						</b>
 					</div>
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
-							formatWithSlippage(expectedOut || ethers.constants.Zero) || 0,
-							toAddress(selectedOptionTo.value as string) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+							expectedOutWithSlippage,
+							toAddress(selectedOptionTo.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: balances?.[toAddress(selectedOptionTo.value as string)]?.normalizedPrice
-									|| vaults?.[toAddress(selectedOptionTo.value as string)]?.tvl?.price
+								: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+									? ycrvCurvePoolPrice || 0
+									: balances?.[toAddress(selectedOptionTo.value)]?.normalizedPrice
+									|| vaults?.[toAddress(selectedOptionTo.value)]?.tvl?.price
 									|| 0
 						)}
 					</p>
@@ -274,9 +191,8 @@ function	CardMigrateLegacy({
 }
 
 function	CardMigrateLegacyWrapper(): ReactElement {
-	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
-	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
-
+	const {txStatusApprove, txStatusZap} = useCardTransactor();
+	
 	return (
 		<div>
 			<motion.div
@@ -290,23 +206,23 @@ function	CardMigrateLegacyWrapper(): ReactElement {
 					variants={CardVariantsInner as never}
 					custom={!txStatusApprove.none || !txStatusZap.none}
 					className={'h-[701px] w-[560px] bg-neutral-100 p-12'}>
-					<CardMigrateLegacy
-						txStatusApprove={txStatusApprove}
-						txStatusZap={txStatusZap}
-						set_txStatusApprove={set_txStatusApprove}
-						set_txStatusZap={set_txStatusZap} />
+					<CardMigrateLegacy />
 				</motion.div>
 			</motion.div>
 			<div className={'w-full bg-neutral-100 p-4 md:p-8 lg:hidden'}>
-				<CardMigrateLegacy
-					txStatusApprove={txStatusApprove}
-					txStatusZap={txStatusZap}
-					set_txStatusApprove={set_txStatusApprove}
-					set_txStatusZap={set_txStatusZap} />
+				<CardMigrateLegacy />
 			</div>
 		</div>
 	);
 }
 
-
-export default CardMigrateLegacyWrapper;
+function	WithCardTransactor(): ReactElement {
+	return (
+		<CardTransactorContextApp
+			defaultOptionFrom={LEGACY_OPTIONS_FROM[0]}
+			defaultOptionTo={LEGACY_OPTIONS_TO[0]}>
+			<CardMigrateLegacyWrapper />
+		</CardTransactorContextApp>
+	);
+}
+export default WithCardTransactor;

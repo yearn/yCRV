@@ -1,6 +1,10 @@
 import {ReactElement} from 'react';
 import {BigNumber} from 'ethers';
 
+export type TYearnVaultWrapper = {
+	[key: string]: TYearnVault | undefined
+}
+
 export type TYearnVault = {
     inception: number,
     address: string,
@@ -101,8 +105,8 @@ export type	TClaimable = {
 export type TDropdownOption = {
 	icon?: ReactElement;
 	label: string;
-	value: string | unknown;
-	zapVia: string;
+	value: string;
+	zapVia?: string;
 };
 
 export type TDropdownProps = {
@@ -117,5 +121,5 @@ export type TDropdownProps = {
 
 export type	TNormalizedBN = {
 	raw: BigNumber,
-	normalized: number | '',
+	normalized: number | string,
 }

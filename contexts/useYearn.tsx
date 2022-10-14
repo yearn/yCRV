@@ -3,12 +3,12 @@ import useSWR from 'swr';
 import axios from 'axios';
 import {ethers} from 'ethers';
 import {toAddress} from '@yearn-finance/web-lib/utils';
-import type {TYearnVault} from 'types/types';
+import type {TYearnVault, TYearnVaultWrapper} from 'types/types';
 
 export type	TYearnContext = {
 	ycrvPrice: number,
 	ycrvCurvePoolPrice: number,
-	vaults: {[key: string]: TYearnVault | undefined},
+	vaults: TYearnVaultWrapper
 }
 const	defaultProps: TYearnContext = {
 	ycrvPrice: 0,

@@ -99,7 +99,6 @@ module.exports = {
 				'prefix': ['set_']
 			},
 			{'selector': 'variableLike', 'format': ['PascalCase'], 'filter': {'regex': '(Context)$|(ContextApp)$|^Component$', 'match': true}},
-			
 			{'selector': ['typeParameter', 'typeAlias'], 'format': ['PascalCase'], 'prefix': ['T']},
 			{'selector': 'interface', 'format': ['PascalCase'], 'prefix': ['I']},
 			{'selector': ['default', 'variableLike', 'parameter'], 'format': null, 'filter': {'regex': '^(__html|_css)$', 'match': true}}

@@ -108,7 +108,7 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 		zapVia: toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
 		icon: (
 			<Image
-				alt={'CRV'}
+				alt={'Curve CRV/yCRV'}
 				width={24}
 				height={24}
 				src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`} />
