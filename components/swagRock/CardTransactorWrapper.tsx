@@ -53,7 +53,7 @@ function	CardTransactorContextApp({
 	defaultOptionTo = LEGACY_OPTIONS_TO[0],
 	children = <div />
 }): ReactElement {
-	const	{provider, isActive} = useWeb3();
+	const	{provider, chainID, isActive} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
@@ -138,7 +138,19 @@ function	CardTransactorContextApp({
 	** Approve the spending of token A by the corresponding ZAP contract to
 	** perform the swap.
 	**************************************************************************/
-	async function	onApproveFrom(): Promise<void> {
+	async function	onApproveFrom(isWido = false): Promise<void> {
+		if (isWido) {
+			new Transaction(provider, widoApproveERC20, set_txStatusApprove)
+				.populate(
+					toAddress(selectedOptionFrom?.value as string),
+					chainID,
+					ethers.constants.MaxUint256
+				)
+				.onSuccess(async (): Promise<void> => {
+					await refresh(); 
+				})
+				.perform();
+		}
 		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
 			toAddress(selectedOptionFrom.value),
 			selectedOptionFrom.zapVia,

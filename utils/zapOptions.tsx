@@ -116,8 +116,8 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 	}
 ];
 
-
-const	ZAP_OPTIONS_TO: TDropdownOption[] = [...LEGACY_OPTIONS_TO,
+const	ZAP_OPTIONS_TO: TDropdownOption[] = [
+	...LEGACY_OPTIONS_TO,
 	{
 		label: 'Eth (debugging)',
 		value: toAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'),
@@ -130,7 +130,8 @@ const	ZAP_OPTIONS_TO: TDropdownOption[] = [...LEGACY_OPTIONS_TO,
 				loading={'eager'}
 				priority />
 		)
-	}];
+	}
+];
 
 
 export {

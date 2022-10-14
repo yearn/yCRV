@@ -15,7 +15,6 @@ import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
 
 import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
 
-
 function	CardZap(): ReactElement {
 	const	{isActive} = useWeb3();
 	const	{balances} = useWallet();
@@ -219,7 +218,7 @@ function	CardZapWrapper(): ReactElement {
 				whileHover={'hover'}
 				animate={'rest'}
 				variants={CardVariants as never}
-				className={'hidden h-[733px] w-[592px] items-center justify-end lg:flex'}
+				className={'hidden h-[733px] w-[592px] items-center justify-start lg:flex'}
 				custom={!txStatusApprove.none || !txStatusZap.none}>
 				<motion.div
 					variants={CardVariantsInner as never}
@@ -237,9 +236,7 @@ function	CardZapWrapper(): ReactElement {
 
 function	WithCardTransactor(): ReactElement {
 	return (
-		<CardTransactorContextApp
-			defaultOptionFrom={ZAP_OPTIONS_FROM[0]}
-			defaultOptionTo={ZAP_OPTIONS_TO[0]}>
+		<CardTransactorContextApp>
 			<CardZapWrapper />
 		</CardTransactorContextApp>
 	);

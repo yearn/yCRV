@@ -29,7 +29,6 @@ function	Meta(): ReactElement {
 					rel={'mask-icon'}
 					href={'/favicons/safari-pinned-tab.svg'}
 					color={meta.theme_color} />
-
 				<link
 					rel={'shortcut icon'}
 					type={'image/x-icon'}
