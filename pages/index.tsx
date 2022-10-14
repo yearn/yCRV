@@ -99,7 +99,11 @@ function	Index(): ReactElement {
 	return (
 		<>
 			<div className={'mx-auto mb-44 flex w-full max-w-6xl flex-col items-center justify-center'}>
-				<AlertBanner title={'You have old tokens'} level={'warning'} isVisible={hasOldTokens} canClose={false}>
+				<AlertBanner
+					title={'You have old tokens'}
+					level={'warning'}
+					isVisible={hasOldTokens}
+					canClose={false}>
 					<p className={'text-center text-lg md:text-2xl'}>
 						<Link href={'/migrate'}>{'Migrate'}</Link>
 					</p>

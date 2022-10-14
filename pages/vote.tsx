@@ -95,7 +95,9 @@ function	NewVault(): ReactElement {
 						<div className={'col-span-2 w-full space-y-1'}>
 							<p className={'text-base text-neutral-600'}>&nbsp;</p>
 							<div>
-								<Button className={'w-full'}>
+								<Button
+									className={'w-full'}
+								>
 									{'Submit'}
 								</Button>
 							</div>

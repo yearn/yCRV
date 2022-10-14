@@ -48,7 +48,8 @@ export default function BalanceReminderPopover(): ReactElement {
 								<div className={'bg-neutral-100 p-0'}>
 									<a
 										href={`https://etherscan.io/address/${process.env.YCRV_TOKEN_ADDRESS}`}
-										target={'_blank'} rel={'noreferrer'}
+										target={'_blank'}
+										rel={'noreferrer'}
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>
@@ -82,7 +83,8 @@ export default function BalanceReminderPopover(): ReactElement {
 
 									<a
 										href={`https://etherscan.io/address/${process.env.STYCRV_TOKEN_ADDRESS}`}
-										target={'_blank'} rel={'noreferrer'}
+										target={'_blank'}
+										rel={'noreferrer'}
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>
@@ -116,7 +118,8 @@ export default function BalanceReminderPopover(): ReactElement {
 
 									<a
 										href={`https://etherscan.io/address/${process.env.LPYCRV_TOKEN_ADDRESS}`}
-										target={'_blank'} rel={'noreferrer'}
+										target={'_blank'}
+										rel={'noreferrer'}
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>
@@ -150,7 +153,8 @@ export default function BalanceReminderPopover(): ReactElement {
 
 									<a
 										href={`https://etherscan.io/address/${process.env.YCRV_CURVE_POOL_ADDRESS}`}
-										target={'_blank'} rel={'noreferrer'}
+										target={'_blank'}
+										rel={'noreferrer'}
 										className={'flow-root cursor-alias p-2 transition-colors hover:bg-neutral-200'}>
 										<span className={'flex flex-row items-center justify-between'}>
 											<span className={'flex items-center text-neutral-900'}>

@@ -1,19 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, {
-	ChangeEvent,
-	ReactElement,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState
-} from 'react';
+import React, {ChangeEvent, ReactElement, useCallback, useEffect, useMemo, useState} from 'react';
 import {motion} from 'framer-motion';
 import {BigNumber, ethers} from 'ethers';
 import {Button} from '@yearn-finance/web-lib/components';
-import {
-	performBatchedUpdates,
-	toAddress
-} from '@yearn-finance/web-lib/utils';
+import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {Dropdown} from 'components/TokenDropdown';
 import ArrowDown from 'components/icons/ArrowDown';
@@ -64,8 +54,8 @@ function CardAnyZap(): ReactElement {
 		selectedOptionTo, set_selectedOptionTo,
 		amount, set_amount,
 		set_hasTypedSomething,
-		toVaultAPY, expectedOutWithSlippage,
-		allowanceFrom, onApproveFrom, onZap
+		toVaultAPY,
+		allowanceFrom, onApproveFrom
 	} = useCardTransactor();
 	const [optionsFrom, set_optionsFrom] = useState<TDropdownOption[]>([]);
 	const [optionsTo, set_optionsTo] = useState<TDropdownOption[]>([]);

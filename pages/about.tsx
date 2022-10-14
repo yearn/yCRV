@@ -17,7 +17,12 @@ function	About(): ReactElement {
 					<p className={' pb-4 text-neutral-600'}>{'We’ve completely overhauled our suite of curve products; refining, improving, and simplifying everything. The result? Our users get the highest yields, in the most streamlined way possible. Lfg.'}</p>
 					<p className={'text-neutral-600'}>
 						{'For more info on each token, and how to use the UI read our '}
-						<a href={'https://docs.yearn.finance/getting-started/products/ycrv/overview'} target={'_blank'} className={'text-neutral-900 underline'} rel={'noreferrer'}>{'docs'}</a>
+						<a
+							href={'https://docs.yearn.finance/getting-started/products/ycrv/overview'}
+							target={'_blank'}
+							className={'text-neutral-900 underline'}
+							rel={'noreferrer'}>{'docs'}
+						</a>
 						{'.'}
 					</p>
 				</div>
@@ -97,7 +102,12 @@ function	About(): ReactElement {
 					</p>
 					<p className={'pb-4 text-neutral-600'}>
 						{'For advanced apes users worried about MEV we advise using '}
-						<a href={'https://docs.flashbots.net/flashbots-protect/rpc/quick-start/'} target={'_blank'} className={'text-neutral-900 underline'} rel={'noreferrer'}>{'flashbots'}</a>
+						<a
+							href={'https://docs.flashbots.net/flashbots-protect/rpc/quick-start/'}
+							target={'_blank'}
+							className={'text-neutral-900 underline'}
+							rel={'noreferrer'}>{'flashbots'}
+						</a>
 						{' rpc.'}
 					</p>
 					<p className={'text-neutral-600'}>
