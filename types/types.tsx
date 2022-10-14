@@ -1,6 +1,10 @@
 import {ReactElement} from 'react';
 import {BigNumber} from 'ethers';
 
+export type TYearnVaultWrapper = {
+	[key: string]: TYearnVault | undefined
+}
+
 export type TYearnVault = {
     inception: number,
     address: string,
