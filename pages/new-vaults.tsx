@@ -92,7 +92,11 @@ function	NewVault(): ReactElement {
 								{(selectedOption.value as TOptionValue).poolAddress ? (
 									<>
 										{(selectedOption.value as TOptionValue).poolAddress}
-										<a href={`${networks[1].explorerBaseURI}/address/${(selectedOption.value as TOptionValue).poolAddress}`} target={'_blank'} rel={'noreferrer'} className={'cursor-pointer text-neutral-600 transition-colors hover:text-neutral-900'}>
+										<a
+											href={`${networks[1].explorerBaseURI}/address/${(selectedOption.value as TOptionValue).poolAddress}`}
+											target={'_blank'}
+											rel={'noreferrer'}
+											className={'cursor-pointer text-neutral-600 transition-colors hover:text-neutral-900'}>
 											<LinkOut />
 										</a>
 									</>
@@ -105,7 +109,11 @@ function	NewVault(): ReactElement {
 								{(selectedOption.value as TOptionValue).gaugeAddress ? (
 									<>
 										{(selectedOption.value as TOptionValue).gaugeAddress}
-										<a href={`${networks[1].explorerBaseURI}/address/${(selectedOption.value as TOptionValue).gaugeAddress}`} target={'_blank'} rel={'noreferrer'} className={'cursor-pointer text-neutral-600 transition-colors hover:text-neutral-900'}>
+										<a
+											href={`${networks[1].explorerBaseURI}/address/${(selectedOption.value as TOptionValue).gaugeAddress}`}
+											target={'_blank'}
+											rel={'noreferrer'}
+											className={'cursor-pointer text-neutral-600 transition-colors hover:text-neutral-900'}>
 											<LinkOut />
 										</a>
 									</>

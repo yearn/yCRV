@@ -38,7 +38,10 @@ class MyDocument extends Document {
 		return (
 			<Html lang={'en'}>
 				<Head>
-					<link rel={'preconnect'} href={'https://brand.yearn.finance'} crossOrigin={'true'} />
+					<link
+						rel={'preconnect'}
+						href={'https://brand.yearn.finance'}
+						crossOrigin={'true'} />
 					<link href={'https://brand.yearn.finance/fonts/fonts.css'} rel={'stylesheet'} />
 					<script dangerouslySetInnerHTML={{__html: modeScript}} />
 				</Head>
