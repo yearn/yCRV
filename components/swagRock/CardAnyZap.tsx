@@ -76,27 +76,29 @@ function CardAnyZap({
 	useEffect((): void => {
 		const fetchBalances = async (): Promise<void> => {
 			const widoSupportedTokens = await getBalances(ADDRESS, [chainID]);
-			set_balances(widoSupportedTokens.reduce((prev, curr): TBalances => ({
-				...prev,
-				[curr.address]: {
-					raw: BigNumber.from(curr.balance),
-					decimals: curr.decimals,
-					balanceUsdValue: curr.balanceUsdValue
-				}}), {})
-			);
-
-			set_optionsFrom(widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption => ({
-				label: name,
-				value: toAddress(address),
-				icon: (
-					<Image
-						alt={name}
-						width={24}
-						height={24}
-						src={logoURI}
-					/>
-				)
-			})));
+			performBatchedUpdates((): void => {
+				set_balances(widoSupportedTokens.reduce((prev, curr): TBalances => ({
+					...prev,
+					[curr.address]: {
+						raw: BigNumber.from(curr.balance),
+						decimals: curr.decimals,
+						balanceUsdValue: curr.balanceUsdValue
+					}}), {})
+				);
+	
+				set_optionsFrom(widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption => ({
+					label: name,
+					value: toAddress(address),
+					icon: (
+						<Image
+							alt={name}
+							width={24}
+							height={24}
+							src={logoURI}
+						/>
+					)
+				})));
+			});
 		};
 
 		fetchBalances();
