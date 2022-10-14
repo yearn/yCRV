@@ -5,7 +5,7 @@ import {Transaction, defaultTxStatus, performBatchedUpdates, providers, toAddres
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {approveERC20} from 'utils/actions/approveToken';
+import {approveERC20, widoApproveERC20} from 'utils/actions/approveToken';
 import {zap} from 'utils/actions/zap';
 import {deposit} from 'utils/actions/deposit';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
@@ -26,7 +26,7 @@ type TCardTransactor = {
 	set_selectedOptionTo: (option: TDropdownOption) => void,
 	set_amount: (amount: TNormalizedBN) => void,
 	set_hasTypedSomething: (hasTypedSomething: boolean) => void,
-	onApproveFrom: () => Promise<void>,
+	onApproveFrom: (isWido: boolean) => Promise<void>,
 	onZap: () => Promise<void>
 }
 
@@ -49,7 +49,7 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 });
 
 function	CardTransactorContextApp({children}: {children: ReactElement}): ReactElement {
-	const	{provider, isActive} = useWeb3();
+	const	{provider, chainID, isActive} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
@@ -134,7 +134,19 @@ function	CardTransactorContextApp({children}: {children: ReactElement}): ReactEl
 	** Approve the spending of token A by the corresponding ZAP contract to
 	** perform the swap.
 	**************************************************************************/
-	async function	onApproveFrom(): Promise<void> {
+	async function	onApproveFrom(isWido = false): Promise<void> {
+		if (isWido) {
+			new Transaction(provider, widoApproveERC20, set_txStatusApprove)
+				.populate(
+					toAddress(selectedOptionFrom?.value as string),
+					chainID,
+					ethers.constants.MaxUint256
+				)
+				.onSuccess(async (): Promise<void> => {
+					await refresh(); 
+				})
+				.perform();
+		}
 		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
 			toAddress(selectedOptionFrom.value),
 			selectedOptionFrom.zapVia,

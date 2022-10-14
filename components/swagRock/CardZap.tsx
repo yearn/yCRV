@@ -14,7 +14,6 @@ import {getCounterValue, handleInputChange} from 'utils';
 import {TDropdownOption} from 'types/types';
 import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
 
-
 function	CardZap(): ReactElement {
 	const	{isActive} = useWeb3();
 	const	{balances} = useWallet();
@@ -216,7 +215,7 @@ function	CardZapWrapper(): ReactElement {
 			<motion.div
 				initial={'rest'} whileHover={'hover'} animate={'rest'}
 				variants={CardVariants as never}
-				className={'hidden h-[733px] w-[592px] items-center justify-end lg:flex'}
+				className={'hidden h-[733px] w-[592px] items-center justify-start lg:flex'}
 				custom={!txStatusApprove.none || !txStatusZap.none}>
 				<motion.div
 					variants={CardVariantsInner as never}
