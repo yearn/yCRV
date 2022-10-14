@@ -6,7 +6,7 @@ export type TDropdownGaugeOption = {
 	icon?: ReactElement;
 	label: string;
 	value: any;
-	zapVia: string;
+	zapVia?: string;
 };
 
 export type TDropdownGaugesProps = {
