@@ -195,19 +195,21 @@ function	CardTransactorContextApp({children}: {children: ReactElement}): ReactEl
 	return (
 		<CardTransactorContext.Provider
 			value={{
-				selectedOptionFrom, set_selectedOptionFrom,
-				selectedOptionTo, set_selectedOptionTo,
-				amount, set_amount,
+				selectedOptionFrom,
+				selectedOptionTo,
+				amount,
+				txStatusApprove,
+				txStatusZap,
+				allowanceFrom,
+				fromVaultAPY,
+				toVaultAPY,
+				expectedOutWithSlippage,
+				set_selectedOptionFrom,
+				set_selectedOptionTo,
+				set_amount,
 				set_hasTypedSomething,
-
-				// Transaction state updaters
-				txStatusApprove, txStatusZap,
-
-				// Memoized values
-				allowanceFrom, fromVaultAPY, toVaultAPY, expectedOutWithSlippage,
-
-				// Ethereum transactions
-				onApproveFrom, onZap
+				onApproveFrom,
+				onZap
 			}}>
 			{children}
 		</CardTransactorContext.Provider>
