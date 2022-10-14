@@ -32,7 +32,7 @@ function DropdownGauges({options, defaultOption, selected, onSelect, placeholder
 							<div className={'flex flex-row items-center'}>
 								{selected?.icon ? cloneElement(selected.icon) : <div className={'h-6 w-6 rounded-full bg-neutral-500'} />}
 								<p className={`pl-2 ${(!selected?.label && !defaultOption?.label) ? 'text-neutral-400' : 'text-neutral-900'} font-normal`}>
-									{selected?.label || defaultOption?.label || placeholder}
+									{selected?.label || defaultOption?.label || placeholder || 'Unknown'}
 								</p>
 							</div>
 							<IconChevron className={`ml-3 h-6 w-6 transition-transform ${open ? '-rotate-180' : 'rotate-0'}`} />
