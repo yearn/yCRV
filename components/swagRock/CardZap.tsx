@@ -9,7 +9,7 @@ import ArrowDown from 'components/icons/ArrowDown';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
-import {LEGACY_OPTIONS_FROM, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
+import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {getCounterValue, handleInputChange} from 'utils';
 import {TDropdownOption} from 'types/types';
 import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
@@ -235,7 +235,7 @@ function	CardZapWrapper(): ReactElement {
 
 function	WithCardTransactor(): ReactElement {
 	return (
-		<CardTransactorContextApp defaultOptionFrom={LEGACY_OPTIONS_FROM[0]}>
+		<CardTransactorContextApp>
 			<CardZapWrapper />
 		</CardTransactorContextApp>
 	);
