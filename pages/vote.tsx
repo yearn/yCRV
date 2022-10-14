@@ -2,8 +2,8 @@ import React, {ReactElement, useMemo, useState} from 'react';
 import Image from 'next/image';
 import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import {Button} from '@yearn-finance/web-lib/components';
-import {Dropdown} from 'components/TokenDropdown';
-import {TCurveGauges, TDropdownOption} from 'types/types';
+import {DropdownGauges, TDropdownGaugeOption} from 'components/TokenDropdownGauges';
+import {TCurveGauges} from 'types/types';
 import {useCurve} from 'contexts/useCurve';
 
 type	TOptionValue = {
@@ -13,7 +13,7 @@ type	TOptionValue = {
 	gaugeAddress: string
 }
 
-const	defaultOption: TDropdownOption = {
+const	defaultOption: TDropdownGaugeOption = {
 	label: '',
 	zapVia: '',
 	value: {
@@ -29,11 +29,11 @@ function	NewVault(): ReactElement {
 	const	[selectedOption, set_selectedOption] = useState(defaultOption);
 	const	[delegateTo, set_delegateTo] = useState('');
 
-	const	gaugesOptions = useMemo((): TDropdownOption[] => {
+	const	gaugesOptions = useMemo((): TDropdownGaugeOption[] => {
 		return (
 			gauges
 				.filter((item: TCurveGauges): boolean => !item.side_chain && !item.is_killed && !item.factory)
-				.map((gauge: TCurveGauges): TDropdownOption => ({
+				.map((gauge: TCurveGauges): TDropdownGaugeOption => ({
 					label: gauge.name,
 					zapVia: '',
 					icon: (
@@ -73,12 +73,12 @@ function	NewVault(): ReactElement {
 					<div className={'grid grid-cols-1 gap-x-0 gap-y-5 md:grid-cols-6 md:gap-x-8'}>
 						<label className={'yearn--input relative z-10 col-span-2'}>
 							<p className={'text-base text-neutral-600'}>{'Select token'}</p>
-							<Dropdown
+							<DropdownGauges
 								defaultOption={defaultOption}
 								placeholder={'Token'}
 								options={gaugesOptions}
 								selected={selectedOption}
-								onSelect={(option: TDropdownOption): void => {
+								onSelect={(option: TDropdownGaugeOption): void => {
 									performBatchedUpdates((): void => {
 										set_selectedOption(option);
 									});
