@@ -4,15 +4,11 @@ import useSWR from 'swr';
 import {format, providers, toAddress} from '@yearn-finance/web-lib/utils';
 import {BigNumber, ethers} from 'ethers';
 import {Contract} from 'ethcall';
-import {request} from 'graphql-request';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
 import {useYearn} from 'contexts/useYearn';
 import {getCounterValue, getVaultAPY} from 'utils';
 import {useWallet} from 'contexts/useWallet';
-
-const graphFetcher = async (url: string, query: string): Promise<any> => request(url, query);
-
 
 function	About(): ReactElement {
 	const	{provider} = useWeb3();
