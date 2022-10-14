@@ -378,7 +378,7 @@ function CardAnyZapWrapper(): ReactElement {
 
 function	WithCardTransactor(): ReactElement {
 	return (
-		<CardTransactorContextApp>
+		<CardTransactorContextApp defaultOptionFrom={{label: '', value: ''}}>
 			<CardAnyZapWrapper />
 		</CardTransactorContextApp>
 	);
