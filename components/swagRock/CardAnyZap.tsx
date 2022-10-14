@@ -28,7 +28,7 @@ import useSWR from 'swr';
 import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
 import {getCounterValue, handleInputChange} from 'utils';
 import {formatWithSlippage} from 'utils/formatWithSlippage';
-import useYearn from 'contexts/useYearn';
+import {useYearn} from 'contexts/useYearn';
 
 type	TBalanceData = {
 	address: string
