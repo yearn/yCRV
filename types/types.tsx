@@ -106,7 +106,7 @@ export type TDropdownOption = {
 	icon?: ReactElement;
 	label: string;
 	value: string;
-	zapVia: string;
+	zapVia?: string;
 };
 
 export type TDropdownProps = {
