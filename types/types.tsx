@@ -105,7 +105,7 @@ export type	TClaimable = {
 export type TDropdownOption = {
 	icon?: ReactElement;
 	label: string;
-	value: string | unknown;
+	value: string;
 	zapVia?: string;
 };
 
