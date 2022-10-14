@@ -48,14 +48,18 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 	onZap: (): any => undefined
 });
 
-function	CardTransactorContextApp({children}: {children: ReactElement}): ReactElement {
+function	CardTransactorContextApp({
+	defaultOptionFrom = LEGACY_OPTIONS_FROM[0],
+	defaultOptionTo = LEGACY_OPTIONS_TO[0],
+	children = <div />
+}): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
-	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(LEGACY_OPTIONS_FROM[0]);
-	const	[selectedOptionTo, set_selectedOptionTo] = useState(LEGACY_OPTIONS_TO[0]);
+	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
+	const	[selectedOptionTo, set_selectedOptionTo] = useState(defaultOptionTo);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 	const	[hasTypedSomething, set_hasTypedSomething] = useState(false);
 

@@ -236,7 +236,9 @@ function	CardZapWrapper(): ReactElement {
 
 function	WithCardTransactor(): ReactElement {
 	return (
-		<CardTransactorContextApp>
+		<CardTransactorContextApp
+			defaultOptionFrom={ZAP_OPTIONS_FROM[0]}
+			defaultOptionTo={ZAP_OPTIONS_TO[0]}>
 			<CardZapWrapper />
 		</CardTransactorContextApp>
 	);
