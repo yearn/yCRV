@@ -52,24 +52,39 @@ function	ListOfVaults(): ReactElement {
 	const columns = useMemo((): unknown[] => [
 		{Header: 'Asset', accessor: 'asset', className: 'cell-start pr-8', sortType: 'basic'},
 		{
-			Header: 'TVL', accessor: 'tvl', className: 'cell-end pr-8', sortType: 'basic',
+			Header: 'TVL',
+			accessor: 'tvl',
+			className: 'cell-end pr-8',
+			sortType: 'basic',
 			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
 		},
 		{
-			Header: 'Total incoming rewards', accessor: 'tir', className: 'cell-end pr-8', sortType: 'basic',
+			Header: 'Total incoming rewards',
+			accessor: 'tir',
+			className: 'cell-end pr-8',
+			sortType: 'basic',
 			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
 		},
 		{
-			Header: 'Available to stake', accessor: 'availableToStake', className: 'cell-end pr-8', sortType: 'basic',
+			Header: 'Available to stake',
+			accessor: 'availableToStake',
+			className: 'cell-end pr-8',
+			sortType: 'basic',
 			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
 		},
 		{
-			Header: 'Staked', accessor: 'staked', className: 'cell-end pr-20', sortType: 'basic',
+			Header: 'Staked',
+			accessor: 'staked',
+			className: 'cell-end pr-20',
+			sortType: 'basic',
 			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
 
 		},
 		{
-			Header: '', accessor: 'button', className: 'cell-end pl-1.5', disableSortBy: true,
+			Header: '',
+			accessor: 'button',
+			className: 'cell-end pl-1.5',
+			disableSortBy: true,
 			Cell: ({value}: {value: string}): ReactNode => (
 				<button
 					className={'flex h-8 items-center justify-center border border-neutral-900 px-7'}
@@ -136,18 +151,22 @@ function	ListOfVaults(): ReactElement {
 							{headerGroup.headers.map((column: any): ReactElement => (
 								<th
 									key={column.getHeaderProps().key}
-									{...column.getHeaderProps(column.getSortByToggleProps([{
-										className: 'pb-6 text-xs text-neutral-900 font-normal whitespace-pre'
-									}]))}>
+									{...column.getHeaderProps(column.getSortByToggleProps([
+										{
+											className: 'pb-6 text-xs text-neutral-900 font-normal whitespace-pre'
+										}
+									]))}>
 									<div className={`flex flex-row items-center ${column.className}`}>
 										{column.render('Header')}
-										{column.canSort ? <div className={'ml-1'}>
-											{column.isSorted
-												? column.isSortedDesc
-													? <IconChevronPlain className={'h-4 w-4 cursor-pointer text-neutral-500'} />
-													: <IconChevronPlain className={'h-4 w-4 rotate-180 cursor-pointer text-neutral-500'} />
-												: <IconChevronPlain className={'h-4 w-4 cursor-pointer text-neutral-300 transition-colors hover:text-neutral-500'} />}
-										</div> : null}
+										{column.canSort ? (
+											<div className={'ml-1'}>
+												{column.isSorted
+													? column.isSortedDesc
+														? <IconChevronPlain className={'h-4 w-4 cursor-pointer text-neutral-500'} />
+														: <IconChevronPlain className={'h-4 w-4 rotate-180 cursor-pointer text-neutral-500'} />
+													: <IconChevronPlain className={'h-4 w-4 cursor-pointer text-neutral-300 transition-colors hover:text-neutral-500'} />}
+											</div>
+										) : null}
 									</div>
 								</th>
 							))}
@@ -168,12 +187,15 @@ function	ListOfVaults(): ReactElement {
 													{
 														className: 'pb-2 text-base font-mono whitespace-pre',
 														style: cell.column.style
-													}])
+													}
+												])
 												}>
 												<div className={`flex flex-row items-center ${cell.column.className}`}>
-													{cell.column.Header === 'Asset' ? <div className={'mr-4 mb-4 h-8 w-8 rounded-full bg-neutral-300'}>
+													{cell.column.Header === 'Asset' ? (
+														<div className={'mr-4 mb-4 h-8 w-8 rounded-full bg-neutral-300'}>
 
-													</div> : null}
+														</div>
+													) : null}
 													<div>
 														{cell.render('Cell')}
 														{cell.column.Header === 'Total incoming rewards' ? (
@@ -190,13 +212,15 @@ function	ListOfVaults(): ReactElement {
 					})}
 				</tbody>
 			</table>
-			{canPreviousPage || canNextPage ? <div className={'flex flex-row items-center justify-end space-x-2 p-4'}>
-				{renderPreviousChevron()}
-				<p className={'select-none text-sm tabular-nums'}>
-					{`${pageIndex + 1}/${pageOptions.length}`}
-				</p>
-				{renderNextChevron()}
-			</div> : null}
+			{canPreviousPage || canNextPage ? (
+				<div className={'flex flex-row items-center justify-end space-x-2 p-4'}>
+					{renderPreviousChevron()}
+					<p className={'select-none text-sm tabular-nums'}>
+						{`${pageIndex + 1}/${pageOptions.length}`}
+					</p>
+					{renderNextChevron()}
+				</div>
+			) : null}
 		</div>
 	);
 }

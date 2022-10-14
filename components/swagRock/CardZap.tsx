@@ -351,7 +351,9 @@ function	CardZapWrapper(): ReactElement {
 	return (
 		<div>
 			<motion.div
-				initial={'rest'} whileHover={'hover'} animate={'rest'}
+				initial={'rest'}
+				whileHover={'hover'}
+				animate={'rest'}
 				variants={CardVariants as never}
 				className={'hidden h-[733px] w-[592px] items-center justify-end lg:flex'}
 				custom={!txStatusApprove.none || !txStatusZap.none}>
