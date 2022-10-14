@@ -87,9 +87,9 @@ function	Header(): ReactElement {
 							{walletIdentity}
 						</p>
 					</div>
-					{isActive && <div className={'ml-4'}>
+					{isActive ? <div className={'ml-4'}>
 						<BalanceReminderPopover />
-					</div>}
+					</div> : null}
 				</div>
 			</header>
 			<ModalMobileMenu
