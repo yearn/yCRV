@@ -87,6 +87,8 @@ export async function	widoApproveERC20(
 				amount // Amount to allow. It can be left empty for maximum approval.
 			}
 		);
+
+		console.log({data, to});
 		
 		const tx = await signer.sendTransaction({data, to});
 		

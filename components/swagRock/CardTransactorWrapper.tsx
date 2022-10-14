@@ -11,6 +11,15 @@ import {approveERC20} from 'utils/actions/approveToken';
 import {deposit} from 'utils/actions/deposit';
 import {zap} from 'utils/actions/zap';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
+import {widoZap} from 'utils/actions/widoZap';
+
+type TApproveFrom = {
+	type: 'wido' | 'default';
+};
+
+type TZap = {
+	type: 'wido' | 'default'
+}
 
 type TCardTransactor = {
 	selectedOptionFrom: TDropdownOption,
@@ -26,8 +35,8 @@ type TCardTransactor = {
 	set_selectedOptionTo: (option: TDropdownOption) => void,
 	set_amount: (amount: TNormalizedBN) => void,
 	set_hasTypedSomething: (hasTypedSomething: boolean) => void,
-	onApproveFrom: () => Promise<void>,
-	onZap: () => Promise<void>
+	onApproveFrom: (options: TApproveFrom) => Promise<void>,
+	onZap: (options: TZap) => Promise<void>
 }
 
 const		CardTransactorContext = createContext<TCardTransactor>({
@@ -53,7 +62,7 @@ function	CardTransactorContextApp({
 	defaultOptionTo = LEGACY_OPTIONS_TO[0],
 	children = <div />
 }): ReactElement {
-	const	{provider, chainID, isActive} = useWeb3();
+	const	{provider, chainID, isActive, address} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
@@ -138,11 +147,11 @@ function	CardTransactorContextApp({
 	** Approve the spending of token A by the corresponding ZAP contract to
 	** perform the swap.
 	**************************************************************************/
-	async function	onApproveFrom(isWido = false): Promise<void> {
-		if (isWido) {
+	async function	onApproveFrom({type = 'default'}: TApproveFrom): Promise<void> {
+		if (type === 'wido') {
 			new Transaction(provider, widoApproveERC20, set_txStatusApprove)
 				.populate(
-					toAddress(selectedOptionFrom?.value as string),
+					toAddress(selectedOptionFrom.value),
 					chainID,
 					ethers.constants.MaxUint256
 				)
@@ -150,7 +159,9 @@ function	CardTransactorContextApp({
 					await refresh(); 
 				})
 				.perform();
+			return;
 		}
+		
 		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
 			toAddress(selectedOptionFrom.value),
 			selectedOptionFrom.zapVia,
@@ -164,7 +175,22 @@ function	CardTransactorContextApp({
 	** Execute a zap using the ZAP contract to migrate from a token A to a
 	** supported token B.
 	**************************************************************************/
-	async function	onZap(): Promise<void> {
+	async function	onZap({type = 'default'}: TZap): Promise<void> {
+		if (type === 'wido') {
+			new Transaction(provider, widoZap, set_txStatusZap).populate({
+				fromChainId: chainID,
+				fromToken: toAddress(selectedOptionFrom.value),
+				toChainId: chainID,
+				toToken: toAddress(selectedOptionTo.value),
+				amount: ethers.constants.MaxUint256.toString(),
+				user: toAddress(address)
+			}).onSuccess(async (): Promise<void> => {
+				set_amount({raw: ethers.constants.Zero, normalized: 0});
+				await refresh();
+			}).perform();
+			return;
+		}
+
 		if (selectedOptionFrom.zapVia === process.env.LPYCRV_TOKEN_ADDRESS) {
 			// Direct deposit to vault from crv/yCRV Curve LP Token to lp-yCRV Vault
 			new Transaction(provider, deposit, set_txStatusZap).populate(
@@ -174,19 +200,20 @@ function	CardTransactorContextApp({
 				set_amount({raw: ethers.constants.Zero, normalized: 0});
 				await refresh();
 			}).perform();
-		} else {
-			// Zap in
-			new Transaction(provider, zap, set_txStatusZap).populate(
-				toAddress(selectedOptionFrom.value), //_input_token
-				toAddress(selectedOptionTo.value), //_output_token
-				amount.raw, //amount_in
-				expectedOut, //_min_out
-				slippage
-			).onSuccess(async (): Promise<void> => {
-				set_amount({raw: ethers.constants.Zero, normalized: 0});
-				await refresh();
-			}).perform();
+			return;
 		}
+
+		// Zap in
+		new Transaction(provider, zap, set_txStatusZap).populate(
+			toAddress(selectedOptionFrom.value), //_input_token
+			toAddress(selectedOptionTo.value), //_output_token
+			amount.raw, //amount_in
+			expectedOut, //_min_out
+			slippage
+		).onSuccess(async (): Promise<void> => {
+			set_amount({raw: ethers.constants.Zero, normalized: 0});
+			await refresh();
+		}).perform();
 	}
 
 	/* 🔵 - Yearn Finance ******************************************************
