@@ -92,7 +92,7 @@ function	TextAnimation(): ReactElement {
 	);
 }
 
-const hasOldTokens = true;
+const hasOldTokens = true; // TODO Check for old tokens
 
 function	Index(): ReactElement {
 	return (

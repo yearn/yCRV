@@ -111,7 +111,7 @@ export type TDropdownOption = {
 
 export type TDropdownProps = {
 	options: TDropdownOption[];
-	defaultOption?: TDropdownOption;
+	defaultOption: TDropdownOption;
 	selected?: TDropdownOption;
 	placeholder?: string;
 	onSelect:

@@ -219,7 +219,7 @@ function	CardMigrateLegacyWrapper(): ReactElement {
 
 function	WithCardTransactor(): ReactElement {
 	return (
-		<CardTransactorContextApp defaultOptionFrom={LEGACY_OPTIONS_FROM[0]}>
+		<CardTransactorContextApp>
 			<CardMigrateLegacyWrapper />
 		</CardTransactorContextApp>
 	);
