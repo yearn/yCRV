@@ -41,6 +41,8 @@ type	TWidoToken = {
 	usdPrice: number,
 }
 
+const EMPTY_OPTION: TDropdownOption = {label: '', value: ''};
+
 function CardAnyZap(): ReactElement {
 	const {chainID, isActive, address} = useWeb3();
 	const {vaults, ycrvPrice, ycrvCurvePoolPrice} = useYearn();
@@ -94,8 +96,7 @@ function CardAnyZap(): ReactElement {
 	useEffect((): void => {
 		const fetchBalances = async (): Promise<void> => {
 			const widoSupportedTokens = await getBalances(address, [chainID]);
-
-			set_optionsFrom(widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption => ({
+			const widoOptionsFrom = widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption => ({
 				label: name,
 				value: toAddress(address),
 				icon: (
@@ -106,11 +107,16 @@ function CardAnyZap(): ReactElement {
 						src={logoURI}
 					/>
 				)
-			})));
+			}));
+
+			if (widoOptionsFrom.length > 0) {
+				set_optionsFrom(widoOptionsFrom);
+				set_selectedOptionFrom(widoOptionsFrom[0]);
+			}
 		};
 
 		fetchBalances();
-	}, [address, chainID]);
+	}, [address, chainID, set_selectedOptionFrom]);
 
 	useEffect((): void => {
 		const fetchSupportedTokens = async (): Promise<void> => {
@@ -213,8 +219,9 @@ function CardAnyZap(): ReactElement {
 							{'Swap from'}
 						</p>
 						<Dropdown
+							defaultOption={selectedOptionFrom || EMPTY_OPTION}
 							options={optionsFrom}
-							selected={selectedOptionFrom}
+							selected={selectedOptionFrom || EMPTY_OPTION}
 							onSelect={(option: TDropdownOption): void => {
 								performBatchedUpdates((): void => {
 									if (option.value === selectedOptionTo?.value) {
@@ -289,8 +296,9 @@ function CardAnyZap(): ReactElement {
 					<label className={'relative z-10 flex flex-col space-y-1'}>
 						<p className={'text-base text-neutral-600'}>{'Swap to'}</p>
 						<Dropdown
+							defaultOption={selectedOptionTo || EMPTY_OPTION}
 							options={optionsTo.filter((option: TDropdownOption): boolean =>option.value !== selectedOptionFrom?.value)}
-							selected={selectedOptionTo}
+							selected={selectedOptionTo || EMPTY_OPTION}
 							onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)}
 							placeholder={'Select token'} />
 						<p className={'pl-2 !text-xs font-normal !text-green-600'}>
