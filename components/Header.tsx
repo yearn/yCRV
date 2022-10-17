@@ -7,7 +7,6 @@ import {ModalMobileMenu} from '@yearn-finance/web-lib/components';
 import LogoYearn from 'components/icons/LogoYearn';
 import BalanceReminderPopover from './BalanceReminderPopover';
 
-
 function	Header(): ReactElement {
 	const	router = useRouter();
 	const	{isActive, address, ens, openLoginModal, onDesactivate, onSwitchChain} = useWeb3();
@@ -45,9 +44,9 @@ function	Header(): ReactElement {
 							{'Vote'}
 						</p>
 					</Link> */}
-					<Link href={'/stats'}>
-						<p className={`yveCRV--nav-link ${router.pathname === '/stats' ? 'active' : '' }`}>
-							{'Stats'}
+					<Link href={'/holdings'}>
+						<p className={`yveCRV--nav-link ${router.pathname === '/holdings' ? 'active' : '' }`}>
+							{'Holdings'}
 						</p>
 					</Link>
 					<Link href={'/about'}>
@@ -127,10 +126,10 @@ function	Header(): ReactElement {
 						</p>
 					</div>
 				</Link> */}
-				<Link href={'/stats'}>
+				<Link href={'/holdings'}>
 					<div className={'mobile-nav-item'} onClick={(): void => set_hasMobileMenu(false)}>
 						<p className={'font-bold'}>
-							{'Stats'}
+							{'Holdings'}
 						</p>
 					</div>
 				</Link>
