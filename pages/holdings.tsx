@@ -66,9 +66,23 @@ function	Stats(): ReactElement {
 	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
 	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
 
+	const	formatBigNumberOver10K = useCallback((v: BigNumber): string => {
+		if (v.gt(ethers.constants.WeiPerEther.mul(10000))) {
+			return format.amount(format.toNormalizedValue(v || 0, 18), 0, 0);
+		}
+		return format.amount(format.toNormalizedValue(v || 0, 18), 2, 2);
+	}, []);
+
+	const	formatNumberOver10K = useCallback((v: number): string => {
+		if (v >= 10000) {
+			return format.amount(v, 0, 0);
+		}
+		return format.amount(v, 2, 2);
+	}, []);
+
 	const	formatedYearnHas = useMemo((): string => (
 		data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] ?
-			format.amount(format.toNormalizedValue(data[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)], 18), 2, 2)
+			format.amount(format.toNormalizedValue(data[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)], 18), 0, 0)
 			: ''
 	), [data]);
 
@@ -108,33 +122,21 @@ function	Stats(): ReactElement {
 					<div className={'grid w-full gap-6 md:col-span-5'}>
 						<div>
 							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
-								{data?.treasury ? 
-									`${format.amount(
-										format.toNormalizedValue(data?.treasury || 0, 18), 2, 2)} `
-									: '- '
-								}
+								{data?.treasury ? `${formatBigNumberOver10K(data?.treasury || 0)} ` : '- '}
 								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'veCRV'}</span>
 							</b>
 							<p className={'text-lg text-neutral-500'}>{'Yearn Treasury'}</p>
 						</div>
 						<div>
 							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
-								{data?.legacy ? 
-									`${format.amount(
-										format.toNormalizedValue(data?.legacy || 0, 18), 2, 2)} `
-									: '- '
-								}
+								{data?.legacy ? `${formatBigNumberOver10K(data?.legacy || 0)} ` : '- '}
 								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'yveCRV'}</span>
 							</b>
 							<p className={'text-lg text-neutral-500'}>{'Legacy system'}</p>
 						</div>
 						<div>
 							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
-								{data?.yCRVSupply ? 
-									`${format.amount(
-										format.toNormalizedValue(data?.yCRVSupply || ethers.constants.Zero, 18), 2, 2)} `
-									: '- '
-								}
+								{data?.yCRVSupply ? `${formatBigNumberOver10K(data?.yCRVSupply || 0)} ` : '- '}
 								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'yCRV'}</span>
 							</b>
 
@@ -183,9 +185,7 @@ function	Stats(): ReactElement {
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'yCRV Deposits: '}</span>
 							<p className={'text-base tabular-nums text-neutral-900'}>
-								{data?.styCRVSupply ? (
-									format.amount(format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18), 2, 2)
-								) : '0.00'}
+								{data?.styCRVSupply ? `${formatBigNumberOver10K(data?.styCRVSupply || 0)} ` : '0.00'}
 							</p>
 						</div>
 						<div className={'flex flex-row items-baseline justify-between'}>
@@ -193,7 +193,7 @@ function	Stats(): ReactElement {
 							<div>
 								<p className={'text-base tabular-nums text-neutral-900'}>
 									{balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized ? (
-										format.amount(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized || 0, 2, 4)
+										formatNumberOver10K(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized || 0)
 									) : '0.00'}
 								</p>
 								<p className={'text-xs tabular-nums text-neutral-600'}>
@@ -232,9 +232,7 @@ function	Stats(): ReactElement {
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'yCRV Deposits: '}</span>
 							<p className={'text-base tabular-nums text-neutral-900'}>
-								{data?.lpyCRVSupply ? (
-									format.amount(format.toNormalizedValue(data?.lpyCRVSupply || ethers.constants.Zero, 18), 2, 2)
-								) : '0.00'}
+								{data?.lpyCRVSupply ? `${formatBigNumberOver10K(data?.lpyCRVSupply || 0)} ` : '0.00'}
 							</p>
 						</div>
 						<div className={'flex flex-row items-baseline justify-between'}>
@@ -242,7 +240,7 @@ function	Stats(): ReactElement {
 							<div>
 								<p className={'text-base tabular-nums text-neutral-900'}>
 									{balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized ? (
-										format.amount(balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized || 0, 2, 4)
+										formatNumberOver10K(balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized || 0)
 									) : '0.00'}
 								</p>
 								<p className={'text-xs tabular-nums text-neutral-600'}>
