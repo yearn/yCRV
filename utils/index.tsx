@@ -20,6 +20,13 @@ export function	getCounterValue(amount: number | string, price: number): string 
 	return (`$${format.amount((Number(amount) || 0) * (price || 0), 2, 2)}`);
 }
 
+export function	getCounterValueRaw(amount: number | string, price: number): string {
+	if (!amount || !price) {
+		return ('');
+	}
+	return (`${format.amount((Number(amount) || 0) * (price || 0), 2, 2)}`);
+}
+
 export function getVaultAPY(vaults: TYearnVaultWrapper, vaultAddress: string): string {
 	if (!vaults?.[toAddress(vaultAddress)]) {
 		return '';

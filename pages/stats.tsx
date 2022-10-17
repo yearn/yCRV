@@ -1,14 +1,15 @@
 import React, {ReactElement, useCallback, useMemo} from 'react';
-import {useWeb3} from '@yearn-finance/web-lib';
-import useSWR from 'swr';
-import {format, providers, toAddress} from '@yearn-finance/web-lib/utils';
 import {BigNumber, ethers} from 'ethers';
 import {Contract} from 'ethcall';
+import useSWR from 'swr';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
+import {format, providers, toAddress} from '@yearn-finance/web-lib/utils';
+import ValueAnimation from 'components/ValueAnimation';
+import {useYearn} from 'contexts/useYearn';
+import {useWallet} from 'contexts/useWallet';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
-import {useYearn} from 'contexts/useYearn';
-import {getCounterValue, getVaultAPY} from 'utils';
-import {useWallet} from 'contexts/useWallet';
+import {getCounterValue, getCounterValueRaw, getVaultAPY} from 'utils';
 
 function	Stats(): ReactElement {
 	const	{provider} = useWeb3();
@@ -65,29 +66,40 @@ function	Stats(): ReactElement {
 	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
 	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
 
+	const	formatedYearnHas = useMemo((): string => (
+		data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] ?
+			format.amount(format.toNormalizedValue(data[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)], 18), 2, 2)
+			: ''
+	), [data]);
+
+	const	formatedYouHave = useMemo((): string => (
+		getCounterValueRaw(
+			(Number(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized) || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0)
+			+
+			(Number(balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized) || 0) * (vaults?.[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0),
+			1
+		)
+	), [balances, vaults]);
+
 	return (
 		<section className={'mt-4 grid w-full grid-cols-12 gap-y-10 pb-10 md:mt-20 md:gap-x-10 md:gap-y-20'}>
 
 			<div className={'col-span-12 w-full md:col-span-8'}>
 				<p className={'pb-2 text-lg text-neutral-900 md:pb-6 md:text-3xl'}>{'Yearn has'}</p>
 				<b className={'text-4xl tabular-nums text-neutral-900 md:text-7xl'}>
-					{data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] ? 
-						`${format.amount(
-							format.toNormalizedValue(data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] || 0, 18), 2, 2)} `
-						: '- '
-					}
-					<span className={'text-base tabular-nums text-neutral-600 md:text-7xl md:text-neutral-900'}>{'veCRV'}</span>
+					<ValueAnimation
+						identifier={'veCRVTreasury'}
+						value={formatedYearnHas}
+						suffix={'veCRV'} />
 				</b>
 			</div>
 			<div className={'col-span-12 w-full md:col-span-4'}>
 				<p className={'pb-2 text-lg text-neutral-900 md:pb-6 md:text-3xl'}>{'You have'}</p>
 				<b className={'text-3xl tabular-nums text-neutral-900 md:text-7xl'}>
-					{getCounterValue(
-						(Number(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized) || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0)
-						+
-						(Number(balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized) || 0) * (vaults?.[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0),
-						1
-					)}
+					<ValueAnimation
+						identifier={'youHave'}
+						value={formatedYouHave ? formatedYouHave : ''}
+						prefix={'$'} />
 				</b>
 			</div>
 
