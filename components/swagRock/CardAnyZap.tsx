@@ -18,7 +18,6 @@ import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapp
 import {getCounterValue, handleInputChange} from 'utils';
 import {formatWithSlippage} from 'utils/formatWithSlippage';
 import {useYearn} from 'contexts/useYearn';
-import {widoAllowance} from 'utils/actions/widoAllowance';
 
 type	TBalanceData = {
 	address: string
@@ -55,12 +54,11 @@ function CardAnyZap(): ReactElement {
 		amount, set_amount,
 		set_hasTypedSomething,
 		toVaultAPY,
-		onApproveFrom,
+		allowanceFrom, onApproveFrom,
 		onZap
 	} = useCardTransactor();
 	const [optionsFrom, set_optionsFrom] = useState<TDropdownOption[]>([]);
 	const [optionsTo, set_optionsTo] = useState<TDropdownOption[]>([]);
-	const [allowanceFrom, set_allowanceFrom] = useState<BigNumber>(ethers.constants.Zero);
 	
 	const getWidoSupportedTokens = useCallback(async(): Promise<void> => {
 		const _widoSupportedTokensRaw = await getBalances(address, [chainID]);
@@ -164,15 +162,6 @@ function CardAnyZap(): ReactElement {
 		}
 	}, []);
 
-	useEffect((): void => {
-		const fetchWidoTokenAllowance = async (): Promise<void> => {
-			const allowance = await widoAllowance({chainId: chainID, accountAddress: address, tokenAddress: selectedOptionFrom.value});
-			set_allowanceFrom(BigNumber.from(allowance));
-		};
-
-		fetchWidoTokenAllowance();
-	}, [address, chainID, selectedOptionFrom.value]);
-
 	const {data: widoQuoteResponse, isValidating} = useSWR(isActive && amount.raw.gt(0) ? [
 		chainID,
 		selectedOptionFrom?.value,
@@ -190,9 +179,7 @@ function CardAnyZap(): ReactElement {
 					className={'w-full'}
 					isBusy={txStatusApprove.pending}
 					isDisabled={!isActive || amount.raw.isZero()}
-					onClick={(): void => {
-						onApproveFrom({type: 'wido'});
-					}}>
+					onClick={onApproveFrom}>
 					{`Approve ${selectedOptionFrom?.label || 'token'}`}
 				</Button>
 			);
@@ -200,9 +187,7 @@ function CardAnyZap(): ReactElement {
 
 		return (
 			<Button
-				onClick={(): void => {
-					onZap({type: 'wido'});
-				}}
+				onClick={onZap}
 				className={'w-full'}
 				isBusy={txStatusZap.pending}
 				isDisabled={!isActive || amount.raw.isZero()}
@@ -383,7 +368,7 @@ function CardAnyZapWrapper(): ReactElement {
 
 function	WithCardTransactor(): ReactElement {
 	return (
-		<CardTransactorContextApp defaultOptionFrom={{label: '', value: ''}}>
+		<CardTransactorContextApp type={'wido'} defaultOptionFrom={{label: '', value: ''}}>
 			<CardAnyZapWrapper />
 		</CardTransactorContextApp>
 	);
