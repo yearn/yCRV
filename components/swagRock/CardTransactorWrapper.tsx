@@ -12,14 +12,9 @@ import {deposit} from 'utils/actions/deposit';
 import {zap} from 'utils/actions/zap';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
 import {widoZap} from 'utils/actions/widoZap';
+import {widoAllowance} from 'utils/actions/widoAllowance';
 
-type TApproveFrom = {
-	type: 'wido' | 'default';
-};
-
-type TZap = {
-	type: 'wido' | 'default'
-}
+type T = 'wido' | 'default';
 
 type TCardTransactor = {
 	selectedOptionFrom: TDropdownOption,
@@ -35,8 +30,8 @@ type TCardTransactor = {
 	set_selectedOptionTo: (option: TDropdownOption) => void,
 	set_amount: (amount: TNormalizedBN) => void,
 	set_hasTypedSomething: (hasTypedSomething: boolean) => void,
-	onApproveFrom: (options: TApproveFrom) => Promise<void>,
-	onZap: (options: TZap) => Promise<void>
+	onApproveFrom: () => Promise<void>,
+	onZap: () => Promise<void>
 }
 
 const		CardTransactorContext = createContext<TCardTransactor>({
@@ -57,11 +52,19 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 	onZap: (): any => undefined
 });
 
+type TProps = {
+	type: T,
+	defaultOptionFrom?: TDropdownOption,
+	defaultOptionTo?: TDropdownOption,
+	children?: ReactElement | null,
+}
+
 function	CardTransactorContextApp({
 	defaultOptionFrom = LEGACY_OPTIONS_FROM[0],
 	defaultOptionTo = LEGACY_OPTIONS_TO[0],
-	children = <div />
-}): ReactElement {
+	children = null,
+	type = 'default'
+}: TProps): ReactElement {
 	const	{provider, chainID, isActive, address} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
@@ -71,6 +74,7 @@ function	CardTransactorContextApp({
 	const	[selectedOptionTo, set_selectedOptionTo] = useState(defaultOptionTo);
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 	const	[hasTypedSomething, set_hasTypedSomething] = useState(false);
+	const 	[allowanceFrom, set_allowanceFrom] = useState<BigNumber>(ethers.constants.Zero);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** useEffect to set the amount to the max amount of the selected token once
@@ -89,6 +93,23 @@ function	CardTransactorContextApp({
 			});
 		}
 	}, [isActive, selectedOptionFrom, amount.raw, hasTypedSomething, balances]);
+
+	useEffect((): void => {
+		const fetchWidoTokenAllowance = async (): Promise<void> => {
+			const allowance = await widoAllowance({chainId: chainID, accountAddress: address, tokenAddress: selectedOptionFrom.value});
+			set_allowanceFrom(BigNumber.from(allowance));
+		};
+		
+		if (isActive && amount.raw.gt(0) &&  type === 'wido') {
+			fetchWidoTokenAllowance();
+		}
+
+		if (type === 'default') {
+			useWalletNonce; // remove warning
+			const allowance = allowances[allowanceKey(selectedOptionFrom.value, selectedOptionFrom.zapVia)];
+			set_allowanceFrom(allowance || ethers.constants.Zero);
+		}
+	}, [address, allowances, amount.raw, chainID, isActive, selectedOptionFrom.value, selectedOptionFrom.zapVia, type, useWalletNonce]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** Perform a smartContract call to the ZAP contract to get the expected
@@ -147,7 +168,7 @@ function	CardTransactorContextApp({
 	** Approve the spending of token A by the corresponding ZAP contract to
 	** perform the swap.
 	**************************************************************************/
-	async function	onApproveFrom({type = 'default'}: TApproveFrom): Promise<void> {
+	async function	onApproveFrom(): Promise<void> {
 		if (type === 'wido') {
 			new Transaction(provider, widoApproveERC20, set_txStatusApprove)
 				.populate(
@@ -175,7 +196,7 @@ function	CardTransactorContextApp({
 	** Execute a zap using the ZAP contract to migrate from a token A to a
 	** supported token B.
 	**************************************************************************/
-	async function	onZap({type = 'default'}: TZap): Promise<void> {
+	async function	onZap(): Promise<void> {
 		if (type === 'wido') {
 			new Transaction(provider, widoZap, set_txStatusZap).populate({
 				fromChainId: chainID,
@@ -229,11 +250,6 @@ function	CardTransactorContextApp({
 		expectedOut || ethers.constants.Zero,
 		slippage
 	), [expectedOut, selectedOptionFrom.value, selectedOptionTo.value, slippage]);
-
-	const	allowanceFrom = useMemo((): BigNumber => {
-		useWalletNonce; // remove warning
-		return allowances[allowanceKey(selectedOptionFrom.value, selectedOptionFrom.zapVia)] || ethers.constants.Zero;
-	}, [useWalletNonce, allowances, selectedOptionFrom.value, selectedOptionFrom.zapVia]);
 
 	return (
 		<CardTransactorContext.Provider
