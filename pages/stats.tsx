@@ -10,7 +10,7 @@ import {useYearn} from 'contexts/useYearn';
 import {getCounterValue, getVaultAPY} from 'utils';
 import {useWallet} from 'contexts/useWallet';
 
-function	About(): ReactElement {
+function	Stats(): ReactElement {
 	const	{provider} = useWeb3();
 	const	{balances} = useWallet();
 	const	{vaults, ycrvPrice} = useYearn();
@@ -65,24 +65,23 @@ function	About(): ReactElement {
 	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
 	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
 
-	// 15000000/10000000000
-
 	return (
-		<section className={'mt-4 grid w-full grid-cols-1 gap-x-10 gap-y-20 pb-10 md:mt-20 md:grid-cols-12'}>
+		<section className={'mt-4 grid w-full grid-cols-12 gap-y-10 pb-10 md:mt-20 md:gap-x-10 md:gap-y-20'}>
 
-			<div className={'w-full md:col-span-8'}>
-				<p className={'pb-6 text-3xl text-neutral-900'}>{'Yearn has'}</p>
-				<b className={'text-7xl tabular-nums text-neutral-900'}>
+			<div className={'col-span-12 w-full md:col-span-8'}>
+				<p className={'pb-2 text-lg text-neutral-900 md:pb-6 md:text-3xl'}>{'Yearn has'}</p>
+				<b className={'text-4xl tabular-nums text-neutral-900 md:text-7xl'}>
 					{data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] ? 
 						`${format.amount(
-							format.toNormalizedValue(data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] || 0, 18), 2, 2)} veCRV`
-						: '- veCRV'
+							format.toNormalizedValue(data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] || 0, 18), 2, 2)} `
+						: '- '
 					}
+					<span className={'text-base tabular-nums text-neutral-600 md:text-7xl md:text-neutral-900'}>{'veCRV'}</span>
 				</b>
 			</div>
-			<div className={'w-full md:col-span-4'}>
-				<p className={'pb-6 text-3xl text-neutral-900'}>{'You have'}</p>
-				<b className={'text-7xl tabular-nums text-neutral-900'}>
+			<div className={'col-span-12 w-full md:col-span-4'}>
+				<p className={'pb-2 text-lg text-neutral-900 md:pb-6 md:text-3xl'}>{'You have'}</p>
+				<b className={'text-3xl tabular-nums text-neutral-900 md:text-7xl'}>
 					{getCounterValue(
 						(Number(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized) || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0)
 						+
@@ -92,16 +91,17 @@ function	About(): ReactElement {
 				</b>
 			</div>
 
-			<div className={'col-span-12 flex w-full flex-row space-x-4'}>
+			<div className={'col-span-12 flex w-full flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4'}>
 				<div className={'w-full bg-neutral-100 p-6 md:w-[412px] md:min-w-[412px]'}>
 					<div className={'grid w-full gap-6 md:col-span-5'}>
 						<div>
 							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
 								{data?.treasury ? 
 									`${format.amount(
-										format.toNormalizedValue(data?.treasury || 0, 18), 2, 2)} veCRV`
-									: '- veCRV'
+										format.toNormalizedValue(data?.treasury || 0, 18), 2, 2)} `
+									: '- '
 								}
+								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'veCRV'}</span>
 							</b>
 							<p className={'text-lg text-neutral-500'}>{'Yearn Treasury'}</p>
 						</div>
@@ -109,9 +109,10 @@ function	About(): ReactElement {
 							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
 								{data?.legacy ? 
 									`${format.amount(
-										format.toNormalizedValue(data?.legacy || 0, 18), 2, 2)} yveCRV`
-									: '- yveCRV'
+										format.toNormalizedValue(data?.legacy || 0, 18), 2, 2)} `
+									: '- '
 								}
+								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'yveCRV'}</span>
 							</b>
 							<p className={'text-lg text-neutral-500'}>{'Legacy system'}</p>
 						</div>
@@ -119,9 +120,10 @@ function	About(): ReactElement {
 							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
 								{data?.yCRVSupply ? 
 									`${format.amount(
-										format.toNormalizedValue(data?.yCRVSupply || ethers.constants.Zero, 18), 2, 2)} yCRV`
-									: '- yCRV'
+										format.toNormalizedValue(data?.yCRVSupply || ethers.constants.Zero, 18), 2, 2)} `
+									: '- '
 								}
+								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'yCRV'}</span>
 							</b>
 
 							<p className={'text-lg text-neutral-500'}>
@@ -136,7 +138,7 @@ function	About(): ReactElement {
 				</div> 
 
 				<div className={'grid w-full bg-neutral-100 p-6'}>
-					<div className={'mb-6 grid w-full grid-cols-5'}>
+					<div className={'mb-6 hidden w-full grid-cols-5 md:grid'}>
 						<p className={'text-base text-neutral-400'}>{'Product'}</p>
 						<p className={'text-base text-neutral-400'}>{'APY'}</p>
 						<p className={'text-base text-neutral-400'}>{'Total Assets'}</p>
@@ -144,83 +146,146 @@ function	About(): ReactElement {
 						<p className={'text-base text-neutral-400'}>{'My Balance'}</p>
 					</div>
 
-					<div className={'mb-8 grid w-full grid-cols-5'}>
-						<p className={'text-base text-neutral-900'}>{'st-yCRV'}</p>
-						<b className={'text-base tabular-nums text-neutral-900'}>
-							{stCRVAPY ? `${(stCRVAPY || '').replace('APY', '')}*` : '0.00%'}
-						</b>
-						<p className={'text-base tabular-nums text-neutral-900'}>
-							{data?.styCRVSupply ? getCounterValue(
-								format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18),
-								vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
-							) : '0.00'}
-						</p>
-						<p className={'text-base tabular-nums text-neutral-900'}>
-							{data?.styCRVSupply ? (
-								format.amount(format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18), 2, 2)
-							) : '0.00'}
-						</p>
-						<div>
-							<p className={'text-base tabular-nums text-neutral-900'}>
-								{balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized ? (
-									format.amount(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized || 0, 2, 4)
-								) : '0.00'}
+					<div className={'mb-8 grid w-full grid-cols-1 md:grid-cols-5'}>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Product: '}</span>
+							<p className={'text-base text-neutral-900'}>
+								{'st-yCRV'}
 							</p>
-							<p className={'text-xs tabular-nums text-neutral-600'}>
-								{balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)] ? getCounterValue(
-									balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized,
+						</div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
+							<b className={'text-base tabular-nums text-neutral-900'}>
+								{stCRVAPY ? `${(stCRVAPY || '').replace('APY', '')}*` : '0.00%'}
+							</b>
+						</div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Total Assets: '}</span>
+							<p className={'text-base tabular-nums text-neutral-900'}>
+								{data?.styCRVSupply ? getCounterValue(
+									format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18),
 									vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
 								) : '0.00'}
 							</p>
 						</div>
-					</div>
-
-					<div className={'mb-8 grid w-full grid-cols-5'}>
-						<p className={'text-base text-neutral-900'}>{'st-yCRV'}</p>
-						<b className={'text-base tabular-nums text-neutral-900'}>
-							{lpCRVAPY ? (lpCRVAPY || '').replace('APY', '') : '0.00%'}
-						</b>
-						<p className={'text-base tabular-nums text-neutral-900'}>
-							{data?.styCRVSupply ? getCounterValue(
-								format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18),
-								vaults?.[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
-							) : '0.00'}
-						</p>
-						<p className={'text-base tabular-nums text-neutral-900'}>
-							{data?.styCRVSupply ? (
-								format.amount(format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18), 2, 2)
-							) : '0.00'}
-						</p>
-						<div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'yCRV Deposits: '}</span>
 							<p className={'text-base tabular-nums text-neutral-900'}>
-								{balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized ? (
-									format.amount(balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized || 0, 2, 4)
+								{data?.styCRVSupply ? (
+									format.amount(format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18), 2, 2)
 								) : '0.00'}
 							</p>
-							<p className={'text-xs tabular-nums text-neutral-600'}>
-								{balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)] ? getCounterValue(
-									balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized,
+						</div>
+						<div className={'flex flex-row items-baseline justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'My Balance: '}</span>
+							<div>
+								<p className={'text-base tabular-nums text-neutral-900'}>
+									{balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized ? (
+										format.amount(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized || 0, 2, 4)
+									) : '0.00'}
+								</p>
+								<p className={'text-xs tabular-nums text-neutral-600'}>
+									{balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)] ? getCounterValue(
+										balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized,
+										vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
+									) : '0.00'}
+								</p>
+							</div>
+						</div>
+					</div>
+
+
+					<div className={'mb-8 grid w-full grid-cols-1 md:grid-cols-5'}>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Product: '}</span>
+							<p className={'text-base text-neutral-900'}>
+								{'lp-yCRV'}
+							</p>
+						</div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
+							<b className={'text-base tabular-nums text-neutral-900'}>
+								{lpCRVAPY ? `${(lpCRVAPY || '').replace('APY', '')}*` : '0.00%'}
+							</b>
+						</div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Total Assets: '}</span>
+							<p className={'text-base tabular-nums text-neutral-900'}>
+								{data?.lpyCRVSupply ? getCounterValue(
+									format.toNormalizedValue(data?.lpyCRVSupply || ethers.constants.Zero, 18),
 									vaults?.[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
 								) : '0.00'}
 							</p>
 						</div>
-					</div>
-
-					<div className={'mb-8 grid w-full grid-cols-5'}>
-						<p className={'text-base text-neutral-900'}>{'vl-yCRV'}</p>
-						<b className={'text-base tabular-nums text-neutral-900'}>{'N/A'}</b>
-						<p className={'text-base tabular-nums text-neutral-900'}>{'N/A'}</p>
-						<p className={'text-base tabular-nums text-neutral-900'}>{'N/A'}</p>
-						<div>
-							<p className={'text-base tabular-nums text-neutral-900'}>{'N/A'}</p>
-							<p className={'text-xs tabular-nums text-neutral-600'}>{'N/A'}</p>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'yCRV Deposits: '}</span>
+							<p className={'text-base tabular-nums text-neutral-900'}>
+								{data?.lpyCRVSupply ? (
+									format.amount(format.toNormalizedValue(data?.lpyCRVSupply || ethers.constants.Zero, 18), 2, 2)
+								) : '0.00'}
+							</p>
+						</div>
+						<div className={'flex flex-row items-baseline justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'My Balance: '}</span>
+							<div>
+								<p className={'text-base tabular-nums text-neutral-900'}>
+									{balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized ? (
+										format.amount(balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized || 0, 2, 4)
+									) : '0.00'}
+								</p>
+								<p className={'text-xs tabular-nums text-neutral-600'}>
+									{balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)] ? getCounterValue(
+										balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized,
+										vaults?.[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
+									) : '0.00'}
+								</p>
+							</div>
 						</div>
 					</div>
 
+					<div className={'mb-8 grid w-full grid-cols-1 md:grid-cols-5'}>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Product: '}</span>
+							<p className={'text-base text-neutral-900'}>
+								{'vl-yCRV'}
+							</p>
+						</div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
+							<b className={'text-base tabular-nums text-neutral-900'}>
+								{'N/A'}
+							</b>
+						</div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Total Assets: '}</span>
+							<p className={'text-base tabular-nums text-neutral-900'}>
+								{'N/A'}
+							</p>
+						</div>
+						<div className={'flex flex-row items-center justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'yCRV Deposits: '}</span>
+							<p className={'text-base tabular-nums text-neutral-900'}>
+								{'N/A'}
+							</p>
+						</div>
+						<div className={'flex flex-row items-baseline justify-between'}>
+							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'My Balance: '}</span>
+							<div>
+								<p className={'text-base tabular-nums text-neutral-900'}>
+									{'N/A'}
+								</p>
+								<p className={'text-xs tabular-nums text-neutral-600'}>
+									{'N/A'}
+								</p>
+							</div>
+						</div>
+					</div>
+
+
 					<div>
-						<p className={'text-base tabular-nums text-neutral-400'}>{'*111.15% APY: '}</p>
-						<p className={'text-base tabular-nums text-neutral-400'}>{'∙ 92.03% Curve Admin Fees (3.6x boost)'}</p>
-						<p className={'text-base tabular-nums text-neutral-400'}>{'∙ 23.12% Gauge Voting Bribes'}</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'*111.15% APY: '}</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 92.03% Curve Admin Fees (3.6x boost)'}</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 23.12% Gauge Voting Bribes'}</p>
 					</div>
 				</div>
 			</div>
@@ -229,4 +294,4 @@ function	About(): ReactElement {
 	);
 }
 
-export default About;
+export default Stats;
