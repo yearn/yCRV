@@ -19,7 +19,7 @@ export function	getCounterValue(amount: number | string, price: number): string 
 	}
 	const value = (Number(amount) || 0) * (price || 0);
 	if (value > 10000) {
-		return (`${format.amount(value, 0, 0)}`);
+		return (`$${format.amount(value, 0, 0)}`);
 	}
 	return (`$${format.amount(value, 2, 2)}`);
 }
