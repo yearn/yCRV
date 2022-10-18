@@ -53,7 +53,7 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 });
 
 type TProps = {
-	type: T,
+	type?: T,
 	defaultOptionFrom?: TDropdownOption,
 	defaultOptionTo?: TDropdownOption,
 	children?: ReactElement | null,
