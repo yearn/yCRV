@@ -2,7 +2,7 @@ import React, {ReactElement} from 'react';
 import {Button} from '@yearn-finance/web-lib/components';
 import CardZap from 'components/swagRock/CardZap';
 import CardMigrateLegacy from 'components/swagRock/CardMigrateLegacy';
-import {useClientEffect} from '@yearn-finance/web-lib';
+import {useClientEffect} from '@yearn-finance/web-lib/hooks';
 
 function	TextAnimation(): ReactElement {
 	function	onStartAnimation(): void {
@@ -27,7 +27,8 @@ function	TextAnimation(): ReactElement {
   
 			for (let i = 0; i < nw.length; i++) {
 				nw[i].className = 'letter behind';
-				nw[0].parentElement.style.opacity = 1;
+				if (nw?.[0]?.parentElement?.style)
+					nw[0].parentElement.style.opacity = 1;
 				animateLetterIn(nw, i);
 			}
 			currentWord = (currentWord == wordArray.length-1) ? 0 : currentWord+1;

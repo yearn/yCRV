@@ -17,7 +17,22 @@ export function	getCounterValue(amount: number | string, price: number): string 
 	if (!amount || !price) {
 		return ('$0.00');
 	}
-	return (`$${format.amount((Number(amount) || 0) * (price || 0), 2, 2)}`);
+	const value = (Number(amount) || 0) * (price || 0);
+	if (value > 10000) {
+		return (`$${format.amount(value, 0, 0)}`);
+	}
+	return (`$${format.amount(value, 2, 2)}`);
+}
+
+export function	getCounterValueRaw(amount: number | string, price: number): string {
+	if (!amount || !price) {
+		return ('');
+	}
+	const value = (Number(amount) || 0) * (price || 0);
+	if (value > 10000) {
+		return (`${format.amount(value, 0, 0)}`);
+	}
+	return (`${format.amount(value, 2, 2)}`);
 }
 
 export function getVaultAPY(vaults: TYearnVaultWrapper, vaultAddress: string): string {

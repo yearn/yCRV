@@ -47,6 +47,10 @@
 	@apply absolute text-neutral-900 font-bold text-5xl md:text-8xl uppercase text-center flex justify-center items-center w-[300px] md:w-[600px];
 	opacity: 0;
 }
+.wordLeft {
+	@apply absolute text-left flex justify-start items-center;
+	opacity: 0;
+}
 .letter {
 	display: inline-block;
 	position: relative;
