@@ -217,7 +217,7 @@ function	Stats(): ReactElement {
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
 							<b className={'text-base tabular-nums text-neutral-900'}>
-								{lpCRVAPY ? `${(lpCRVAPY || '').replace('APY', '')}*` : '0.00%'}
+								{lpCRVAPY ? `${(lpCRVAPY || '').replace('APY', '')}` : '0.00%'}
 							</b>
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
