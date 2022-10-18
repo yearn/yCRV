@@ -203,7 +203,7 @@ function	CardTransactorContextApp({
 				fromToken: toAddress(selectedOptionFrom.value),
 				toChainId: chainID,
 				toToken: toAddress(selectedOptionTo.value),
-				amount: ethers.constants.MaxUint256.toString(),
+				amount: amount.raw,
 				user: toAddress(address)
 			}).onSuccess(async (): Promise<void> => {
 				set_amount({raw: ethers.constants.Zero, normalized: 0});
