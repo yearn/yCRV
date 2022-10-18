@@ -294,8 +294,8 @@ function	Stats(): ReactElement {
 
 					<div>
 						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'*111.15% APY: '}</p>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 92.03% Curve Admin Fees (3.6x boost)'}</p>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 23.12% Gauge Voting Bribes'}</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 23.12% Curve Admin Fees (3.6x boost)'}</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 92.03% Gauge Voting Bribes'}</p>
 					</div>
 				</div>
 			</div>
