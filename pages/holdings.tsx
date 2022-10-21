@@ -317,37 +317,50 @@ function	Stats(): ReactElement {
 						return (
 							<div
 								key={`${harvest.vaultAddress}_${harvest.timestamp}`}
-								className={'grid w-full cursor-pointer grid-cols-5 py-4 px-6 transition-colors hover:bg-neutral-200/30'}>
-								<div className={'flex flex-row items-center space-x-4'}>
-									<div className={'h-9 w-9 rounded-full bg-neutral-200'}>
-										<Image
-											alt={toAddress(harvest.vaultAddress) === toAddress(process.env.STYCRV_TOKEN_ADDRESS) ? 'st-yCRV' : 'lp-yCRV'}
-											width={36}
-											height={36}
-											quality={90}
-											src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(harvest.vaultAddress)}/logo-128.png`}
-											loading={'eager'} />
+								className={'grid w-full cursor-pointer grid-cols-1 border-t border-neutral-200 py-4 px-6 transition-colors hover:bg-neutral-200/30 md:grid-cols-5 md:border-none'}>
+								<div className={'mb-2 flex flex-row items-center justify-between md:mb-0'}>
+									<div className={'flex flex-row items-center space-x-0 md:space-x-4'}>
+										<div className={'hidden h-8 w-8 rounded-full bg-neutral-200 md:flex md:h-9 md:w-9'}>
+											<Image
+												alt={toAddress(harvest.vaultAddress) === toAddress(process.env.STYCRV_TOKEN_ADDRESS) ? 'st-yCRV' : 'lp-yCRV'}
+												width={36}
+												height={36}
+												quality={90}
+												src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(harvest.vaultAddress)}/logo-128.png`}
+												loading={'eager'} />
+										</div>
+										<b>
+											{toAddress(harvest.vaultAddress) === toAddress(process.env.STYCRV_TOKEN_ADDRESS) ? 'st-yCRV' : 'lp-yCRV'}
+										</b>
 									</div>
-									<b>
-										{toAddress(harvest.vaultAddress) === toAddress(process.env.STYCRV_TOKEN_ADDRESS) ? 'st-yCRV' : 'lp-yCRV'}
-									</b>
+									<div className={'flex md:hidden'}>
+										<p className={'text-sm tabular-nums text-neutral-400 md:text-base md:text-neutral-900'}>
+											{format.date(Number(harvest.timestamp) * 1000)}
+										</p>
+									</div>
 								</div>
-								<div>
+								<div className={'flex h-9 flex-row items-center justify-between'}>
+									<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Gain: '}</span>
 									<p className={'text-base tabular-nums text-neutral-900'}>
 										{format.amount(format.toNormalizedValue(format.BN(harvest.profit).sub(format.BN(harvest.loss)), 18), 2, 2)}
 									</p>
 								</div>
-								<div>
+
+								<div className={'flex h-9 flex-row items-center justify-between'}>
+									<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Value: '}</span>
 									<p className={'text-base tabular-nums text-neutral-900'}>
 										{`$ ${format.amount(Number(harvest.profitValue) - Number(harvest.lossValue), 2, 2)}`}
 									</p>
 								</div>
-								<div>
+
+								<div className={'hidden h-9 items-center md:flex'}>
 									<p className={'text-base tabular-nums text-neutral-900'}>
 										{format.date(Number(harvest.timestamp) * 1000)}
 									</p>
 								</div>
-								<div>
+
+								<div className={'flex h-9 flex-row items-center justify-between'}>
+									<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Hash: '}</span>
 									<a
 										href={`https://etherscan.io/tx/${harvest.txHash}`}
 										target={'_blank'}
@@ -356,7 +369,7 @@ function	Stats(): ReactElement {
 											className={'flex flex-row items-center space-x-2 font-mono text-sm tabular-nums text-neutral-900'}
 											style={{lineHeight: '24px'}}>
 											{truncateHex(harvest.txHash, 6)}
-											<IconLinkOut className={'ml-4 h-4 w-4'} />
+											<IconLinkOut className={'ml-2 h-4 w-4 md:ml-4'} />
 										</div>
 									</a>
 								</div>
