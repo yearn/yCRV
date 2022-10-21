@@ -1,12 +1,12 @@
 import React, {ReactElement, useMemo, useState} from 'react';
-import {useSettings} from '@yearn-finance/web-lib/contexts';
-import {performBatchedUpdates} from '@yearn-finance/web-lib/utils';
 import {Button} from '@yearn-finance/web-lib/components';
+import {useSettings} from '@yearn-finance/web-lib/contexts';
 import {LinkOut}  from '@yearn-finance/web-lib/icons';
-import {DropdownGauges, TDropdownGaugeOption} from 'components/TokenDropdownGauges';
-import {TCurveGauges} from 'types/types';
-import {useCurve} from 'contexts/useCurve';
+import {performBatchedUpdates} from '@yearn-finance/web-lib/utils';
 import ListOfVaults from 'components/ListOfVaults';
+import {DropdownGauges, TDropdownGaugeOption} from 'components/TokenDropdownGauges';
+import {useCurve} from 'contexts/useCurve';
+import {TCurveGauges} from 'types/types';
 
 type	TOptionValue = {
 	name: string

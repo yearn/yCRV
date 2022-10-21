@@ -1,16 +1,16 @@
-import React, {ReactElement, createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import React, {createContext, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import {BigNumber, ethers} from 'ethers';
 import useSWR from 'swr';
-import {Transaction, defaultTxStatus, performBatchedUpdates, providers, toAddress} from '@yearn-finance/web-lib/utils';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
+import {defaultTxStatus, performBatchedUpdates, providers, toAddress, Transaction} from '@yearn-finance/web-lib/utils';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {approveERC20} from 'utils/actions/approveToken';
-import {zap} from 'utils/actions/zap';
-import {deposit} from 'utils/actions/deposit';
-import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
-import {allowanceKey, getAmountWithSlippage, getVaultAPY} from 'utils';
 import {TDropdownOption, TNormalizedBN} from 'types/types';
+import {allowanceKey, getAmountWithSlippage, getVaultAPY} from 'utils';
+import {approveERC20} from 'utils/actions/approveToken';
+import {deposit} from 'utils/actions/deposit';
+import {zap} from 'utils/actions/zap';
+import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
 
 type TCardTransactor = {
 	selectedOptionFrom: TDropdownOption,

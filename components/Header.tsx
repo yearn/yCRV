@@ -1,10 +1,11 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
+import {ModalMobileMenu} from '@yearn-finance/web-lib/components';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {truncateHex} from '@yearn-finance/web-lib/utils';
-import {ModalMobileMenu} from '@yearn-finance/web-lib/components';
 import LogoYearn from 'components/icons/LogoYearn';
+
 import BalanceReminderPopover from './BalanceReminderPopover';
 
 function	Header(): ReactElement {

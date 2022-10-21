@@ -1,17 +1,18 @@
 import React, {ChangeEvent, ReactElement} from 'react';
-import {motion} from 'framer-motion';
 import {ethers} from 'ethers';
+import {motion} from 'framer-motion';
 import {Button} from '@yearn-finance/web-lib/components';
-import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
-import {Dropdown} from 'components/TokenDropdown';
+import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import ArrowDown from 'components/icons/ArrowDown';
+import {Dropdown} from 'components/TokenDropdown';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
+import {TDropdownOption} from 'types/types';
+import {getCounterValue, handleInputChange} from 'utils';
 import {CardVariants, CardVariantsInner} from 'utils/animations';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
-import {getCounterValue, handleInputChange} from 'utils';
-import {TDropdownOption} from 'types/types';
+
 import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
 
 function	CardMigrateLegacy(): ReactElement {

@@ -1,5 +1,5 @@
-import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import {BigNumber, ethers} from 'ethers';
+import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import {TNormalizedBN, TYearnVaultWrapper} from 'types/types';
 
 export function	max(input: BigNumber, balance: BigNumber): BigNumber {
@@ -45,11 +45,13 @@ export function getVaultAPY(vaults: TYearnVaultWrapper, vaultAddress: string): s
 		return 'APY 0.00%';
 	}
 
-	if (toAddress(vaultAddress) == toAddress(process.env.STYCRV_TOKEN_ADDRESS))
+	if (toAddress(vaultAddress) == toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
 		return 'APY 52.24%';
+	}
 
-	if (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy)
+	if (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy) {
 		return `APY ${format.amount((vaults?.[toAddress(vaultAddress)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
+	}
 
 	return 'APY 0.00%';
 }
@@ -78,8 +80,9 @@ export function handleInputChange(
 ): TNormalizedBN {
 	let		amount = e.target.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
 	const	amountParts = amount.split('.');
-	if (amountParts.length === 2)
+	if (amountParts.length === 2) {
 		amount = amountParts[0] + '.' + amountParts[1].slice(0, decimals);
+	}
 	const	raw = ethers.utils.parseUnits(amount || '0', decimals);
 	return ({raw: raw, normalized: amount});
 }

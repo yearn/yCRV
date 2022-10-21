@@ -1,10 +1,10 @@
 import React, {Fragment, ReactElement} from 'react';
-import {Popover, Transition} from '@headlessui/react';
-import {AddToMetamask, Wallet} from '@yearn-finance/web-lib/icons';
-import {useWallet} from 'contexts/useWallet';
-import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import Image from 'next/image';
-import {useWeb3} from '@yearn-finance/web-lib';
+import {Popover, Transition} from '@headlessui/react';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
+import {AddToMetamask, Wallet} from '@yearn-finance/web-lib/icons';
+import {format, toAddress} from '@yearn-finance/web-lib/utils';
+import {useWallet} from 'contexts/useWallet';
 
 export default function BalanceReminderPopover(): ReactElement {
 	const	{balances} = useWallet();
@@ -12,7 +12,6 @@ export default function BalanceReminderPopover(): ReactElement {
 
 	async function addTokenToMetamask(address: string, symbol: string, decimals: number, image: string): Promise<void> {
 		try {
-			// wasAdded is a boolean. Like any RPC method, an error may be thrown.
 			await provider.send('wallet_watchAsset', {
 				type: 'ERC20',
 				options: {

@@ -1,20 +1,23 @@
 import React, {createContext, useContext} from 'react';
-import useSWR from 'swr';
-import axios from 'axios';
 import {ethers} from 'ethers';
+import axios from 'axios';
+import useSWR from 'swr';
 import {toAddress} from '@yearn-finance/web-lib/utils';
-import type {TYearnVault, TYearnVaultWrapper} from 'types/types';
+
+import type {TYDaemonHarvests, TYearnVault, TYearnVaultWrapper} from 'types/types';
 
 export type	TYearnContext = {
 	crvPrice: number,
 	ycrvPrice: number,
 	ycrvCurvePoolPrice: number,
+	yCRVHarvests: TYDaemonHarvests[],
 	vaults: TYearnVaultWrapper
 }
 const	defaultProps: TYearnContext = {
 	crvPrice: 0,
 	ycrvPrice: 0,
 	ycrvCurvePoolPrice: 0,
+	yCRVHarvests: [],
 	vaults: {[ethers.constants.AddressZero]: undefined}
 };
 
@@ -43,6 +46,8 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	const	{data: yveCRVdata} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcherLegacy);
 	const	{data: prices} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/some/${process.env.YCRV_TOKEN_ADDRESS},${process.env.YCRV_CURVE_POOL_ADDRESS},${process.env.CRV_TOKEN_ADDRESS}?humanized=true`, baseFetcher);
 	const	{data} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/all`, fetcher);
+	const	{data: yCRVHarvests} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
+
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Setup and render the Context provider to use in the app.
@@ -50,6 +55,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	return (
 		<YearnContext.Provider
 			value={{
+				yCRVHarvests,
 				crvPrice: prices?.[(process.env.CRV_TOKEN_ADDRESS as string)?.toLowerCase()] || 0,
 				ycrvPrice: prices?.[(process.env.YCRV_TOKEN_ADDRESS as string)?.toLowerCase()] || 0,
 				ycrvCurvePoolPrice: prices?.[(process.env.YCRV_CURVE_POOL_ADDRESS as string)?.toLowerCase()] || 0,

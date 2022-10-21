@@ -1,4 +1,4 @@
-import React, {Fragment, ReactElement, cloneElement, useRef} from 'react';
+import React, {cloneElement, Fragment, ReactElement, useRef} from 'react';
 import {Menu, Transition} from '@headlessui/react';
 import IconChevron from 'components/icons/IconChevron';
 
