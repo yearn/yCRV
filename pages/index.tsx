@@ -3,7 +3,6 @@ import {Button} from '@yearn-finance/web-lib/components';
 import {useClientEffect} from '@yearn-finance/web-lib/hooks';
 import CardZap from 'components/swagRock/CardZap';
 import CardAnyZap from 'components/swagRock/CardAnyZap';
-import CardMigrateLegacy from 'components/swagRock/CardMigrateLegacy';
 
 function	TextAnimation(): ReactElement {
 	function	onStartAnimation(): void {
@@ -114,7 +113,6 @@ function	Index(): ReactElement {
 			<section id={'swap'} className={'mt-0 flex w-full flex-col items-center justify-center space-y-10 space-x-0 md:flex-row md:space-y-0 md:space-x-4 lg:space-x-0'}>
 				<CardZap />
 				<CardAnyZap />
-				<CardMigrateLegacy />
 			</section>
 		</>
 	);

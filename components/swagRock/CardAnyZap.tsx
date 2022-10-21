@@ -40,6 +40,12 @@ type	TWidoToken = {
 	usdPrice: number,
 }
 
+const RANKING = {
+	[toAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')]: 1, // eth
+	[toAddress('0xc5bDdf9843308380375a611c18B50Fb9341f502A')]: 2, // yveCRV 
+	[toAddress('0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a')]: 2  // yvBOOST
+};
+
 const EMPTY_OPTION: TDropdownOption = {label: '', value: ''};
 
 function CardAnyZap(): ReactElement {
@@ -95,7 +101,7 @@ function CardAnyZap(): ReactElement {
 	useEffect((): void => {
 		const fetchBalances = async (): Promise<void> => {
 			const widoSupportedTokens = await getBalances(address, [chainID]);
-			const widoOptionsFrom = widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption => ({
+			const widoOptionsFrom = widoSupportedTokens.map(({name, address, logoURI}): TDropdownOption & { rank: number } => ({
 				label: name,
 				value: toAddress(address),
 				icon: (
@@ -105,8 +111,9 @@ function CardAnyZap(): ReactElement {
 						height={24}
 						src={logoURI}
 					/>
-				)
-			}));
+				),
+				rank: RANKING[toAddress(address)] ?? Number.MAX_SAFE_INTEGER
+			})).sort((a, b): number => a.rank - b.rank);
 
 			if (widoOptionsFrom.length > 0) {
 				set_optionsFrom(widoOptionsFrom);
@@ -172,7 +179,6 @@ function CardAnyZap(): ReactElement {
 	] : null, widoQuoteFetcher, {refreshInterval: 10000, shouldRetryOnError: false});
 
 	function renderButton(): ReactElement {
-		// TODO Check if token was already approved
 		if (txStatusApprove.pending || amount.raw.gt(allowanceFrom)) {
 			return (
 				<Button
@@ -242,7 +248,7 @@ function CardAnyZap(): ReactElement {
 						<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
 							<div className={'flex h-10 flex-row items-center justify-between bg-neutral-300 py-4 px-0'}>
 								<input
-									className={`scrollbar-none w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none ${isActive ? '' : 'cursor-not-allowed'}`}
+									className={`w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none scrollbar-none ${isActive ? '' : 'cursor-not-allowed'}`}
 									type={'text'}
 									disabled={!isActive}
 									value={amount.normalized}
@@ -319,7 +325,7 @@ function CardAnyZap(): ReactElement {
 										<span className={'loader'} />
 									</div>
 								</div> :
-								<b className={'scrollbar-none overflow-x-scroll'}>
+								<b className={'overflow-x-scroll scrollbar-none'}>
 									{formatWithSlippage({
 										value: widoQuoteResponse?.toTokenAmount || ethers.constants.Zero,
 										addressFrom: toAddress(selectedOptionFrom?.value as string),
