@@ -1,10 +1,10 @@
 import React, {ReactElement, useMemo, useState} from 'react';
 import Image from 'next/image';
-import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import {Button} from '@yearn-finance/web-lib/components';
+import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import {DropdownGauges, TDropdownGaugeOption} from 'components/TokenDropdownGauges';
-import {TCurveGauges} from 'types/types';
 import {useCurve} from 'contexts/useCurve';
+import {TCurveGauges} from 'types/types';
 
 type	TOptionValue = {
 	name: string

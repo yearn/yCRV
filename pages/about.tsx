@@ -1,6 +1,6 @@
 import React, {ReactElement, useState} from 'react';
-import {useWallet} from 'contexts/useWallet';
 import {Button} from '@yearn-finance/web-lib/components';
+import {useWallet} from 'contexts/useWallet';
 
 function	About(): ReactElement {
 	const	{slippage, set_slippage} = useWallet();

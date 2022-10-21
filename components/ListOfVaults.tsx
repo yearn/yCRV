@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {ReactElement, ReactNode, useMemo} from 'react';
-import Link from 'next/link';
 import {usePagination, useSortBy, useTable} from 'react-table';
+import Link from 'next/link';
 import {Chevron} from '@yearn-finance/web-lib/icons';
 import {format} from '@yearn-finance/web-lib/utils';
 import IconChevronPlain from 'components/icons/IconChevronPlain';
@@ -113,8 +113,9 @@ function	ListOfVaults(): ReactElement {
 	} = useTable({columns, data, initialState: {pageSize: 50}}, useSortBy, usePagination);
 	
 	function	renderPreviousChevron(): ReactElement {
-		if (!canPreviousPage) 
+		if (!canPreviousPage) {
 			return (<Chevron className={'h-4 w-4 cursor-not-allowed opacity-50'} />);
+		}
 		return (
 			<Chevron
 				className={'h-4 w-4 cursor-pointer'}
@@ -123,8 +124,9 @@ function	ListOfVaults(): ReactElement {
 	}
 
 	function	renderNextChevron(): ReactElement {
-		if (!canNextPage) 
+		if (!canNextPage) {
 			return (<Chevron className={'h-4 w-4 rotate-180 cursor-not-allowed opacity-50'} />);
+		}
 		return (
 			<Chevron
 				className={'h-4 w-4 rotate-180 cursor-pointer'}

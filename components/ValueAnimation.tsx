@@ -1,6 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import React, {ReactElement, useRef} from 'react';
-import {useClientEffect} from '@yearn-finance/web-lib';
+import {useClientEffect} from '@yearn-finance/web-lib/hooks';
 
 function	ValueAnimation({
 	identifier,
@@ -43,8 +43,9 @@ function	ValueAnimation({
   
 			for (let i = 0; i < nw.length; i++) {
 				nw[i].className = 'letter behind';
-				if (nw?.[0]?.parentElement?.style)
+				if (nw?.[0]?.parentElement?.style) {
 					nw[0].parentElement.style.opacity = 1;
+				}
 				animateLetterIn(nw, i);
 			}
 			currentWord = (currentWord == wordArray.length-1) ? 0 : currentWord+1;
@@ -84,8 +85,9 @@ function	ValueAnimation({
 		initZero();
 	}, []);
 	useClientEffect((): void => {
-		if (value && !hasBeenTriggerd.current)
+		if (value && !hasBeenTriggerd.current) {
 			onStartAnimation();
+		}
 	}, [value, hasBeenTriggerd.current]);
 
 	return (

@@ -123,3 +123,14 @@ export type	TNormalizedBN = {
 	raw: BigNumber,
 	normalized: number | string,
 }
+
+export type TYDaemonHarvests = {
+	vaultAddress: string,
+	strategyAddress: string,
+	txHash: string,
+	timestamp: string,
+	profit: string,
+	profitValue: number,
+	loss: string,
+	lossValue: number,
+}

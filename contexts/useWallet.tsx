@@ -1,13 +1,14 @@
-import React, {ReactElement, createContext, useCallback, useContext, useEffect, useState} from 'react';
-import {BigNumber, ethers} from 'ethers';
+import React, {createContext, ReactElement, useCallback, useContext, useEffect, useState} from 'react';
 import {Contract} from 'ethcall';
+import {BigNumber, ethers} from 'ethers';
 // eslint-disable-next-line import/no-named-as-default
 import NProgress from 'nprogress';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
-import {ABI, format, performBatchedUpdates, providers, toAddress} from '@yearn-finance/web-lib/utils';
 import {useBalances, useClientEffect} from '@yearn-finance/web-lib/hooks';
-import YVECRV_ABI from 'utils/abi/yveCRV.abi';
+import {ABI, format, performBatchedUpdates, providers, toAddress} from '@yearn-finance/web-lib/utils';
 import {allowanceKey} from 'utils';
+import YVECRV_ABI from 'utils/abi/yveCRV.abi';
+
 import type * as TWalletTypes from 'contexts/useWallet.d';
 import type {TClaimable} from 'types/types';
 
@@ -59,10 +60,11 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 	const	[slippage, set_slippage] = useState<number>(1);
 
 	useClientEffect((): () => void => {
-		if (isLoading)
+		if (isLoading) {
 			NProgress.start();
-		else 
+		} else {
 			NProgress.done();
+		}
 		return (): unknown => NProgress.done();
 	}, [isLoading]);
 

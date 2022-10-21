@@ -1,9 +1,9 @@
 import React, {ReactElement} from 'react';
 import Link from 'next/link';
-import meta from 'public/manifest.json';
 import {SwitchTheme} from '@yearn-finance/web-lib/components';
 import {useUI} from '@yearn-finance/web-lib/contexts';
 import {SocialDiscord, SocialGithub, SocialMedium, SocialTwitter} from '@yearn-finance/web-lib/icons';
+import meta from 'public/manifest.json';
 
 function Footer(): ReactElement {
 	const {theme, switchTheme} = useUI();

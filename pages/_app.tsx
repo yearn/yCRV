@@ -2,11 +2,11 @@ import React, {ReactElement} from 'react';
 import {AppProps} from 'next/app';
 import {AnimatePresence, motion} from 'framer-motion';
 import {WithYearn} from '@yearn-finance/web-lib/contexts';
-import {WalletContextApp} from 'contexts/useWallet';
-import {YearnContextApp} from 'contexts/useYearn';
-import {CurveContextApp} from 'contexts/useCurve';
 import Header from 'components/Header';
 import Meta from 'components/Meta';
+import {CurveContextApp} from 'contexts/useCurve';
+import {WalletContextApp} from 'contexts/useWallet';
+import {YearnContextApp} from 'contexts/useYearn';
 
 import	'../style.css';
 
