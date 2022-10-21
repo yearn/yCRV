@@ -50,11 +50,6 @@ function	Header(): ReactElement {
 							{'Holdings'}
 						</p>
 					</Link>
-					<Link href={'/migrate'}>
-						<p className={`yveCRV--nav-link ${router.pathname === '/migrate' ? 'active' : '' }`}>
-							{'Migrate'}
-						</p>
-					</Link>
 					<Link href={'/about'}>
 						<p className={`yveCRV--nav-link ${router.pathname === '/about' ? 'active' : '' }`}>
 							{'About'}

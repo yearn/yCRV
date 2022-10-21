@@ -3,7 +3,7 @@ import {Button} from '@yearn-finance/web-lib/components';
 import {useClientEffect} from '@yearn-finance/web-lib/hooks';
 import CardZap from 'components/swagRock/CardZap';
 import CardAnyZap from 'components/swagRock/CardAnyZap';
-import Link from 'next/link';
+import CardMigrateLegacy from 'components/swagRock/CardMigrateLegacy';
 
 function	TextAnimation(): ReactElement {
 	function	onStartAnimation(): void {
@@ -92,13 +92,11 @@ function	TextAnimation(): ReactElement {
 	);
 }
 
-const hasOldTokens = true; // TODO Check for old tokens
-
 function	Index(): ReactElement {
 	return (
 		<>
 			<div className={'mx-auto mb-44 flex w-full max-w-6xl flex-col items-center justify-center'}>
-				<div className={`relative ${hasOldTokens ? 'mt-20' : 'mt-10'} h-12 w-[300px] md:h-[104px] md:w-[600px]`}>
+				<div className={'relative mt-10 h-12 w-[300px] md:h-[104px] md:w-[600px]'}>
 					<TextAnimation />
 				</div>
 				<div className={'mt-8 mb-6'}>
@@ -116,6 +114,7 @@ function	Index(): ReactElement {
 			<section id={'swap'} className={'mt-0 flex w-full flex-col items-center justify-center space-y-10 space-x-0 md:flex-row md:space-y-0 md:space-x-4 lg:space-x-0'}>
 				<CardZap />
 				<CardAnyZap />
+				<CardMigrateLegacy />
 			</section>
 		</>
 	);
