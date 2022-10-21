@@ -41,7 +41,17 @@ function	About(): ReactElement {
 						<span className={'text-neutral-900'}>{'lp-yCRV'}</span>
 						{' is generating better yield, you can swap anytime on the main page. Or vice versa.'}
 					</p>
-					<p className={'text-neutral-600'}>{'You get more yield, and a fun swap experience. Win win.'}</p>
+					<p className={'pb-4 text-neutral-600'}>{'You get more yield, and a fun swap experience. Win win.'}</p>
+					<p className={'text-neutral-600'}>
+						{'Anyswap is powered by '}
+						<a
+							href={'https://docs.joinwido.com/'}
+							target={'_blank'}
+							className={'text-neutral-900 underline'}
+							rel={'noreferrer'}>{'Wido'}
+						</a>
+						{', with a 0.3% fee taken from the token you\'re swapping from.'}
+					</p>
 				</div>
 			</div>
 
@@ -117,13 +127,13 @@ function	About(): ReactElement {
 				<div className={'mt-8'}>
 					<p className={'pb-1 text-neutral-900'}>{'Slippage tolerance'}</p>
 					<div className={'flex flex-row space-x-2'}>
-						<div className={'flex h-10 w-40 min-w-[160px] items-center border-2 border-neutral-700 bg-neutral-0 py-4 px-0'}>
+						<div className={'bg-neutral-0 flex h-10 w-40 min-w-[160px] items-center border-2 border-neutral-700 py-4 px-0'}>
 							<input
 								type={'number'}
 								min={0}
 								step={0.1}
 								max={100}
-								className={'h-10 w-full overflow-x-scroll border-none bg-transparent p-2 text-right outline-none scrollbar-none'}
+								className={'scrollbar-none h-10 w-full overflow-x-scroll border-none bg-transparent p-2 text-right outline-none'}
 								value={localSlippage}
 								onChange={(e): void => {
 									set_localSlippage(parseFloat(e.target.value) || 0);
