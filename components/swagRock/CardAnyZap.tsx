@@ -200,12 +200,15 @@ function CardAnyZap(): ReactElement {
 	return (
 		<>
 			<div aria-label={'card title'} className={'flex flex-col pb-8'}>
-				<h2 className={'text-3xl font-bold'}>{'Anyzap'}</h2>
+				<h2 className={'text-3xl font-bold'}>{'Swap (almost) any '}</h2>
+				<h2 className={'text-3xl font-bold'}>{'token with Anyswap'}</h2>
 			</div>
 			<div
 				aria-label={'card description'}
 				className={'w-full pb-10 md:w-[96%]'}>
-				<p className={'text-neutral-600'}>{'description'}</p>
+				<p className={'text-neutral-600'}>
+					{'Swap almost any ERC20 token into the yCRV ecosystem. Yep, even that game-fi token on its way to zero can be swapped and start earning you yield rather than pain and regret.'}
+				</p>
 			</div>
 			<div>
 				<div className={'grid grid-cols-2 gap-4'}>
@@ -232,16 +235,14 @@ function CardAnyZap(): ReactElement {
 							}}
 							placeholder={'Select token'}
 						/>
-						<p className={'pl-2 !text-xs font-normal !text-green-600'}>
-							{'TODO'}
-						</p>
+						<p className={'pl-2 !text-xs font-normal !text-green-600'}>&nbsp;</p>
 					</label>
 					<div className={'flex flex-col space-y-1'}>
 						<p className={'text-base text-neutral-600'}>{'Amount'}</p>
 						<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
 							<div className={'flex h-10 flex-row items-center justify-between bg-neutral-300 py-4 px-0'}>
 								<input
-									className={`w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none scrollbar-none ${isActive ? '' : 'cursor-not-allowed'}`}
+									className={`scrollbar-none w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none ${isActive ? '' : 'cursor-not-allowed'}`}
 									type={'text'}
 									disabled={!isActive}
 									value={amount.normalized}
@@ -263,18 +264,20 @@ function CardAnyZap(): ReactElement {
 								</button>
 							</div>
 						</div>
-						<p className={'pl-2 text-xs font-normal text-neutral-600'}>
-							{getCounterValue(
-								amount?.normalized || 0,
-								toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
-									? ycrvPrice || 0
-									: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
-										? ycrvCurvePoolPrice || 0
-										: allBalances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
+						<div className={'flex flex-row items-center justify-between'}>
+							<p className={'pl-2 text-xs font-normal text-neutral-600'}>
+								{getCounterValue(
+									amount?.normalized || 0,
+									toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+										? ycrvPrice || 0
+										: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+											? ycrvCurvePoolPrice || 0
+											: allBalances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
 									|| vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price
 									|| 0
-							)}
-						</p>
+								)}
+							</p>
+						</div>
 					</div>
 				</div>
 
@@ -316,7 +319,7 @@ function CardAnyZap(): ReactElement {
 										<span className={'loader'} />
 									</div>
 								</div> :
-								<b className={'overflow-x-scroll scrollbar-none'}>
+								<b className={'scrollbar-none overflow-x-scroll'}>
 									{formatWithSlippage({
 										value: widoQuoteResponse?.toTokenAmount || ethers.constants.Zero,
 										addressFrom: toAddress(selectedOptionFrom?.value as string),
@@ -332,8 +335,17 @@ function CardAnyZap(): ReactElement {
 					</div>
 				</div>
 
-				<div aria-label={'card actions'}>
-					<div className={'mb-3'}>{renderButton()}</div>
+				<div aria-label={'card actions'} className={'mb-3'}>
+					<div>{renderButton()}</div>
+					<span className={'flex flex-row items-center justify-center'}>
+						<a
+							className={'cursor-pointer pt-2 text-center text-xs text-neutral-400/60 transition-colors hover:text-neutral-400'}
+							href={'https://docs.joinwido.com/'}
+							target={'_blank'}
+							rel={'noreferrer'}>
+							{'Powered by Wido'}
+						</a>
+					</span>
 				</div>
 			</div>
 		</>
