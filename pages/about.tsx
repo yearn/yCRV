@@ -127,13 +127,13 @@ function	About(): ReactElement {
 				<div className={'mt-8'}>
 					<p className={'pb-1 text-neutral-900'}>{'Slippage tolerance'}</p>
 					<div className={'flex flex-row space-x-2'}>
-						<div className={'bg-neutral-0 flex h-10 w-40 min-w-[160px] items-center border-2 border-neutral-700 py-4 px-0'}>
+						<div className={'flex h-10 w-40 min-w-[160px] items-center border-2 border-neutral-700 bg-neutral-0 py-4 px-0'}>
 							<input
 								type={'number'}
 								min={0}
 								step={0.1}
 								max={100}
-								className={'scrollbar-none h-10 w-full overflow-x-scroll border-none bg-transparent p-2 text-right outline-none'}
+								className={'h-10 w-full overflow-x-scroll border-none bg-transparent p-2 text-right outline-none scrollbar-none'}
 								value={localSlippage}
 								onChange={(e): void => {
 									set_localSlippage(parseFloat(e.target.value) || 0);

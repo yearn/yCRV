@@ -6,13 +6,6 @@ import {DropdownGauges, TDropdownGaugeOption} from 'components/TokenDropdownGaug
 import {useCurve} from 'contexts/useCurve';
 import {TCurveGauges} from 'types/types';
 
-type	TOptionValue = {
-	name: string
-	tokenAddress: string
-	poolAddress: string
-	gaugeAddress: string
-}
-
 const	defaultOption: TDropdownGaugeOption = {
 	label: '',
 	zapVia: '',
@@ -88,7 +81,7 @@ function	NewVault(): ReactElement {
 						<div className={'col-span-2 w-full space-y-1'}>
 							<p className={'text-base text-neutral-600'}>{'Vote weight'}</p>
 							<div className={'h-10 bg-neutral-0 p-2 text-base'}>
-								{(selectedOption.value as TOptionValue).name === '' ? '-' : `Curve ${(selectedOption.value as TOptionValue).name} yVault`}
+								{selectedOption.value.name === '' ? '-' : `Curve ${selectedOption.value.name} yVault`}
 							</div>
 						</div>
 

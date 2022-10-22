@@ -1,5 +1,5 @@
 import {BigNumber, constants} from 'ethers';
-import {TokenAllowanceRequest, getTokenAllowance} from 'wido';
+import {getTokenAllowance, TokenAllowanceRequest} from 'wido';
 
 export async function widoAllowance(request: TokenAllowanceRequest): Promise<BigNumber> {
 	try {

@@ -7,12 +7,12 @@ import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
 import {TDropdownOption, TNormalizedBN} from 'types/types';
 import {allowanceKey, getAmountWithSlippage, getVaultAPY} from 'utils';
-import {approveERC20} from 'utils/actions/approveToken';
+import {approveERC20, widoApproveERC20} from 'utils/actions/approveToken';
 import {deposit} from 'utils/actions/deposit';
+import {widoAllowance} from 'utils/actions/widoAllowance';
+import {widoZap} from 'utils/actions/widoZap';
 import {zap} from 'utils/actions/zap';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
-import {widoZap} from 'utils/actions/widoZap';
-import {widoAllowance} from 'utils/actions/widoAllowance';
 
 type T = 'wido' | 'default';
 
@@ -30,8 +30,8 @@ type TCardTransactor = {
 	set_selectedOptionTo: (option: TDropdownOption) => void,
 	set_amount: (amount: TNormalizedBN) => void,
 	set_hasTypedSomething: (hasTypedSomething: boolean) => void,
-	onApproveFrom: () => Promise<void>,
-	onZap: () => Promise<void>
+	onApproveFrom: () => void,
+	onZap: () => void
 }
 
 const		CardTransactorContext = createContext<TCardTransactor>({
@@ -48,8 +48,8 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 	set_selectedOptionTo: (): void => undefined,
 	set_amount: (): void => undefined,
 	set_hasTypedSomething: (): void => undefined,
-	onApproveFrom: (): any => undefined,
-	onZap: (): any => undefined
+	onApproveFrom: (): void => undefined,
+	onZap: (): void => undefined
 });
 
 type TProps = {

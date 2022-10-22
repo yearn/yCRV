@@ -1,5 +1,5 @@
 import {ethers} from 'ethers';
-import {ChainId, approveForZap} from 'wido';
+import {approveForZap, ChainId} from 'wido';
 
 export async function	isApprovedERC20(
 	provider: ethers.providers.Web3Provider,
@@ -77,8 +77,6 @@ export async function	widoApproveERC20(
 ): Promise<boolean> {
 	const	signer = provider.getSigner();
 
-	console.log({provider, tokenAddress, amount, chainId});
-
 	try {
 		const {data, to} = await approveForZap(
 			{
@@ -88,8 +86,6 @@ export async function	widoApproveERC20(
 			}
 		);
 
-		console.log({data, to});
-		
 		const tx = await signer.sendTransaction({data, to});
 		
 		await tx.wait();

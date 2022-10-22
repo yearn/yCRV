@@ -2,10 +2,17 @@ import React, {cloneElement, Fragment, ReactElement, useRef} from 'react';
 import {Menu, Transition} from '@headlessui/react';
 import IconChevron from 'components/icons/IconChevron';
 
+export type	TOptionValue = {
+	name: string
+	tokenAddress: string
+	poolAddress: string
+	gaugeAddress: string
+}
+
 export type TDropdownGaugeOption = {
 	icon?: ReactElement;
 	label: string;
-	value: any;
+	value: TOptionValue;
 	zapVia?: string;
 };
 

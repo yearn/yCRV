@@ -1,16 +1,16 @@
 import React, {ReactElement} from 'react';
 import {Button} from '@yearn-finance/web-lib/components';
 import {useClientEffect} from '@yearn-finance/web-lib/hooks';
-import CardZap from 'components/swagRock/CardZap';
 import CardAnyZap from 'components/swagRock/CardAnyZap';
+import CardZap from 'components/swagRock/CardZap';
 
 function	TextAnimation(): ReactElement {
 	function	onStartAnimation(): void {
-		const words = document.getElementsByClassName('word') as any;
-		const wordArray: any[] = [];
+		const words = document.querySelectorAll<HTMLElement>('.word');
+		const wordArray: HTMLSpanElement[][] = [];
 		let currentWord = 0;
 
-		words[currentWord].style.opacity = 1;
+		words[currentWord].style.opacity = '1';
 		for (const word of words) {
 			splitLetters(word);
 		}
@@ -28,26 +28,26 @@ function	TextAnimation(): ReactElement {
 			for (let i = 0; i < nw.length; i++) {
 				nw[i].className = 'letter behind';
 				if (nw?.[0]?.parentElement?.style) {
-					nw[0].parentElement.style.opacity = 1;
+					nw[0].parentElement.style.opacity = '1';
 				}
 				animateLetterIn(nw, i);
 			}
 			currentWord = (currentWord == wordArray.length-1) ? 0 : currentWord+1;
 		}
 
-		function animateLetterOut(cw: any, i: number): void {
+		function animateLetterOut(cw: HTMLSpanElement[], i: number): void {
 			setTimeout((): void => {
 				cw[i].className = 'letter out';
 			}, i*80);
 		}
 
-		function animateLetterIn(nw: any, i: number): void {
+		function animateLetterIn(nw: HTMLSpanElement[], i: number): void {
 			setTimeout((): void => {
 				nw[i].className = 'letter in';
 			}, 340+(i*80));
 		}
 
-		function splitLetters(word: any): void {
+		function splitLetters(word: HTMLSpanElement): void {
 			const content = word.innerHTML;
 			word.innerHTML = '';
 			const letters = [];

@@ -1,23 +1,24 @@
 import React, {ChangeEvent, ReactElement, useCallback, useEffect, useMemo, useState} from 'react';
-import {motion} from 'framer-motion';
-import {BigNumber, ethers} from 'ethers';
-import {Button} from '@yearn-finance/web-lib/components';
-import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
-import {useWeb3} from '@yearn-finance/web-lib/contexts';
-import {Dropdown} from 'components/TokenDropdown';
-import ArrowDown from 'components/icons/ArrowDown';
-import {CardVariants, CardVariantsInner} from 'utils/animations';
-import {ZAP_OPTIONS_TO} from 'utils/zapOptions';
-import {ChainId, Token, getBalances, getSupportedTokens} from 'wido';
-import {TDropdownOption} from 'types/types';
 import Image from 'next/image';
-import {useWallet} from 'contexts/useWallet';
-import {widoQuote} from 'utils/actions/widoQuote';
+import {BigNumber, ethers} from 'ethers';
 import useSWR from 'swr';
-import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
-import {getCounterValue, handleInputChange} from 'utils';
-import {formatWithSlippage} from 'utils/formatWithSlippage';
+import {motion} from 'framer-motion';
+import {Button} from '@yearn-finance/web-lib/components';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
+import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
+import ArrowDown from 'components/icons/ArrowDown';
+import {Dropdown} from 'components/TokenDropdown';
+import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
+import {TDropdownOption} from 'types/types';
+import {getCounterValue, handleInputChange} from 'utils';
+import {widoQuote} from 'utils/actions/widoQuote';
+import {CardVariants, CardVariantsInner} from 'utils/animations';
+import {formatWithSlippage} from 'utils/formatWithSlippage';
+import {ZAP_OPTIONS_TO} from 'utils/zapOptions';
+import {ChainId, getBalances, getSupportedTokens, Token} from 'wido';
+
+import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
 
 type	TBalanceData = {
 	address: string
@@ -230,7 +231,9 @@ function CardAnyZap(): ReactElement {
 								performBatchedUpdates((): void => {
 									if (option.value === selectedOptionTo?.value) {
 										const o = ZAP_OPTIONS_TO.find(({value}): boolean => value !== option.value);
-										if (o) set_selectedOptionTo(o);
+										if (o) {
+											set_selectedOptionTo(o);
+										}
 									}
 									set_selectedOptionFrom(option);
 									set_amount({
