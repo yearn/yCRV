@@ -50,9 +50,10 @@ function	Stats(): ReactElement {
 			yCRVContract.totalSupply(),
 			styCRVContract.totalSupply(),
 			lpyCRVContract.totalSupply(),
-			crvYCRVLpContract.calc_withdraw_one_coin(ethers.constants.WeiPerEther, 0)
+			crvYCRVLpContract.get_dy(1, 0, ethers.constants.WeiPerEther)
 		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
+		console.warn(crvYCRVPeg.toString());
 		return ({
 			['legacy']: yveCRVTotalSupply.sub(yveCRVInYCRV),
 			['treasury']: veCRVBalance.sub(yveCRVTotalSupply.sub(yveCRVInYCRV)).sub(yCRVTotalSupply),
@@ -147,7 +148,10 @@ function	Stats(): ReactElement {
 								{`(Price = $${(
 									ycrvPrice ? format.amount(ycrvPrice, 2, 2) : '0.00'
 								)} | Peg = ${(
-									data?.crvYCRVPeg ? format.amount(format.toNormalizedValue(data?.crvYCRVPeg || ethers.constants.Zero, 16) * 99.85 / 100, 2, 2): '0.0000'
+									data?.crvYCRVPeg ? (
+										format.amount(
+											(format.toNormalizedValue(data?.crvYCRVPeg || ethers.constants.Zero, 18) + 0.0015) * 100, 2, 2)
+									): '0.0000'
 								)}%)`}
 							</p>
 						</div>
