@@ -7,17 +7,20 @@ import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import IconLinkOut from '@yearn-finance/web-lib/icons/IconLinkOut';
 import {format, providers, toAddress, truncateHex} from '@yearn-finance/web-lib/utils';
 import ValueAnimation from 'components/ValueAnimation';
+import {useCurve} from 'contexts/useCurve';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
 import {TYDaemonHarvests} from 'types/types';
-import {getCounterValue, getCounterValueRaw, getVaultAPY} from 'utils';
+import {getCounterValue, getCounterValueRaw, getVaultAPY, getVaultRawAPY} from 'utils';
 import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
+import STYCRV_ABI from 'utils/abi/styCRV.abi';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
 function	Stats(): ReactElement {
 	const	{provider} = useWeb3();
 	const	{balances} = useWallet();
 	const	{vaults, ycrvPrice, yCRVHarvests} = useYearn();
+	const	{curveWeeklyFees, cgPrices} = useCurve();
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** SWR hook to get the expected out for a given in/out pair with a specific
@@ -29,7 +32,7 @@ function	Stats(): ReactElement {
 		const	ethcallProvider = await providers.newEthCallProvider(currentProvider);
 
 		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
+		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS as string, STYCRV_ABI);
 		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
 		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
 		const	veEscrowContract = new Contract(process.env.VECRV_ADDRESS as string, YVECRV_ABI);
@@ -39,6 +42,7 @@ function	Stats(): ReactElement {
 			yveCRVTotalSupply,
 			yveCRVInYCRV,
 			veCRVBalance,
+			veCRVTotalSupply,
 			yCRVTotalSupply,
 			styCRVTotalSupply,
 			lpyCRVTotalSupply,
@@ -47,13 +51,13 @@ function	Stats(): ReactElement {
 			yveCRVContract.totalSupply(),
 			yveCRVContract.balanceOf(process.env.YCRV_TOKEN_ADDRESS),
 			veEscrowContract.balanceOf(process.env.VECRV_YEARN_TREASURY_ADDRESS),
+			veEscrowContract.totalSupply(),
 			yCRVContract.totalSupply(),
-			styCRVContract.totalSupply(),
+			styCRVContract.totalAssets(),
 			lpyCRVContract.totalSupply(),
 			crvYCRVLpContract.get_dy(1, 0, ethers.constants.WeiPerEther)
-		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
-		console.warn(crvYCRVPeg.toString());
 		return ({
 			['legacy']: yveCRVTotalSupply.sub(yveCRVInYCRV),
 			['treasury']: veCRVBalance.sub(yveCRVTotalSupply.sub(yveCRVInYCRV)).sub(yCRVTotalSupply),
@@ -61,13 +65,14 @@ function	Stats(): ReactElement {
 			['styCRVSupply']: styCRVTotalSupply,
 			['lpyCRVSupply']: lpyCRVTotalSupply,
 			['crvYCRVPeg']: crvYCRVPeg,
+			['boostMultiplier']: veCRVBalance.mul(1e4).div(styCRVTotalSupply),
+			['veCRVTotalSupply']: veCRVTotalSupply,
 			[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)]: veCRVBalance
 		});
-
 	}, [provider]);
 	const	{data} = useSWR('numbers', numbersFetchers, {refreshInterval: 10000, shouldRetryOnError: false});
 
-	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
+	const	stCRVRawAPY = useMemo((): number => getVaultRawAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
 	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
 
 	const	formatBigNumberOver10K = useCallback((v: BigNumber): string => {
@@ -98,6 +103,31 @@ function	Stats(): ReactElement {
 			1
 		)
 	), [balances, vaults]);
+
+	const	latestCurveFeesValue = useMemo((): number => {
+		console.log(curveWeeklyFees);
+		if (curveWeeklyFees?.weeklyFeesTable?.[0].rawFees > 0) {
+			return curveWeeklyFees.weeklyFeesTable[0].rawFees;
+		} else {
+			return curveWeeklyFees?.weeklyFeesTable?.[1].rawFees || 0;
+		}
+	}, [curveWeeklyFees]);
+
+	const	currentVeCRVAPY = useMemo((): number => {
+		return (
+			latestCurveFeesValue / (
+				format.toNormalizedValue(format.BN(data?.veCRVTotalSupply), 18) * cgPrices?.['curve-dao-token'].usd
+			) * 52 * 100
+		);
+	}, [data, latestCurveFeesValue, cgPrices]);
+
+	const	curveAdminFeePercent = useMemo((): number => {
+		return (
+			currentVeCRVAPY
+			*
+			Number(data?.boostMultiplier) / 10000
+		);
+	}, [data, currentVeCRVAPY]);
 
 	return (
 		<section className={'mt-4 grid w-full grid-cols-12 gap-y-10 pb-10 md:mt-20 md:gap-x-10 md:gap-y-20'}>
@@ -177,7 +207,7 @@ function	Stats(): ReactElement {
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
 							<b className={'text-base tabular-nums text-neutral-900'}>
-								{stCRVAPY ? `${(stCRVAPY || '').replace('APY', '')}*` : '0.00%'}
+								{stCRVRawAPY ? `${format.amount(stCRVRawAPY, 2, 2)}*` : '0.00%'}
 							</b>
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
@@ -298,9 +328,15 @@ function	Stats(): ReactElement {
 					</div>
 
 					<div>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'*52.24% APY: '}</p>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 8.61% Curve Admin Fees (3.6x boost)'}</p>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>{'∙ 43.63% Gauge Voting Bribes'}</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
+							{stCRVRawAPY ? `*${format.amount(stCRVRawAPY, 2, 2)} APY: ` : '*0.00% APY: '}
+						</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
+							{`∙ ${curveAdminFeePercent ? format.amount(curveAdminFeePercent, 2, 2) : '0.00'}% Curve Admin Fees (${format.amount(Number(data?.boostMultiplier) / 10000, 2, 2)}x boost)`}
+						</p>
+						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
+							{`∙ ${stCRVRawAPY && curveAdminFeePercent ? format.amount(stCRVRawAPY - curveAdminFeePercent, 2, 2) : '0.00'}% Gauge Voting Bribes`}
+						</p>
 					</div>
 				</div>
 			</div>

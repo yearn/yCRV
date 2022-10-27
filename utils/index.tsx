@@ -52,6 +52,23 @@ export function getVaultAPY(vaults: TYearnVaultWrapper, vaultAddress: string): s
 	return 'APY 0.00%';
 }
 
+export function getVaultRawAPY(vaults: TYearnVaultWrapper, vaultAddress: string): number {
+	if (!vaults?.[toAddress(vaultAddress)]) {
+		return 0;
+	}
+
+	if (toAddress(vaultAddress) == toAddress(process.env.YVECRV_TOKEN_ADDRESS)
+		|| toAddress(vaultAddress) == toAddress(process.env.YVBOOST_TOKEN_ADDRESS)) {
+		return 0;
+	}
+
+	if (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy) {
+		return (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy || 0) * 100;
+	}
+
+	return 0;
+}
+
 export function getAmountWithSlippage(from: string, to: string, value: BigNumber, slippage: number): number {
 	const	hasLP = (
 		toAddress(from) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS)
