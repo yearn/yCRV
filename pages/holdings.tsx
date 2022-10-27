@@ -332,10 +332,10 @@ function	Stats(): ReactElement {
 							{stCRVRawAPY ? `*${format.amount(stCRVRawAPY, 2, 2)} APY: ` : '*0.00% APY: '}
 						</p>
 						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
-							{`∙ ${format.amount(curveAdminFeePercent, 2, 2)}% Curve Admin Fees (${format.amount(Number(data?.boostMultiplier) / 10000, 2, 2)}x boost)`}
+							{`∙ ${curveAdminFeePercent ? format.amount(curveAdminFeePercent, 2, 2) : '0.00'}% Curve Admin Fees (${format.amount(Number(data?.boostMultiplier) / 10000, 2, 2)}x boost)`}
 						</p>
 						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
-							{`∙ ${format.amount(stCRVRawAPY - curveAdminFeePercent, 2, 2)}% Gauge Voting Bribes`}
+							{`∙ ${stCRVRawAPY && curveAdminFeePercent ? format.amount(stCRVRawAPY - curveAdminFeePercent, 2, 2) : '0.00'}% Gauge Voting Bribes`}
 						</p>
 					</div>
 				</div>
