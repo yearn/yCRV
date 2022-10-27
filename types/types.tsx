@@ -97,6 +97,17 @@ export type TCurveGauges = {
 	}
 }
 
+export type TCurveWeeklyFees = {
+	weeklyFeesTable: {
+		date: string,
+		ts: number,
+		rawFees: number
+	}[]
+	totalFees: {
+		fees: number
+	}
+}
+
 export type	TClaimable = {
 	raw: BigNumber,
 	normalized: number,
