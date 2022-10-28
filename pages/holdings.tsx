@@ -207,7 +207,7 @@ function	Stats(): ReactElement {
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
 							<b className={'text-base tabular-nums text-neutral-900'}>
-								{stCRVRawAPY ? `${format.amount(stCRVRawAPY, 2, 2)}*` : '0.00%'}
+								{stCRVRawAPY ? `${format.amount(stCRVRawAPY, 2, 2)}%*` : '0.00%'}
 							</b>
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
@@ -329,7 +329,7 @@ function	Stats(): ReactElement {
 
 					<div>
 						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
-							{stCRVRawAPY ? `*${format.amount(stCRVRawAPY, 2, 2)} APY: ` : '*0.00% APY: '}
+							{stCRVRawAPY ? `*${format.amount(stCRVRawAPY, 2, 2)}% APY: ` : '*0.00% APY: '}
 						</p>
 						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
 							{`∙ ${curveAdminFeePercent ? format.amount(curveAdminFeePercent, 2, 2) : '0.00'}% Curve Admin Fees (${format.amount(Number(data?.boostMultiplier) / 10000, 2, 2)}x boost)`}
