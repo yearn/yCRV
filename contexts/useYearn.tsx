@@ -55,9 +55,9 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 		<YearnContext.Provider
 			value={{
 				yCRVHarvests,
-				crvPrice: prices?.[(process.env.CRV_TOKEN_ADDRESS as string)?.toLowerCase()] || 0,
-				ycrvPrice: prices?.[(process.env.YCRV_TOKEN_ADDRESS as string)?.toLowerCase()] || 0,
-				ycrvCurvePoolPrice: prices?.[(process.env.YCRV_CURVE_POOL_ADDRESS as string)?.toLowerCase()] || 0,
+				crvPrice: prices?.[toAddress(process.env.CRV_TOKEN_ADDRESS as string)] || 0,
+				ycrvPrice: prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS as string)] || 0,
+				ycrvCurvePoolPrice: prices?.[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string)] || 0,
 				vaults: {
 					[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
 					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
