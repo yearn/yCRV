@@ -139,7 +139,8 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	useEffect((): void => {
 		const fetchWidoTokenAllowance = async (): Promise<void> => {
-			const allowance = await widoAllowance({chainId: chainID, accountAddress: address, tokenAddress: selectedOptionFrom.value});
+			const safeChainID = chainID === 1337 ? 1 : chainID;
+			const allowance = await widoAllowance({chainId: safeChainID, accountAddress: address, tokenAddress: selectedOptionFrom.value});
 			set_allowanceFrom(BigNumber.from(allowance));
 		};
 		
@@ -214,12 +215,10 @@ function	CardTransactorContextApp({
 			const	_possibleFroms = [..._possibleFromsYearnInWallet, ...widoOptionsFrom, ..._possibleFromsYearnNotInWallet];
 			const	_allBalances = {...balances as unknown as {[key: string]: TBalanceData}, ...widoTokens};
 
-			console.warn(_possibleFroms[0]);
-
 			performBatchedUpdates((): void => {
 				set_allBalances(_allBalances);
 				set_possibleFroms(_possibleFroms);
-				set_selectedOptionFrom(_possibleFroms?.[0]);
+				set_selectedOptionFrom((s): TDropdownOption => s.value === '' ? _possibleFroms?.[0] : s);
 				if (_possibleFroms?.[0].value === selectedOptionTo?.value) {
 					set_selectedOptionTo(ZAP_OPTIONS_TO.find((o: TDropdownOption): boolean => o.value !== _possibleFroms?.[0].value) as TDropdownOption);
 				}
@@ -330,10 +329,11 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	async function	onApproveFrom(): Promise<void> {
 		if (shouldUseWido) {
+			const safeChainID = chainID === 1337 ? 1 : chainID;
 			new Transaction(provider, widoApproveERC20, set_txStatusApprove)
 				.populate(
 					toAddress(selectedOptionFrom.value),
-					chainID,
+					safeChainID,
 					ethers.constants.MaxUint256
 				)
 				.onSuccess(async (): Promise<void> => {
@@ -358,16 +358,20 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	async function	onZap(): Promise<void> {
 		if (shouldUseWido) {
+			const safeChainID = chainID === 1337 ? 1 : chainID;
 			new Transaction(provider, widoZap, set_txStatusZap).populate({
-				fromChainId: chainID,
+				fromChainId: safeChainID,
 				fromToken: toAddress(selectedOptionFrom.value),
-				toChainId: chainID,
+				toChainId: safeChainID,
 				toToken: toAddress(selectedOptionTo.value),
 				amount: amount.raw,
 				user: toAddress(address)
 			}).onSuccess(async (): Promise<void> => {
-				set_amount({raw: ethers.constants.Zero, normalized: 0});
-				await refresh();
+				const _balances = await refresh();
+				set_amount({
+					raw: _balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+					normalized: _balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+				});
 			}).perform();
 			return;
 		}
@@ -378,8 +382,11 @@ function	CardTransactorContextApp({
 				toAddress(selectedOptionTo.value), //destination vault
 				amount.raw //amount_in
 			).onSuccess(async (): Promise<void> => {
-				set_amount({raw: ethers.constants.Zero, normalized: 0});
-				await refresh();
+				const _balances = await refresh();
+				set_amount({
+					raw: _balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+					normalized: _balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+				});
 			}).perform();
 			return;
 		}
@@ -392,8 +399,11 @@ function	CardTransactorContextApp({
 			expectedOut?.raw, //_min_out
 			slippage
 		).onSuccess(async (): Promise<void> => {
-			set_amount({raw: ethers.constants.Zero, normalized: 0});
-			await refresh();
+			const _balances = await refresh();
+			set_amount({
+				raw: _balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+				normalized: _balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+			});
 		}).perform();
 	}
 

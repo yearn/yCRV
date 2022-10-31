@@ -1,5 +1,6 @@
 import {BigNumber} from 'ethers';
 
+import type {TBalanceData} from '@yearn-finance/web-lib/hooks/types.d';
 import type {TClaimable} from 'types/types';
 
 export type	TBalances = {
@@ -20,7 +21,7 @@ export type	TWalletContext = {
 	allowances: {[key: string]: BigNumber},
 	yveCRVClaimable: TClaimable;
 	useWalletNonce: number,
-	refresh: () => Promise<void>,
+	refresh: () => Promise<{[key: string]: TBalanceData}>,
 	slippage: number,
 	set_slippage: (slippage: number) => void,
 }

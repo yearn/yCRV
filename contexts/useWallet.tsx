@@ -9,6 +9,7 @@ import {ABI, format, performBatchedUpdates, providers} from '@yearn-finance/web-
 import {allowanceKey} from 'utils';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
+import type {TBalanceData} from '@yearn-finance/web-lib/hooks/types.d';
 import type * as TWalletTypes from 'contexts/useWallet.d';
 import type {TClaimable} from 'types/types';
 
@@ -18,7 +19,7 @@ const	defaultProps = {
 	allowances: {[ethers.constants.AddressZero]: ethers.constants.Zero},
 	yveCRVClaimable: {raw: ethers.constants.Zero, normalized: 0},
 	useWalletNonce: 0,
-	refresh: async (): Promise<void> => undefined,
+	refresh: async (): Promise<{[key: string]: TBalanceData}> => ({}),
 	slippage: 0.6,
 	set_slippage: (): void => undefined
 };
@@ -131,11 +132,12 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 				isLoading,
 				yveCRVClaimable,
 				allowances,
-				refresh: async (): Promise<void> => {
-					await Promise.all([
+				refresh: async (): Promise<{[key: string]: TBalanceData}> => {
+					const	[updatedBalances] = await Promise.all([
 						updateBalances(),
 						getExtraData()
 					]);
+					return updatedBalances;
 				},
 				useWalletNonce: nonce,
 				slippage,

@@ -87,6 +87,7 @@ function CardAnyZapTokensSelector({optionsTo}: {
 					options={possibleTo}
 					selected={selectedOptionTo || EMPTY_OPTION}
 					onSelect={(option: TDropdownOption): void => set_selectedOptionTo(option)}
+					balances={allBalances}
 					placeholder={'Select token'} />
 				<p className={'pl-2 !text-xs font-normal !text-green-600'}>
 					{toVaultAPY}
