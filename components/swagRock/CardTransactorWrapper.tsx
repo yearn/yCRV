@@ -107,7 +107,9 @@ function	CardTransactorContextApp({
 			toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string),
 			toAddress(process.env.STYCRV_TOKEN_ADDRESS as string),
 			toAddress(process.env.YCRV_TOKEN_ADDRESS as string),
-			toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string)
+			toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
+			'',
+			ethers.constants.AddressZero
 		];
 		if (useYearnArrFrom.includes(toAddress(selectedOptionFrom.value))) {
 			return false;
