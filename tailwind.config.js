@@ -28,6 +28,7 @@ module.exports = {
 				'lg': '1200px'
 			},
 			fontSize: {
+				'xxs': ['10px', '16px'],
 				'3xl': ['32px', '40px'],
 				'7xl': ['64px', '72px'],
 				'8xl': ['88px', '104px']

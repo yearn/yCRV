@@ -1,10 +1,53 @@
-import React, {cloneElement, Fragment, ReactElement, useRef} from 'react';
+import React, {cloneElement, Fragment, ReactElement, useMemo, useRef} from 'react';
 import {Menu, Transition} from '@headlessui/react';
+import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import IconChevron from 'components/icons/IconChevron';
 
-import type {TDropdownProps} from 'types/types';
+import type {TBalanceData, TDropdownItemProps, TDropdownProps} from 'types/types';
 
-function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}: TDropdownProps): ReactElement {
+function DropdownItem({
+	option,
+	onSelect,
+	balances,
+	buttonRef
+}: TDropdownItemProps): ReactElement {
+	const	balance = useMemo((): TBalanceData | null => balances?.[toAddress(option.value)] || null, [balances, option.value]);
+
+	return (
+		<Menu.Item>
+			{({active}): ReactElement => (
+				<div
+					onClick={(): void => {
+						onSelect(option);
+						setTimeout((): void => buttonRef.current?.click(), 0);
+					}}
+					data-active={active}
+					className={'yveCRV--dropdown-menu-item'}>
+					<div className={'h-6 w-6 rounded-full'}>
+						{option?.icon ? cloneElement(option.icon) : null}
+					</div>
+					<div>
+						<p className={`${option.icon ? 'pl-2' : 'pl-0'} font-normal text-neutral-900`}>
+							{option.label}
+						</p>
+						<p className={`${option.icon ? 'pl-2' : 'pl-0'} text-xxs font-normal text-neutral-600`}>
+							{`${format.amount(balance?.normalized || 0, 2, 2)} ${option.symbol}`}
+						</p>
+					</div>
+				</div>
+			)}
+		</Menu.Item>
+	);
+}
+
+function Dropdown({
+	options,
+	defaultOption,
+	selected,
+	onSelect,
+	placeholder = '',
+	balances
+}: TDropdownProps): ReactElement {
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	return (
 		<div>
@@ -13,7 +56,7 @@ function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}
 					<>
 						<Menu.Button
 							ref={buttonRef}
-							className={'flex h-10 w-full items-center justify-between border border-neutral-600 p-2 text-base text-neutral-900'}>
+							className={'flex h-10 w-full items-center justify-between bg-neutral-0 px-3 py-2 text-base text-neutral-900'}>
 							<div className={'flex flex-row items-center'}>
 								{selected?.icon ? cloneElement(selected.icon) : <div className={'h-6 w-6 rounded-full bg-neutral-500'} />}
 								<p className={`pl-2 ${(!selected?.label && !defaultOption?.label) ? 'text-neutral-400' : 'text-neutral-900'} font-normal`}>
@@ -33,22 +76,12 @@ function Dropdown({options, defaultOption, selected, onSelect, placeholder = ''}
 							leaveTo={'transform scale-95 opacity-0'}>
 							<Menu.Items className={'yveCRV--dropdown-menu'}>
 								{options.map((option, index): ReactElement => (
-									<Menu.Item key={option?.label || index}>
-										{({active}): ReactElement => (
-											<div
-												onClick={(): void => {
-													onSelect(option);
-													setTimeout((): void => buttonRef.current?.click(), 0);
-												}}
-												data-active={active}
-												className={'yveCRV--dropdown-menu-item'}>
-												{option?.icon ? cloneElement(option.icon) : null}
-												<p className={`${option.icon ? 'pl-2' : 'pl-0'} font-normal text-neutral-900`}>
-													{option.label}
-												</p>
-											</div>
-										)}
-									</Menu.Item>
+									<DropdownItem 
+										key={option?.label || index}
+										option={option}
+										onSelect={onSelect}
+										balances={balances}
+										buttonRef={buttonRef} />
 								))}
 							</Menu.Items>
 						</Transition>

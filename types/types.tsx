@@ -102,9 +102,20 @@ export type	TClaimable = {
 	normalized: number,
 }
 
+export type	TBalanceData = {
+	address: string
+	decimals: number,
+	symbol: string,
+	raw: BigNumber,
+	normalized: number,
+	normalizedPrice: number,
+}
+
+
 export type TDropdownOption = {
 	icon?: ReactElement;
 	label: string;
+	symbol: string;
 	value: string;
 	zapVia?: string;
 };
@@ -117,6 +128,20 @@ export type TDropdownProps = {
 	onSelect:
 		| React.Dispatch<React.SetStateAction<TDropdownOption>>
 		| ((option: TDropdownOption) => void);
+	balances?: {
+		[key: string]: TBalanceData
+	};
+};
+
+export type TDropdownItemProps = {
+	option: TDropdownOption;
+	onSelect:
+		| React.Dispatch<React.SetStateAction<TDropdownOption>>
+		| ((option: TDropdownOption) => void);
+	balances?: {
+		[key: string]: TBalanceData
+	};
+	buttonRef: React.RefObject<HTMLButtonElement>;
 };
 
 export type	TNormalizedBN = {
@@ -133,4 +158,8 @@ export type TYDaemonHarvests = {
 	profitValue: number,
 	loss: string,
 	lossValue: number,
+}
+
+export type TYDaemonPricesWrapper = {
+	[key: string]: string
 }

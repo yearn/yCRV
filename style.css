@@ -20,7 +20,7 @@
 		--dropdown-border-width: 0px;
 		--dropdown-border-color: transparent;
 
-		@apply flex overflow-y-auto absolute left-0 flex-col mt-1 w-full min-w-fit max-h-60 scrollbar-none text-neutral-400 border border-neutral-600 bg-neutral-200;
+		@apply flex overflow-y-auto absolute left-0 flex-col mt-1 w-full min-w-fit max-h-60 scrollbar-none text-neutral-400 border border-neutral-300 bg-neutral-200;
 	}
 	& .yveCRV--dropdown-menu-item {
 		@apply w-full flex flex-row items-center cursor-pointer py-2 pr-4 pl-3 transition-colors;

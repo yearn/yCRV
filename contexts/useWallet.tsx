@@ -5,7 +5,7 @@ import {BigNumber, ethers} from 'ethers';
 import NProgress from 'nprogress';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {useBalances, useClientEffect} from '@yearn-finance/web-lib/hooks';
-import {ABI, format, performBatchedUpdates, providers, toAddress} from '@yearn-finance/web-lib/utils';
+import {ABI, format, performBatchedUpdates, providers} from '@yearn-finance/web-lib/utils';
 import {allowanceKey} from 'utils';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
@@ -22,16 +22,6 @@ const	defaultProps = {
 	set_slippage: (): void => undefined
 };
 
-const	defaultData = {
-	decimals: 0,
-	normalized: 0,
-	symbol: '',
-	raw: ethers.constants.Zero,
-	rawPrice: ethers.constants.Zero,
-	normalizedPrice: 0,
-	normalizedValue: 0
-};
-
 /* 🔵 - Yearn Finance **********************************************************
 ** This context controls most of the user's wallet data we may need to
 ** interact with our app, aka mostly the balances and the token prices.
@@ -40,7 +30,7 @@ const	WalletContext = createContext<TWalletTypes.TWalletContext>(defaultProps);
 export const WalletContextApp = ({children}: {children: ReactElement}): ReactElement => {
 	const	[nonce] = useState<number>(0);
 	const	{provider, address, isActive} = useWeb3();
-	const	{data, update: updateBalances, isLoading} = useBalances({
+	const	{data: balances, update: updateBalances, isLoading} = useBalances({
 		key: nonce,
 		provider: provider || providers.getProvider(1),
 		tokens: [
@@ -136,19 +126,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 	return (
 		<WalletContext.Provider
 			value={{
-				balances: {
-					// YCRV ECOSYSTEM
-					[toAddress(process.env.YCRV_TOKEN_ADDRESS)]: data[toAddress(process.env.YCRV_TOKEN_ADDRESS)] || defaultData,
-					[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: data[toAddress(process.env.STYCRV_TOKEN_ADDRESS)] || defaultData,
-					[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: data[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)] || defaultData,
-					[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)]: data[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)] || defaultData,
-					// CRV ECOSYSTEM
-					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: data[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)] || defaultData,
-					[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: data[toAddress(process.env.YVECRV_TOKEN_ADDRESS)] || defaultData,
-					[toAddress(process.env.YVECRV_POOL_LP_ADDRESS)]: data[toAddress(process.env.YVECRV_POOL_LP_ADDRESS)] || defaultData,
-					[toAddress(process.env.CRV_TOKEN_ADDRESS)]: data[toAddress(process.env.CRV_TOKEN_ADDRESS)] || defaultData,
-					[toAddress(process.env.THREECRV_TOKEN_ADDRESS)]: data[toAddress(process.env.THREECRV_TOKEN_ADDRESS)] || defaultData
-				},
+				balances,
 				yveCRVClaimable,
 				allowances,
 				refresh: async (): Promise<void> => {

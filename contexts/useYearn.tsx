@@ -4,19 +4,15 @@ import axios from 'axios';
 import useSWR from 'swr';
 import {toAddress} from '@yearn-finance/web-lib/utils';
 
-import type {TYDaemonHarvests, TYearnVault, TYearnVaultWrapper} from 'types/types';
+import type {TYDaemonHarvests, TYDaemonPricesWrapper, TYearnVault, TYearnVaultWrapper} from 'types/types';
 
 export type	TYearnContext = {
-	crvPrice: number,
-	ycrvPrice: number,
-	ycrvCurvePoolPrice: number,
+	prices: TYDaemonPricesWrapper,
 	yCRVHarvests: TYDaemonHarvests[],
 	vaults: TYearnVaultWrapper
 }
 const	defaultProps: TYearnContext = {
-	crvPrice: 0,
-	ycrvPrice: 0,
-	ycrvCurvePoolPrice: 0,
+	prices: {},
 	yCRVHarvests: [],
 	vaults: {[ethers.constants.AddressZero]: undefined}
 };
@@ -44,7 +40,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	**	apy.net_apy
 	***************************************************************************/
 	const	{data: yveCRVdata} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcherLegacy);
-	const	{data: prices} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/some/${process.env.YCRV_TOKEN_ADDRESS},${process.env.YCRV_CURVE_POOL_ADDRESS},${process.env.CRV_TOKEN_ADDRESS}?humanized=true`, baseFetcher);
+	const	{data: prices} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/some/${process.env.YCRV_TOKEN_ADDRESS},${process.env.YCRV_CURVE_POOL_ADDRESS},${process.env.CRV_TOKEN_ADDRESS}`, baseFetcher);
 	const	{data} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/all`, fetcher);
 	const	{data: yCRVHarvests} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
 
@@ -55,10 +51,8 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	return (
 		<YearnContext.Provider
 			value={{
+				prices,
 				yCRVHarvests,
-				crvPrice: prices?.[(process.env.CRV_TOKEN_ADDRESS as string)?.toLowerCase()] || 0,
-				ycrvPrice: prices?.[(process.env.YCRV_TOKEN_ADDRESS as string)?.toLowerCase()] || 0,
-				ycrvCurvePoolPrice: prices?.[(process.env.YCRV_CURVE_POOL_ADDRESS as string)?.toLowerCase()] || 0,
 				vaults: {
 					[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
 					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),

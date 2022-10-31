@@ -1,23 +1,29 @@
-import React, {ReactElement} from 'react';
+import React, {ReactElement, useRef} from 'react';
+import Link from 'next/link';
 import {Button} from '@yearn-finance/web-lib/components';
 import {useClientEffect} from '@yearn-finance/web-lib/hooks';
 import CardAnyZap from 'components/swagRock/CardAnyZap';
-import CardZap from 'components/swagRock/CardZap';
 
 function	TextAnimation(): ReactElement {
+	const	interval = useRef<NodeJS.Timer>();
+	const	areAlreadySplited = useRef<boolean>(false);
+	const	wordArray = useRef<HTMLSpanElement[][]>([]);
+
 	function	onStartAnimation(): void {
 		const words = document.querySelectorAll<HTMLElement>('.word');
-		const wordArray: HTMLSpanElement[][] = [];
 		let currentWord = 0;
 
 		words[currentWord].style.opacity = '1';
-		for (const word of words) {
-			splitLetters(word);
+		if (!areAlreadySplited.current) {
+			for (const word of words) {
+				splitLetters(word);
+			}
+			areAlreadySplited.current = true;
 		}
 
 		function changeWord(): void {
-			const cw = wordArray[currentWord];
-			const nw = currentWord == words.length-1 ? wordArray[0] : wordArray[currentWord+1];
+			const cw = wordArray.current[currentWord];
+			const nw = currentWord == words.length-1 ? wordArray.current[0] : wordArray.current[currentWord+1];
 			if (!cw || !nw) {
 				return;
 			}
@@ -32,7 +38,7 @@ function	TextAnimation(): ReactElement {
 				}
 				animateLetterIn(nw, i);
 			}
-			currentWord = (currentWord == wordArray.length-1) ? 0 : currentWord+1;
+			currentWord = (currentWord == wordArray.current.length-1) ? 0 : currentWord+1;
 		}
 
 		function animateLetterOut(cw: HTMLSpanElement[], i: number): void {
@@ -59,7 +65,7 @@ function	TextAnimation(): ReactElement {
 				letters.push(letter);
 			}
   
-			wordArray.push(letters);
+			wordArray.current.push(letters);
 		}
 
 		setTimeout((): void => {
@@ -68,8 +74,15 @@ function	TextAnimation(): ReactElement {
 		}, 3000);
 	}
 
+	function	clearAnimation(): void {
+		if (interval.current) {
+			clearInterval(interval.current);
+		}
+	}
+
 	useClientEffect((): void => {
 		onStartAnimation();
+		return clearAnimation();
 	}, []);
 
 	return (
@@ -94,24 +107,25 @@ function	TextAnimation(): ReactElement {
 function	Index(): ReactElement {
 	return (
 		<>
-			<div className={'mx-auto mb-44 flex w-full max-w-6xl flex-col items-center justify-center'}>
+			<div className={'mx-auto mb-20 flex w-full max-w-6xl flex-col items-center justify-center'}>
 				<div className={'relative mt-10 h-12 w-[300px] md:h-[104px] md:w-[600px]'}>
 					<TextAnimation />
 				</div>
-				<div className={'mt-8 mb-6'}>
-					<p className={'text-center text-lg md:text-2xl'}>{'Whatever word you choose, get supercharged yields on CRV with Yearn.'}</p>
+				<div className={'mt-8 mb-10'}>
+					<b className={'text-center text-lg md:text-2xl'}>{'Whatever word you choose, get supercharged yields on CRV with Yearn.'}</b>
+					<p className={'mt-8 whitespace-pre text-center text-base text-neutral-600'}>
+						{'The best CRV yields in DeFi are just a swap away.\nSwap between yCRV ecosystem tokens, or from most ERC20 tokens. '}
+					</p>
 				</div>
 				<div>
-					<Button
-						as={'a'}
-						href={'#swap'}
-						className={'w-full'}>
-						{'To the yield!'}
-					</Button>
+					<Link href={'/about'}>
+						<Button className={'w-full'}>
+							{'Learn more!'}
+						</Button>
+					</Link>
 				</div>
 			</div>
 			<section id={'swap'} className={'mt-0 flex w-full flex-col items-center justify-center space-y-10 space-x-0 md:flex-row md:space-y-0 md:space-x-4 lg:space-x-0'}>
-				<CardZap />
 				<CardAnyZap />
 			</section>
 		</>
