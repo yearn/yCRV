@@ -3,7 +3,6 @@ import {Menu, Transition} from '@headlessui/react';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import IconChevron from 'components/icons/IconChevron';
-import useWallet from 'contexts/useWallet';
 
 import type {TBalanceData, TDropdownItemProps, TDropdownProps} from 'types/types';
 
@@ -54,13 +53,13 @@ function DropdownEmpty(): ReactElement {
 			</div>
 		);
 	}
-		return (
-			<div className={'relative flex h-14 flex-col items-center justify-center px-4 text-center'}>
-				<div className={'flex h-10 items-center justify-center'}>
-					<span className={'loader'} />
-				</div>
+	return (
+		<div className={'relative flex h-14 flex-col items-center justify-center px-4 text-center'}>
+			<div className={'flex h-10 items-center justify-center'}>
+				<span className={'loader'} />
 			</div>
-		);
+		</div>
+	);
 }	
 
 function Dropdown({
