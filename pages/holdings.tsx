@@ -17,7 +17,14 @@ import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 function	Stats(): ReactElement {
 	const	{provider} = useWeb3();
 	const	{balances} = useWallet();
-	const	{vaults, ycrvPrice, yCRVHarvests} = useYearn();
+	const	{vaults, prices, yCRVHarvests} = useYearn();
+
+	const	ycrvPrice = useMemo((): number => (
+		format.toNormalizedValue(
+			format.BN(prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS as string)] || 0),
+			6
+		)
+	), [prices]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** SWR hook to get the expected out for a given in/out pair with a specific
