@@ -14,6 +14,7 @@ import type {TClaimable} from 'types/types';
 
 const	defaultProps = {
 	balances: {},
+	isLoading: false,
 	allowances: {[ethers.constants.AddressZero]: ethers.constants.Zero},
 	yveCRVClaimable: {raw: ethers.constants.Zero, normalized: 0},
 	useWalletNonce: 0,
@@ -127,6 +128,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		<WalletContext.Provider
 			value={{
 				balances,
+				isLoading,
 				yveCRVClaimable,
 				allowances,
 				refresh: async (): Promise<void> => {

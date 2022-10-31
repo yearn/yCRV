@@ -1,7 +1,9 @@
 import React, {cloneElement, Fragment, ReactElement, useMemo, useRef} from 'react';
 import {Menu, Transition} from '@headlessui/react';
+import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import IconChevron from 'components/icons/IconChevron';
+import useWallet from 'contexts/useWallet';
 
 import type {TBalanceData, TDropdownItemProps, TDropdownProps} from 'types/types';
 
@@ -40,6 +42,27 @@ function DropdownItem({
 	);
 }
 
+function DropdownEmpty(): ReactElement {
+	const {isActive, openLoginModal} = useWeb3();
+
+	if (!isActive) {
+		return (
+			<div
+				onClick={(): void => openLoginModal()}
+				className={'flex h-14 cursor-pointer flex-col items-center justify-center px-4 text-center transition-colors hover:bg-neutral-300'}>
+				<b className={'text-neutral-900'}>{'Connect Wallet'}</b>
+			</div>
+		);
+	}
+		return (
+			<div className={'relative flex h-14 flex-col items-center justify-center px-4 text-center'}>
+				<div className={'flex h-10 items-center justify-center'}>
+					<span className={'loader'} />
+				</div>
+			</div>
+		);
+}	
+
 function Dropdown({
 	options,
 	defaultOption,
@@ -49,6 +72,7 @@ function Dropdown({
 	balances
 }: TDropdownProps): ReactElement {
 	const buttonRef = useRef<HTMLButtonElement>(null);
+
 	return (
 		<div>
 			<Menu as={'menu'} className={'relative inline-block w-full text-left'}>
@@ -75,14 +99,18 @@ function Dropdown({
 							leaveFrom={'transform scale-100 opacity-100'}
 							leaveTo={'transform scale-95 opacity-0'}>
 							<Menu.Items className={'yveCRV--dropdown-menu'}>
-								{options.map((option, index): ReactElement => (
-									<DropdownItem 
-										key={option?.label || index}
-										option={option}
-										onSelect={onSelect}
-										balances={balances}
-										buttonRef={buttonRef} />
-								))}
+								{options.length === 0 ? (
+									<DropdownEmpty />
+								): (
+									options.map((option, index): ReactElement => (
+										<DropdownItem 
+											key={option?.label || index}
+											option={option}
+											onSelect={onSelect}
+											balances={balances}
+											buttonRef={buttonRef} />
+									)
+									))}
 							</Menu.Items>
 						</Transition>
 					</>

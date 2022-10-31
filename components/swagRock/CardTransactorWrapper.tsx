@@ -97,7 +97,7 @@ function	CardTransactorContextApp({
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 	const	[hasTypedSomething, set_hasTypedSomething] = useState(false);
 	const 	[allowanceFrom, set_allowanceFrom] = useState<BigNumber>(ethers.constants.Zero);
-	const	[possibleFroms, set_possibleFroms] = useState<TDropdownOption[]>([defaultOptionFrom]);
+	const	[possibleFroms, set_possibleFroms] = useState<TDropdownOption[]>([]);
 
 	const shouldUseWido = useMemo((): boolean => {
 		const	useYearnArrFrom = [
@@ -162,7 +162,6 @@ function	CardTransactorContextApp({
 		if (!balances || Object.values(balances).length === 0) {
 			return;
 		}
-		console.log(balances);
 
 		const optionsFromAsObject: {[key: string]: TDropdownOption} = {};
 		//Exclude yCRV specific tokens

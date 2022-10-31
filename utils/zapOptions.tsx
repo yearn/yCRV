@@ -120,7 +120,8 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 				height={24}
 				src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`} />
 		)
-	}
+	},
+	...LEGACY_OPTIONS_FROM
 ];
 
 const	ZAP_OPTIONS_TO: TDropdownOption[] = [...LEGACY_OPTIONS_TO];

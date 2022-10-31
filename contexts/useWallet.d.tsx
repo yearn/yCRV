@@ -16,6 +16,7 @@ export type	TBalances = {
 
 export type	TWalletContext = {
 	balances: TBalances,
+	isLoading: boolean,
 	allowances: {[key: string]: BigNumber},
 	yveCRVClaimable: TClaimable;
 	useWalletNonce: number,
