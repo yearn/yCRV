@@ -71,13 +71,13 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		const	currentProvider = provider || providers.getProvider(1);
 		const	ethcallProvider = await providers.newEthCallProvider(currentProvider);
 		const	userAddress = address;
-		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	crvContract = new Contract(process.env.CRV_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
-		const	yvBoostContract = new Contract(process.env.YVBOOST_TOKEN_ADDRESS as string, ABI.ERC20_ABI);
-		const	yCRVPoolContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS as string, YVECRV_ABI);
+		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	crvContract = new Contract(process.env.CRV_TOKEN_ADDRESS, ABI.ERC20_ABI);
+		const	yvBoostContract = new Contract(process.env.YVBOOST_TOKEN_ADDRESS, ABI.ERC20_ABI);
+		const	yCRVPoolContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS, YVECRV_ABI);
 
 		const	[
 			claimable,

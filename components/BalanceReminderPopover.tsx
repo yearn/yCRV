@@ -69,7 +69,7 @@ export default function BalanceReminderPopover(): ReactElement {
 														e.preventDefault();
 														e.stopPropagation();
 														addTokenToMetamask(
-															process.env.YCRV_TOKEN_ADDRESS as string,
+															process.env.YCRV_TOKEN_ADDRESS,
 															'yCRV',
 															18,
 															`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_TOKEN_ADDRESS)}/logo-128.png`
@@ -104,7 +104,7 @@ export default function BalanceReminderPopover(): ReactElement {
 														e.preventDefault();
 														e.stopPropagation();
 														addTokenToMetamask(
-															process.env.STYCRV_TOKEN_ADDRESS as string,
+															process.env.STYCRV_TOKEN_ADDRESS,
 															'st-yCRV',
 															18,
 															`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.STYCRV_TOKEN_ADDRESS)}/logo-128.png`
@@ -139,7 +139,7 @@ export default function BalanceReminderPopover(): ReactElement {
 														e.preventDefault();
 														e.stopPropagation();
 														addTokenToMetamask(
-															process.env.LPYCRV_TOKEN_ADDRESS as string,
+															process.env.LPYCRV_TOKEN_ADDRESS,
 															'lp-yCRV',
 															18,
 															`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.LPYCRV_TOKEN_ADDRESS)}/logo-128.png`
@@ -174,7 +174,7 @@ export default function BalanceReminderPopover(): ReactElement {
 														e.preventDefault();
 														e.stopPropagation();
 														addTokenToMetamask(
-															process.env.YCRV_CURVE_POOL_ADDRESS as string,
+															process.env.YCRV_CURVE_POOL_ADDRESS,
 															'Curve CRV/yCRV LP Token',
 															18,
 															`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`

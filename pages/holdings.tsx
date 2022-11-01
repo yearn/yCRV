@@ -21,7 +21,7 @@ function	Stats(): ReactElement {
 
 	const	ycrvPrice = useMemo((): number => (
 		format.toNormalizedValue(
-			format.BN(prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS as string)] || 0),
+			format.BN(prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS)] || 0),
 			6
 		)
 	), [prices]);
@@ -35,12 +35,12 @@ function	Stats(): ReactElement {
 		const	currentProvider = provider || providers.getProvider(1);
 		const	ethcallProvider = await providers.newEthCallProvider(currentProvider);
 
-		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	veEscrowContract = new Contract(process.env.VECRV_ADDRESS as string, YVECRV_ABI);
-		const	crvYCRVLpContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS as string, CURVE_CRV_YCRV_LP_ABI);
+		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	veEscrowContract = new Contract(process.env.VECRV_ADDRESS, YVECRV_ABI);
+		const	crvYCRVLpContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS, CURVE_CRV_YCRV_LP_ABI);
 
 		const	[
 			yveCRVTotalSupply,
@@ -73,8 +73,8 @@ function	Stats(): ReactElement {
 	}, [provider]);
 	const	{data} = useSWR('numbers', numbersFetchers, {refreshInterval: 10000, shouldRetryOnError: false});
 
-	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
-	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
+	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS), [vaults]);
+	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS), [vaults]);
 
 	const	formatBigNumberOver10K = useCallback((v: BigNumber): string => {
 		if (v.gt(ethers.constants.WeiPerEther.mul(10000))) {

@@ -112,14 +112,14 @@ function CardAnyZapAmountSelector(): ReactElement {
 
 	const	ycrvPrice = useMemo((): number => (
 		format.toNormalizedValue(
-			format.BN(prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS as string)] || 0),
+			format.BN(prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS)] || 0),
 			6
 		)
 	), [prices]);
 
 	const	ycrvCurvePoolPrice = useMemo((): number => (
 		format.toNormalizedValue(
-			format.BN(prices?.[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string)] || 0),
+			format.BN(prices?.[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)] || 0),
 			6
 		)
 	), [prices]);
@@ -277,7 +277,7 @@ function CardAnyZap(): ReactElement {
 			);
 
 			const widoSupportedZapTo = ZAP_OPTIONS_TO.filter(
-				({value}): boolean => widoSupportedTokenAddresses.has(toAddress(value as string))
+				({value}): boolean => widoSupportedTokenAddresses.has(toAddress(value))
 			);
 			set_optionsTo(widoSupportedZapTo);
 		};

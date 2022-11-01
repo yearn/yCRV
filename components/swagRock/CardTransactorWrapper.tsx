@@ -70,13 +70,13 @@ type TProps = {
 }
 
 const WIDO_RANKING = {
-	[toAddress(process.env.CRV_TOKEN_ADDRESS as string)]: 1,
-	[toAddress(process.env.YCRV_TOKEN_ADDRESS as string)]: 2,
-	[toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string)]: 3,
-	[toAddress(process.env.YVECRV_TOKEN_ADDRESS as string)]: 4,
-	[toAddress(process.env.STYCRV_TOKEN_ADDRESS as string)]: 5,
-	[toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string)]: 6,
-	[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string)]: 7,
+	[toAddress(process.env.CRV_TOKEN_ADDRESS)]: 1,
+	[toAddress(process.env.YCRV_TOKEN_ADDRESS)]: 2,
+	[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: 3,
+	[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: 4,
+	[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: 5,
+	[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: 6,
+	[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)]: 7,
 	[toAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')]: 8 // eth
 };
 
@@ -101,13 +101,13 @@ function	CardTransactorContextApp({
 
 	const shouldUseWido = useMemo((): boolean => {
 		const	useYearnArrFrom = [
-			toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string),
-			toAddress(process.env.YVECRV_TOKEN_ADDRESS as string),
-			toAddress(process.env.CRV_TOKEN_ADDRESS as string),
-			toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string),
-			toAddress(process.env.STYCRV_TOKEN_ADDRESS as string),
-			toAddress(process.env.YCRV_TOKEN_ADDRESS as string),
-			toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
+			toAddress(process.env.YVBOOST_TOKEN_ADDRESS),
+			toAddress(process.env.YVECRV_TOKEN_ADDRESS),
+			toAddress(process.env.CRV_TOKEN_ADDRESS),
+			toAddress(process.env.YCRV_CURVE_POOL_ADDRESS),
+			toAddress(process.env.STYCRV_TOKEN_ADDRESS),
+			toAddress(process.env.YCRV_TOKEN_ADDRESS),
+			toAddress(process.env.LPYCRV_TOKEN_ADDRESS),
 			'',
 			ethers.constants.AddressZero
 		];
@@ -271,7 +271,7 @@ function	CardTransactorContextApp({
 		if (_inputToken === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)) {
 			// Direct deposit to vault from crv/yCRV Curve LP Token to lp-yCRV Vault
 			const	contract = new ethers.Contract(
-				process.env.LPYCRV_TOKEN_ADDRESS as string,
+				process.env.LPYCRV_TOKEN_ADDRESS,
 				['function pricePerShare() public view returns (uint256)'],
 				currentProvider
 			);
@@ -293,7 +293,7 @@ function	CardTransactorContextApp({
 		} else {
 			// Zap in
 			const	contract = new ethers.Contract(
-				process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
+				process.env.ZAP_YEARN_VE_CRV_ADDRESS,
 				['function calc_expected_out(address, address, uint256) public view returns (uint256)'],
 				currentProvider
 			);

@@ -9,8 +9,8 @@ export function	max(input: BigNumber, balance: BigNumber): BigNumber {
 	return input;
 }
 
-export function allowanceKey(token: unknown, spender: unknown): string {
-	return `${toAddress(token as string)}_${toAddress(spender as string)}`;
+export function allowanceKey(token: string, spender?: string): string {
+	return `${toAddress(token)}_${toAddress(spender)}`;
 }
 
 export function	getCounterValue(amount: number | string, price: number): string {
