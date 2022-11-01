@@ -195,7 +195,6 @@ function	CardTransactorContextApp({
 		const widoTokens: {[key: string]: TBalanceData} = {};
 		for (const token of widoSupportedTokens) {
 			widoTokens[toAddress(token.address)] = {
-				address: toAddress(token.address),
 				decimals: token.decimals,
 				symbol: token.symbol,
 				raw: BigNumber.from(token.balance),
@@ -215,7 +214,7 @@ function	CardTransactorContextApp({
 				}
 			}
 			const	_possibleFroms = [..._possibleFromsYearnInWallet, ...widoOptionsFrom, ..._possibleFromsYearnNotInWallet];
-			const	_allBalances = {...balances as unknown as {[key: string]: TBalanceData}, ...widoTokens};
+			const	_allBalances = {...balances, ...widoTokens};
 
 			performBatchedUpdates((): void => {
 				set_allBalances(_allBalances);

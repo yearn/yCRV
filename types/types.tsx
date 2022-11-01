@@ -103,7 +103,6 @@ export type	TClaimable = {
 }
 
 export type	TBalanceData = {
-	address: string
 	decimals: number,
 	symbol: string,
 	raw: BigNumber,
