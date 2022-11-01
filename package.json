@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": false,
 	"scripts": {
-		"dev": "next",
+		"dev": "next dev",
 		"dev:ts": "tsc --watch",
 		"start": "tsc && next build && next start",
 		"build": "tsc && next build",
