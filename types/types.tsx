@@ -135,9 +135,7 @@ export type TDropdownProps = {
 
 export type TDropdownItemProps = {
 	option: TDropdownOption;
-	onSelect:
-		| React.Dispatch<React.SetStateAction<TDropdownOption>>
-		| ((option: TDropdownOption) => void);
+	onSelect: (option: TDropdownOption) => void;
 	balances?: {
 		[key: string]: TBalanceData
 	};
