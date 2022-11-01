@@ -107,13 +107,13 @@ function	TextAnimation(): ReactElement {
 function	Index(): ReactElement {
 	return (
 		<>
-			<div className={'mx-auto mb-20 flex w-full max-w-6xl flex-col items-center justify-center'}>
+			<div className={'mx-auto mb-10 flex w-full max-w-6xl flex-col items-center justify-center md:mb-20'}>
 				<div className={'relative mt-10 h-12 w-[300px] md:h-[104px] md:w-[600px]'}>
 					<TextAnimation />
 				</div>
-				<div className={'mt-8 mb-10'}>
+				<div className={'mt-8 mb-10 w-full max-w-6xl text-center'}>
 					<b className={'text-center text-lg md:text-2xl'}>{'Whatever word you choose, get supercharged yields on CRV with Yearn.'}</b>
-					<p className={'mt-8 whitespace-pre text-center text-base text-neutral-600'}>
+					<p className={'mt-8 whitespace-pre-line text-center text-base text-neutral-600'}>
 						{'The best CRV yields in DeFi are just a swap away.\nSwap between yCRV ecosystem tokens, or from most ERC20 tokens. '}
 					</p>
 				</div>

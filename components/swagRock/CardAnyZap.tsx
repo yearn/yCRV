@@ -47,7 +47,7 @@ function CardAnyZapTokensSelector({optionsTo}: {
 
 	return (
 		<div className={'grid grid-cols-12 gap-4'}>
-			<label className={'relative z-20 col-span-5 flex flex-col space-y-1'}>
+			<label className={'relative z-20 col-span-6 flex flex-col space-y-1 md:col-span-5'}>
 				<p className={'text-base text-neutral-600'}>
 					{'Select Token'}
 				</p>
@@ -76,11 +76,11 @@ function CardAnyZapTokensSelector({optionsTo}: {
 				<p className={'pl-2 !text-xs font-normal !text-green-600'}>&nbsp;</p>
 			</label>
 
-			<div className={'col-span-2 flex items-center justify-center'}>
+			<div className={'col-span-2 hidden items-center justify-center md:flex'}>
 				<ArrowRight />
 			</div>
 
-			<label className={'relative z-10 col-span-5 flex flex-col space-y-1'}>
+			<label className={'relative z-10 col-span-6 flex flex-col space-y-1 md:col-span-5'}>
 				<p className={'text-base text-neutral-600'}>{'Deposit to'}</p>
 				<Dropdown
 					defaultOption={possibleTo[0] || selectedOptionTo || EMPTY_OPTION}
@@ -125,8 +125,8 @@ function CardAnyZapAmountSelector(): ReactElement {
 	), [prices]);
 
 	return (
-		<div className={'mt-4 mb-8 grid grid-cols-12 gap-4 md:mt-8 md:mb-16'}>
-			<div className={'col-span-5 flex flex-col space-y-1'}>
+		<div className={'mt-0 mb-8 grid grid-cols-12 gap-4 md:mt-8 md:mb-16'}>
+			<div className={'col-span-12 flex flex-col space-y-1 md:col-span-5'}>
 				<p className={'text-base text-neutral-600'}>{'Amount'}</p>
 				<div className={'flex h-10 items-center bg-neutral-0 p-2'}>
 					<div className={'flex h-10 w-full flex-row items-center justify-between py-4 px-0'}>
@@ -169,11 +169,11 @@ function CardAnyZapAmountSelector(): ReactElement {
 				</div>
 			</div>
 
-			<div className={'col-span-2 flex items-center justify-center'}>
+			<div className={'col-span-2 hidden items-center justify-center md:flex'}>
 				<ArrowRight />
 			</div>
 
-			<div className={'col-span-5 flex flex-col space-y-1'}>
+			<div className={'col-span-12 flex flex-col space-y-1 md:col-span-5'}>
 				<div>
 					<p className={'hidden text-base text-neutral-600 md:block'}>
 						{'You will receive minimum'}
@@ -249,7 +249,7 @@ function CardAnyZapActionButton(): ReactElement {
 	}
 
 	return (
-		<div className={'relative'}>
+		<div className={'relative mb-8 md:mb-0'}>
 			<div>{renderButton()}</div>
 			<span className={`absolute mx-auto mt-3 flex w-full flex-row items-center justify-center transition-opacity ${shouldUseWido ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
 				<a
@@ -286,25 +286,25 @@ function CardAnyZap(): ReactElement {
 	}, [chainID]);
 
 	return (
-		<div>
+		<>
 			<CardAnyZapTokensSelector optionsTo={optionsTo} />
 			<CardAnyZapAmountSelector />
 			<CardAnyZapActionButton />
-		</div>
+		</>
 	);
 }
 
 function	WithCardTransactor(): ReactElement {
 	return (
 		<CardTransactorContextApp defaultOptionFrom={{label: '', value: '', symbol: ''}}>
-			<div>
+			<>
 				<div className={'hidden w-[808px] bg-neutral-100 p-4 md:py-14 md:px-16 lg:block'}>
 					<CardAnyZap />
 				</div>
 				<div className={'w-full bg-neutral-100 p-4 md:p-8 lg:hidden'}>
 					<CardAnyZap />
 				</div>
-			</div>
+			</>
 		</CardTransactorContextApp>
 	);
 }

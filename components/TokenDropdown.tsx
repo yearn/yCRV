@@ -79,14 +79,18 @@ function Dropdown({
 					<>
 						<Menu.Button
 							ref={buttonRef}
-							className={'flex h-10 w-full items-center justify-between bg-neutral-0 px-3 py-2 text-base text-neutral-900'}>
-							<div className={'flex flex-row items-center'}>
-								{selected?.icon ? cloneElement(selected.icon) : <div className={'h-6 w-6 rounded-full bg-neutral-500'} />}
-								<p className={`pl-2 ${(!selected?.label && !defaultOption?.label) ? 'text-neutral-400' : 'text-neutral-900'} font-normal`}>
+							className={'md: flex h-10 w-full items-center justify-between bg-neutral-0 p-2 px-3 text-base text-neutral-900'}>
+							<div className={'relative flex flex-row items-center'}>
+								<div className={'h-4 w-4 rounded-full md:h-6 md:w-6'}>
+									{selected?.icon ? cloneElement(selected.icon) : <div className={'h-4 w-4 rounded-full bg-neutral-500 md:h-6 md:w-6'} />}
+								</div>
+								<p className={`pl-2 ${(!selected?.label && !defaultOption?.label) ? 'text-neutral-400' : 'text-neutral-900'} max-w-[75%] overflow-x-hidden text-ellipsis whitespace-nowrap font-normal scrollbar-none md:max-w-full`}>
 									{selected?.label || defaultOption?.label || placeholder}
 								</p>
 							</div>
-							<IconChevron className={`ml-3 h-6 w-6 transition-transform ${open ? '-rotate-180' : 'rotate-0'}`} />
+							<div className={'absolute right-2 md:right-3'}>
+								<IconChevron className={`h-4 w-4 transition-transform md:h-6 md:w-6 ${open ? '-rotate-180' : 'rotate-0'}`} />
+							</div>
 						</Menu.Button>
 						<Transition
 							as={Fragment}
