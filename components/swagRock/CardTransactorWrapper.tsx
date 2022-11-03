@@ -6,7 +6,7 @@ import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {defaultTxStatus, format, performBatchedUpdates, providers, toAddress, Transaction} from '@yearn-finance/web-lib/utils';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {allowanceKey, getAmountWithSlippage, getVaultAPY} from 'utils';
+import {allowanceKey, getAmountWithSlippage, getSafeChainID, getVaultAPY} from 'utils';
 import {approveERC20, widoApproveERC20} from 'utils/actions/approveToken';
 import {deposit} from 'utils/actions/deposit';
 import {widoAllowance} from 'utils/actions/widoAllowance';
@@ -98,6 +98,7 @@ function	CardTransactorContextApp({
 	const	[hasTypedSomething, set_hasTypedSomething] = useState(false);
 	const 	[allowanceFrom, set_allowanceFrom] = useState<BigNumber>(ethers.constants.Zero);
 	const	[possibleFroms, set_possibleFroms] = useState<TDropdownOption[]>([]);
+	const	safeChainID = useMemo((): number => getSafeChainID(chainID), [chainID]);
 
 	const shouldUseWido = useMemo((): boolean => {
 		const	useYearnArrFrom = [
@@ -141,7 +142,6 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	useEffect((): void => {
 		const fetchWidoTokenAllowance = async (): Promise<void> => {
-			const safeChainID = chainID === 1337 ? 1 : chainID;
 			const allowance = await widoAllowance({chainId: safeChainID, accountAddress: address, tokenAddress: selectedOptionFrom.value});
 			set_allowanceFrom(BigNumber.from(allowance));
 		};
@@ -155,7 +155,7 @@ function	CardTransactorContextApp({
 			const allowance = allowances[allowanceKey(selectedOptionFrom.value, selectedOptionFrom.zapVia)];
 			set_allowanceFrom(allowance || ethers.constants.Zero);
 		}
-	}, [address, allowances, amount.raw, chainID, isActive, selectedOptionFrom.value, selectedOptionFrom.zapVia, shouldUseWido, useWalletNonce]);
+	}, [address, allowances, amount.raw, isActive, safeChainID, selectedOptionFrom.value, selectedOptionFrom.zapVia, shouldUseWido, useWalletNonce]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** useEffect to fetch the balances from Wido, as long as the possible from
@@ -172,7 +172,6 @@ function	CardTransactorContextApp({
 			optionsFromAsObject[toAddress(optionFrom.value)] = optionFrom;
 		}
 
-		const safeChainID = chainID === 1337 ? 1 : chainID;
 		const widoSupportedTokens = await getBalances(address, [safeChainID]);
 		const widoOptionsFrom = widoSupportedTokens
 			.filter((option: Balance): boolean => !optionsFromAsObject[toAddress(option.address)])
@@ -225,7 +224,7 @@ function	CardTransactorContextApp({
 				}
 			});
 		}
-	}, [address, balances, chainID, selectedOptionTo?.value]);
+	}, [address, balances, safeChainID, selectedOptionTo?.value]);
 	useEffect((): void => {
 		widoTokensFetcher();
 	}, [widoTokensFetcher]);
@@ -242,7 +241,6 @@ function	CardTransactorContextApp({
 	): Promise<{raw: BigNumber, normalized: number}> => {
 		if (shouldUseWido) {
 			try {
-				const safeChainID = chainID === 1337 ? 1 : chainID;
 				const request = {
 					fromChainId: safeChainID,
 					fromToken: _inputToken,
@@ -311,7 +309,7 @@ function	CardTransactorContextApp({
 				return ({raw: ethers.constants.Zero, normalized: 0});
 			}
 		}
-	}, [shouldUseWido, provider, chainID, address, selectedOptionFrom.value, selectedOptionTo.value, slippage]);
+	}, [address, provider, safeChainID, selectedOptionFrom.value, selectedOptionTo.value, shouldUseWido, slippage]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** SWR hook to get the expected out for a given in/out pair with a specific
@@ -330,7 +328,6 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	async function	onApproveFrom(): Promise<void> {
 		if (shouldUseWido) {
-			const safeChainID = chainID === 1337 ? 1 : chainID;
 			new Transaction(provider, widoApproveERC20, set_txStatusApprove)
 				.populate(
 					toAddress(selectedOptionFrom.value),
@@ -359,7 +356,6 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	async function	onZap(): Promise<void> {
 		if (shouldUseWido) {
-			const safeChainID = chainID === 1337 ? 1 : chainID;
 			new Transaction(provider, widoZap, set_txStatusZap).populate({
 				fromChainId: safeChainID,
 				fromToken: toAddress(selectedOptionFrom.value),

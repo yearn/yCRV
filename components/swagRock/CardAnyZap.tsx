@@ -6,8 +6,9 @@ import {format, performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/u
 import ArrowRight from 'components/icons/ArrowRight';
 import {Dropdown} from 'components/TokenDropdown';
 import {useYearn} from 'contexts/useYearn';
+import {ChainId} from 'types';
 import {TDropdownOption} from 'types/types';
-import {getCounterValue, handleInputChange} from 'utils';
+import {getCounterValue, getSafeChainID, handleInputChange} from 'utils';
 import {ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {getSupportedTokens, Token} from 'wido';
 
@@ -267,11 +268,11 @@ function CardAnyZapActionButton(): ReactElement {
 function CardAnyZap(): ReactElement {
 	const {chainID} = useWeb3();
 	const [optionsTo, set_optionsTo] = useState<TDropdownOption[]>([]);
+	const safeChainID = useMemo((): number => getSafeChainID(chainID), [chainID]);
 
 	useEffect((): void => {
 		const fetchSupportedTokens = async (): Promise<void> => {
-			const safeChainID = chainID === 1337 ? 1 : chainID;
-			const widoSupportedTokens: Token[] = await getSupportedTokens({chainId: [safeChainID]});
+			const widoSupportedTokens: Token[] = await getSupportedTokens({chainId: [safeChainID as ChainId]});
 			const widoSupportedTokenAddresses = new Set(
 				widoSupportedTokens.map(({address}): string => toAddress(address))
 			);
@@ -283,7 +284,7 @@ function CardAnyZap(): ReactElement {
 		};
 
 		fetchSupportedTokens();
-	}, [chainID]);
+	}, [safeChainID]);
 
 	return (
 		<>

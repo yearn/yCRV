@@ -86,3 +86,7 @@ export function handleInputChange(
 	const	raw = ethers.utils.parseUnits(amount || '0', decimals);
 	return ({raw: raw, normalized: amount});
 }
+
+export function getSafeChainID(chainID: number): number {
+	return chainID === 1337 ? 1 : chainID;
+}
