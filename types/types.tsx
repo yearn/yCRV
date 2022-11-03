@@ -103,7 +103,7 @@ export type	TClaimable = {
 	normalized: number,
 }
 
-export type	TBalanceData = {
+export type	TSimplifiedBalanceData = {
 	decimals: number,
 	symbol: string,
 	raw: BigNumber,
@@ -128,13 +128,13 @@ export type TDropdownProps = {
 	onSelect:
 		| React.Dispatch<React.SetStateAction<TDropdownOption>>
 		| ((option: TDropdownOption) => void);
-	balances?: Dict<TBalanceData>
+	balances?: Dict<TSimplifiedBalanceData>
 };
 
 export type TDropdownItemProps = {
 	option: TDropdownOption;
 	onSelect: (option: TDropdownOption) => void;
-	balances?: Dict<TBalanceData>;
+	balances?: Dict<TSimplifiedBalanceData>;
 	buttonRef: React.RefObject<HTMLButtonElement>;
 };
 

@@ -1,6 +1,8 @@
 import {BigNumber, ethers} from 'ethers';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
-import {Dict, TNormalizedBN, TYearnVault} from 'types/types';
+
+import type {TBalanceData} from '@yearn-finance/web-lib/hooks/types.d';
+import type {Dict, TNormalizedBN, TSimplifiedBalanceData, TYearnVault} from 'types/types';
 
 export function	max(input: BigNumber, balance: BigNumber): BigNumber {
 	if (input.gt(balance)) {
@@ -89,4 +91,14 @@ export function handleInputChange(
 
 export function getSafeChainID(chainID: number): number {
 	return chainID === 1337 ? 1 : chainID;
+}
+
+export function convertTBalance(balance: TBalanceData): TSimplifiedBalanceData {
+	return {
+		decimals: balance.decimals,
+		symbol: balance.symbol,
+		raw: balance.raw,
+		normalized: balance.normalized,
+		normalizedPrice: balance.normalizedPrice
+	};
 }

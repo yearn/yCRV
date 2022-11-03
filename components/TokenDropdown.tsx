@@ -4,7 +4,7 @@ import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import IconChevron from 'components/icons/IconChevron';
 
-import type {TBalanceData, TDropdownItemProps, TDropdownProps} from 'types/types';
+import type {TDropdownItemProps, TDropdownProps, TSimplifiedBalanceData} from 'types/types';
 
 function DropdownItem({
 	option,
@@ -12,7 +12,7 @@ function DropdownItem({
 	balances,
 	buttonRef
 }: TDropdownItemProps): ReactElement {
-	const	balance = useMemo((): TBalanceData | null => balances?.[toAddress(option.value)] || null, [balances, option.value]);
+	const	balance = useMemo((): TSimplifiedBalanceData | null => balances?.[toAddress(option.value)] || null, [balances, option.value]);
 
 	return (
 		<Menu.Item>

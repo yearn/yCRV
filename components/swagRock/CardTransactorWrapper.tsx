@@ -14,14 +14,14 @@ import {widoQuote} from 'utils/actions/widoQuote';
 import {widoZap} from 'utils/actions/widoZap';
 import {zap} from 'utils/actions/zap';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
-import {getBalances} from 'wido';
+import {ChainId, getBalances} from 'wido';
 
-import type {Dict, TBalanceData, TDropdownOption, TNormalizedBN} from 'types/types';
+import type {Dict, TDropdownOption, TNormalizedBN, TSimplifiedBalanceData} from 'types/types';
 import type {Balance} from 'wido';
 
 type TCardTransactor = {
 	shouldUseWido: boolean;
-	allBalances: Dict<TBalanceData>;
+	allBalances: Dict<TSimplifiedBalanceData>;
 	possibleFroms: TDropdownOption[];
 	selectedOptionFrom: TDropdownOption,
 	selectedOptionTo: TDropdownOption,
@@ -80,7 +80,6 @@ const WIDO_RANKING = {
 	[toAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')]: 8 // eth
 };
 
-
 function	CardTransactorContextApp({
 	defaultOptionFrom = LEGACY_OPTIONS_FROM[0],
 	defaultOptionTo = LEGACY_OPTIONS_TO[0],
@@ -89,7 +88,7 @@ function	CardTransactorContextApp({
 	const	{provider, chainID, isActive, address} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
-	const	[allBalances, set_allBalances] = useState<Dict<TBalanceData>>({});
+	const	[allBalances, set_allBalances] = useState<Dict<TSimplifiedBalanceData>>({});
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
@@ -142,7 +141,11 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	useEffect((): void => {
 		const fetchWidoTokenAllowance = async (): Promise<void> => {
-			const allowance = await widoAllowance({chainId: safeChainID, accountAddress: address, tokenAddress: selectedOptionFrom.value});
+			const allowance = await widoAllowance({
+				chainId: safeChainID as ChainId,
+				accountAddress: address,
+				tokenAddress: selectedOptionFrom.value
+			});
 			set_allowanceFrom(BigNumber.from(allowance));
 		};
 		
@@ -172,7 +175,7 @@ function	CardTransactorContextApp({
 			optionsFromAsObject[toAddress(optionFrom.value)] = optionFrom;
 		}
 
-		const widoSupportedTokens = await getBalances(address, [safeChainID]);
+		const widoSupportedTokens = await getBalances(address, [safeChainID as ChainId]);
 		const widoOptionsFrom = widoSupportedTokens
 			.filter((option: Balance): boolean => !optionsFromAsObject[toAddress(option.address)])
 			.map(({name, symbol, address, logoURI}): TDropdownOption & {rank: number} => {
@@ -191,7 +194,7 @@ function	CardTransactorContextApp({
 				});
 			}).sort((a, b): number => a.rank - b.rank);
 
-		const widoTokens: Dict<TBalanceData> = {};
+		const widoTokens: Dict<TSimplifiedBalanceData> = {};
 		for (const token of widoSupportedTokens) {
 			widoTokens[toAddress(token.address)] = {
 				decimals: token.decimals,
@@ -242,9 +245,9 @@ function	CardTransactorContextApp({
 		if (shouldUseWido) {
 			try {
 				const request = {
-					fromChainId: safeChainID,
+					fromChainId: safeChainID as ChainId,
 					fromToken: _inputToken,
-					toChainId: safeChainID,
+					toChainId: safeChainID as ChainId,
 					toToken: _outputToken,
 					amount: _amountIn.toString(),
 					user: address
