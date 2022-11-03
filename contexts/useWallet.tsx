@@ -10,8 +10,18 @@ import {allowanceKey} from 'utils';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
 import type {TBalanceData} from '@yearn-finance/web-lib/hooks/types.d';
-import type * as TWalletTypes from 'contexts/useWallet.d';
-import type {Dict, TClaimable} from 'types/types';
+import type {Dict, TNormalizedBN} from 'types/types.d';
+
+export type	TWalletContext = {
+	balances: Dict<TBalanceData>,
+	allowances: Dict<BigNumber>,
+	yveCRVClaimable: TNormalizedBN;
+	useWalletNonce: number,
+	isLoading: boolean,
+	slippage: number,
+	refresh: () => Promise<Dict<TBalanceData>>,
+	set_slippage: (slippage: number) => void,
+}
 
 const	defaultProps = {
 	balances: {},
@@ -28,7 +38,7 @@ const	defaultProps = {
 ** This context controls most of the user's wallet data we may need to
 ** interact with our app, aka mostly the balances and the token prices.
 ******************************************************************************/
-const	WalletContext = createContext<TWalletTypes.TWalletContext>(defaultProps);
+const	WalletContext = createContext<TWalletContext>(defaultProps);
 export const WalletContextApp = ({children}: {children: ReactElement}): ReactElement => {
 	const	[nonce] = useState<number>(0);
 	const	{provider, address, isActive} = useWeb3();
@@ -47,7 +57,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 			{token: process.env.THREECRV_TOKEN_ADDRESS}
 		]
 	});
-	const	[yveCRVClaimable, set_yveCRVClaimable] = useState<TClaimable>({raw: ethers.constants.Zero, normalized: 0});
+	const	[yveCRVClaimable, set_yveCRVClaimable] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 	const	[allowances, set_allowances] = useState<Dict<BigNumber>>({[ethers.constants.AddressZero]: ethers.constants.Zero});
 	const	[slippage, set_slippage] = useState<number>(1);
 
@@ -149,5 +159,5 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 };
 
 
-export const useWallet = (): TWalletTypes.TWalletContext => useContext(WalletContext);
+export const useWallet = (): TWalletContext => useContext(WalletContext);
 export default useWallet;

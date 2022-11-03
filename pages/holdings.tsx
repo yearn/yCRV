@@ -9,10 +9,12 @@ import {format, providers, toAddress, truncateHex} from '@yearn-finance/web-lib/
 import ValueAnimation from 'components/ValueAnimation';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {Dict, TYDaemonHarvests} from 'types/types';
 import {getCounterValue, getCounterValueRaw, getVaultAPY} from 'utils';
 import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
+
+import type {Dict} from 'types/types.d';
+import type {TYDaemonHarvests} from 'types/yearn.d';
 
 function	Stats(): ReactElement {
 	const	{provider} = useWeb3();

@@ -2,7 +2,8 @@ import {BigNumber, ethers} from 'ethers';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
 
 import type {TBalanceData} from '@yearn-finance/web-lib/hooks/types.d';
-import type {Dict, TNormalizedBN, TSimplifiedBalanceData, TYearnVault} from 'types/types';
+import type {Dict, TNormalizedBN, TSimplifiedBalanceData} from 'types/types.d';
+import type {TYearnVault} from 'types/yearn.d';
 
 export function	max(input: BigNumber, balance: BigNumber): BigNumber {
 	if (input.gt(balance)) {

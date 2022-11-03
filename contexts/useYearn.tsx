@@ -4,7 +4,8 @@ import axios from 'axios';
 import useSWR from 'swr';
 import {toAddress} from '@yearn-finance/web-lib/utils';
 
-import type {Dict, TYDaemonHarvests, TYearnVault} from 'types/types';
+import type {Dict} from 'types/types.d';
+import type {TYDaemonHarvests, TYearnVault} from 'types/yearn.d';
 
 export type	TYearnContext = {
 	prices: Dict<string>,

@@ -4,7 +4,8 @@ import {Button} from '@yearn-finance/web-lib/components';
 import {performBatchedUpdates, toAddress} from '@yearn-finance/web-lib/utils';
 import {DropdownGauges, TDropdownGaugeOption} from 'components/TokenDropdownGauges';
 import {useCurve} from 'contexts/useCurve';
-import {TCurveGauges} from 'types/types';
+
+import type {TCurveGauges} from 'types/curve.d';
 
 const	defaultOption: TDropdownGaugeOption = {
 	label: '',

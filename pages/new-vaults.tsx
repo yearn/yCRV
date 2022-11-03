@@ -6,7 +6,8 @@ import {performBatchedUpdates} from '@yearn-finance/web-lib/utils';
 import ListOfVaults from 'components/ListOfVaults';
 import {DropdownGauges, TDropdownGaugeOption} from 'components/TokenDropdownGauges';
 import {useCurve} from 'contexts/useCurve';
-import {TCurveGauges} from 'types/types';
+
+import type {TCurveGauges} from 'types/curve.d';
 
 const	defaultOption: TDropdownGaugeOption = {
 	label: '',
