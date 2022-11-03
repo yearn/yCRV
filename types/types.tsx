@@ -1,8 +1,9 @@
 import {ReactElement} from 'react';
 import {BigNumber} from 'ethers';
 
-export type TYearnVaultWrapper = {
-	[key: string]: TYearnVault | undefined
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export type Dict<T> = {
+	[key: string]: T
 }
 
 export type TYearnVault = {
@@ -127,17 +128,13 @@ export type TDropdownProps = {
 	onSelect:
 		| React.Dispatch<React.SetStateAction<TDropdownOption>>
 		| ((option: TDropdownOption) => void);
-	balances?: {
-		[key: string]: TBalanceData
-	};
+	balances?: Dict<TBalanceData>
 };
 
 export type TDropdownItemProps = {
 	option: TDropdownOption;
 	onSelect: (option: TDropdownOption) => void;
-	balances?: {
-		[key: string]: TBalanceData
-	};
+	balances?: Dict<TBalanceData>;
 	buttonRef: React.RefObject<HTMLButtonElement>;
 };
 
@@ -155,8 +152,4 @@ export type TYDaemonHarvests = {
 	profitValue: number,
 	loss: string,
 	lossValue: number,
-}
-
-export type TYDaemonPricesWrapper = {
-	[key: string]: string
 }

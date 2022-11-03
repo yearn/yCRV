@@ -1,6 +1,6 @@
 import {BigNumber, ethers} from 'ethers';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
-import {TNormalizedBN, TYearnVaultWrapper} from 'types/types';
+import {Dict, TNormalizedBN, TYearnVault} from 'types/types';
 
 export function	max(input: BigNumber, balance: BigNumber): BigNumber {
 	if (input.gt(balance)) {
@@ -35,7 +35,7 @@ export function	getCounterValueRaw(amount: number | string, price: number): stri
 	return (`${format.amount(value, 2, 2)}`);
 }
 
-export function getVaultAPY(vaults: TYearnVaultWrapper, vaultAddress: string): string {
+export function getVaultAPY(vaults: Dict<TYearnVault | undefined>, vaultAddress: string): string {
 	if (!vaults?.[toAddress(vaultAddress)]) {
 		return '';
 	}

@@ -9,7 +9,7 @@ import {format, providers, toAddress, truncateHex} from '@yearn-finance/web-lib/
 import ValueAnimation from 'components/ValueAnimation';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {TYDaemonHarvests} from 'types/types';
+import {Dict, TYDaemonHarvests} from 'types/types';
 import {getCounterValue, getCounterValueRaw, getVaultAPY} from 'utils';
 import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
@@ -31,7 +31,7 @@ function	Stats(): ReactElement {
 	** amount. This hook is called every 10s or when amount/in or out changes.
 	** Calls the expectedOutFetcher callback.
 	**************************************************************************/
-	const numbersFetchers = useCallback(async (): Promise<{[key: string]: BigNumber}> => {
+	const numbersFetchers = useCallback(async (): Promise<Dict<BigNumber>> => {
 		const	currentProvider = provider || providers.getProvider(1);
 		const	ethcallProvider = await providers.newEthCallProvider(currentProvider);
 

@@ -4,12 +4,12 @@ import axios from 'axios';
 import useSWR from 'swr';
 import {toAddress} from '@yearn-finance/web-lib/utils';
 
-import type {TYDaemonHarvests, TYDaemonPricesWrapper, TYearnVault, TYearnVaultWrapper} from 'types/types';
+import type {Dict, TYDaemonHarvests, TYearnVault} from 'types/types';
 
 export type	TYearnContext = {
-	prices: TYDaemonPricesWrapper,
+	prices: Dict<string>,
 	yCRVHarvests: TYDaemonHarvests[],
-	vaults: TYearnVaultWrapper
+	vaults: Dict<TYearnVault | undefined>
 }
 const	defaultProps: TYearnContext = {
 	prices: {},

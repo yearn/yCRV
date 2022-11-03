@@ -11,7 +11,7 @@ import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
 import type {TBalanceData} from '@yearn-finance/web-lib/hooks/types.d';
 import type * as TWalletTypes from 'contexts/useWallet.d';
-import type {TClaimable} from 'types/types';
+import type {Dict, TClaimable} from 'types/types';
 
 const	defaultProps = {
 	balances: {},
@@ -19,7 +19,7 @@ const	defaultProps = {
 	allowances: {[ethers.constants.AddressZero]: ethers.constants.Zero},
 	yveCRVClaimable: {raw: ethers.constants.Zero, normalized: 0},
 	useWalletNonce: 0,
-	refresh: async (): Promise<{[key: string]: TBalanceData}> => ({}),
+	refresh: async (): Promise<Dict<TBalanceData>> => ({}),
 	slippage: 0.6,
 	set_slippage: (): void => undefined
 };
@@ -48,7 +48,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 		]
 	});
 	const	[yveCRVClaimable, set_yveCRVClaimable] = useState<TClaimable>({raw: ethers.constants.Zero, normalized: 0});
-	const	[allowances, set_allowances] = useState<{[key: string]: BigNumber}>({[ethers.constants.AddressZero]: ethers.constants.Zero});
+	const	[allowances, set_allowances] = useState<Dict<BigNumber>>({[ethers.constants.AddressZero]: ethers.constants.Zero});
 	const	[slippage, set_slippage] = useState<number>(1);
 
 	useClientEffect((): () => void => {
@@ -132,7 +132,7 @@ export const WalletContextApp = ({children}: {children: ReactElement}): ReactEle
 				isLoading,
 				yveCRVClaimable,
 				allowances,
-				refresh: async (): Promise<{[key: string]: TBalanceData}> => {
+				refresh: async (): Promise<Dict<TBalanceData>> => {
 					const	[updatedBalances] = await Promise.all([
 						updateBalances(),
 						getExtraData()

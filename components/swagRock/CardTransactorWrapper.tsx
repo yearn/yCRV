@@ -16,12 +16,12 @@ import {zap} from 'utils/actions/zap';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {getBalances} from 'wido';
 
-import type {TBalanceData, TDropdownOption, TNormalizedBN} from 'types/types';
+import type {Dict, TBalanceData, TDropdownOption, TNormalizedBN} from 'types/types';
 import type {Balance} from 'wido';
 
 type TCardTransactor = {
 	shouldUseWido: boolean;
-	allBalances: {[key: string]: TBalanceData};
+	allBalances: Dict<TBalanceData>;
 	possibleFroms: TDropdownOption[];
 	selectedOptionFrom: TDropdownOption,
 	selectedOptionTo: TDropdownOption,
@@ -89,7 +89,7 @@ function	CardTransactorContextApp({
 	const	{provider, chainID, isActive, address} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
-	const	[allBalances, set_allBalances] = useState<{[key: string]: TBalanceData}>({});
+	const	[allBalances, set_allBalances] = useState<Dict<TBalanceData>>({});
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
@@ -166,7 +166,7 @@ function	CardTransactorContextApp({
 			return;
 		}
 
-		const optionsFromAsObject: {[key: string]: TDropdownOption} = {};
+		const optionsFromAsObject: Dict<TDropdownOption> = {};
 		//Exclude yCRV specific tokens
 		for (const optionFrom of ZAP_OPTIONS_FROM) {
 			optionsFromAsObject[toAddress(optionFrom.value)] = optionFrom;
@@ -192,7 +192,7 @@ function	CardTransactorContextApp({
 				});
 			}).sort((a, b): number => a.rank - b.rank);
 
-		const widoTokens: {[key: string]: TBalanceData} = {};
+		const widoTokens: Dict<TBalanceData> = {};
 		for (const token of widoSupportedTokens) {
 			widoTokens[toAddress(token.address)] = {
 				decimals: token.decimals,
