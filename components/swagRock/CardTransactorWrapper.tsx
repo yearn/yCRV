@@ -16,7 +16,7 @@ import {zap} from 'utils/actions/zap';
 import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {ChainId, getBalances} from 'wido';
 
-import type {Dict, TDropdownOption, TNormalizedBN, TSimplifiedBalanceData} from 'types/types';
+import type {Dict, TDropdownOption, TNormalizedBN, TSimplifiedBalanceData} from 'types/types.d';
 import type {Balance} from 'wido';
 
 type TCardTransactor = {

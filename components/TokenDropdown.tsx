@@ -4,7 +4,7 @@ import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
 import IconChevron from 'components/icons/IconChevron';
 
-import type {TDropdownItemProps, TDropdownProps, TSimplifiedBalanceData} from 'types/types';
+import type {TDropdownItemProps, TDropdownProps, TSimplifiedBalanceData} from 'types/types.d';
 
 function DropdownItem({
 	option,

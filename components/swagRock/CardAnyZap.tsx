@@ -7,12 +7,13 @@ import ArrowRight from 'components/icons/ArrowRight';
 import {Dropdown} from 'components/TokenDropdown';
 import {useYearn} from 'contexts/useYearn';
 import {ChainId} from 'types';
-import {TDropdownOption} from 'types/types';
 import {getCounterValue, getSafeChainID, handleInputChange} from 'utils';
 import {ZAP_OPTIONS_TO} from 'utils/zapOptions';
 import {getSupportedTokens, Token} from 'wido';
 
 import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
+
+import type {TDropdownOption} from 'types/types.d';
 
 const EMPTY_OPTION: TDropdownOption = {label: '', value: '', symbol: ''};
 
