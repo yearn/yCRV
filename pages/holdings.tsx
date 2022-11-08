@@ -19,7 +19,7 @@ import type {TYDaemonHarvests} from 'types/yearn.d';
 function	Stats(): ReactElement {
 	const	{provider} = useWeb3();
 	const	{balances} = useWallet();
-	const	{vaults, prices, yCRVHarvests} = useYearn();
+	const	{vaults, prices, yCRVHarvests, earned} = useYearn();
 
 	const	ycrvPrice = useMemo((): number => (
 		format.toNormalizedValue(
@@ -98,6 +98,8 @@ function	Stats(): ReactElement {
 			: ''
 	), [data]);
 
+	console.log(earned);
+
 	const	formatedYouHave = useMemo((): string => (
 		getCounterValueRaw(
 			(Number(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized) || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0)
@@ -106,6 +108,15 @@ function	Stats(): ReactElement {
 			1
 		)
 	), [balances, vaults]);
+
+	const	formatedYouEarned = useMemo((): string => (
+		getCounterValueRaw(
+			(earned?.realizedGains || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0)
+			+
+			(earned?.unrealizedGains || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0),
+			1
+		)
+	), [earned, vaults]);
 
 	return (
 		<section className={'mt-4 grid w-full grid-cols-12 gap-y-10 pb-10 md:mt-20 md:gap-x-10 md:gap-y-20'}>
@@ -120,11 +131,11 @@ function	Stats(): ReactElement {
 				</b>
 			</div>
 			<div className={'col-span-12 w-full md:col-span-4'}>
-				<p className={'pb-2 text-lg text-neutral-900 md:pb-6 md:text-3xl'}>{'You have'}</p>
+				<p className={'pb-2 text-lg text-neutral-900 md:pb-6 md:text-3xl'}>{'You Earned'}</p>
 				<b className={'text-3xl tabular-nums text-neutral-900 md:text-7xl'}>
 					<ValueAnimation
-						identifier={'youHave'}
-						value={formatedYouHave ? formatedYouHave : ''}
+						identifier={'youEarned'}
+						value={formatedYouEarned ? formatedYouEarned : ''}
 						prefix={'$'} />
 				</b>
 			</div>
