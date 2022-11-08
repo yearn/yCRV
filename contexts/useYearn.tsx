@@ -43,9 +43,9 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	**	we need to fetch the data from the API, especially to get the
 	**	apy.net_apy
 	***************************************************************************/
+	let data = {}
 	const	{data: yveCRVdata} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcherLegacy);
 	const	{data: prices} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/some/${process.env.YCRV_TOKEN_ADDRESS},${process.env.YCRV_CURVE_POOL_ADDRESS},${process.env.CRV_TOKEN_ADDRESS},${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}?humanized=true`, baseFetcher);
-	const	{data} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/all`, fetcher);
 	const	{data: yCRVHarvests} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
 
 	/* 🔵 - Yearn Finance ******************************************************
