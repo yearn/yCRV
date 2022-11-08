@@ -43,7 +43,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	**	we need to fetch the data from the API, especially to get the
 	**	apy.net_apy
 	***************************************************************************/
-	let data = {}
+	const	{data} = useSWR(`https://api.yearn.finance/v1/chains/1/vaults/all`, fetcher); // trace where it's being used bc the data is the same as yveCRVdata
 	const	{data: yveCRVdata} = useSWR('https://api.yearn.finance/v1/chains/1/vaults/all', fetcherLegacy);
 	const	{data: prices} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/prices/some/${process.env.YCRV_TOKEN_ADDRESS},${process.env.YCRV_CURVE_POOL_ADDRESS},${process.env.CRV_TOKEN_ADDRESS},${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}?humanized=true`, baseFetcher);
 	const	{data: yCRVHarvests} = useSWR(`${process.env.YDAEMON_BASE_URI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
@@ -60,9 +60,9 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 				ycrvCurvePoolPrice: prices?.[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string)] || 0,
 				vaults: {
 					[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
-					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
-					[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)),
-					[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS))
+					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
+					[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)),
+					[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS))
 				}
 			}}>
 			{children}
