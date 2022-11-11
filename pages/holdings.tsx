@@ -9,31 +9,40 @@ import {format, providers, toAddress, truncateHex} from '@yearn-finance/web-lib/
 import ValueAnimation from 'components/ValueAnimation';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {TYDaemonHarvests} from 'types/types';
 import {getCounterValue, getCounterValueRaw, getVaultAPY} from 'utils';
 import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
+import type {Dict} from 'types/types.d';
+import type {TYDaemonHarvests} from 'types/yearn.d';
+
 function	Stats(): ReactElement {
 	const	{provider} = useWeb3();
 	const	{balances} = useWallet();
-	const	{vaults, ycrvPrice, yCRVHarvests} = useYearn();
+	const	{vaults, prices, yCRVHarvests} = useYearn();
+
+	const	ycrvPrice = useMemo((): number => (
+		format.toNormalizedValue(
+			format.BN(prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS)] || 0),
+			6
+		)
+	), [prices]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** SWR hook to get the expected out for a given in/out pair with a specific
 	** amount. This hook is called every 10s or when amount/in or out changes.
 	** Calls the expectedOutFetcher callback.
 	**************************************************************************/
-	const numbersFetchers = useCallback(async (): Promise<{[key: string]: BigNumber}> => {
+	const numbersFetchers = useCallback(async (): Promise<Dict<BigNumber>> => {
 		const	currentProvider = provider || providers.getProvider(1);
 		const	ethcallProvider = await providers.newEthCallProvider(currentProvider);
 
-		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	veEscrowContract = new Contract(process.env.VECRV_ADDRESS as string, YVECRV_ABI);
-		const	crvYCRVLpContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS as string, CURVE_CRV_YCRV_LP_ABI);
+		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS, YVECRV_ABI);
+		const	veEscrowContract = new Contract(process.env.VECRV_ADDRESS, YVECRV_ABI);
+		const	crvYCRVLpContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS, CURVE_CRV_YCRV_LP_ABI);
 
 		const	[
 			yveCRVTotalSupply,
@@ -66,8 +75,8 @@ function	Stats(): ReactElement {
 	}, [provider]);
 	const	{data} = useSWR('numbers', numbersFetchers, {refreshInterval: 10000, shouldRetryOnError: false});
 
-	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
-	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
+	const	stCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS), [vaults]);
+	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS), [vaults]);
 
 	const	formatBigNumberOver10K = useCallback((v: BigNumber): string => {
 		if (v.gt(ethers.constants.WeiPerEther.mul(10000))) {

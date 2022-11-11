@@ -1,6 +1,9 @@
 import {BigNumber, ethers} from 'ethers';
 import {format, toAddress} from '@yearn-finance/web-lib/utils';
-import {TNormalizedBN, TYearnVaultWrapper} from 'types/types';
+
+import type {TBalanceData} from '@yearn-finance/web-lib/hooks/types.d';
+import type {Dict, TNormalizedBN, TSimplifiedBalanceData} from 'types/types.d';
+import type {TYearnVault} from 'types/yearn.d';
 
 export function	max(input: BigNumber, balance: BigNumber): BigNumber {
 	if (input.gt(balance)) {
@@ -9,8 +12,8 @@ export function	max(input: BigNumber, balance: BigNumber): BigNumber {
 	return input;
 }
 
-export function allowanceKey(token: unknown, spender: unknown): string {
-	return `${toAddress(token as string)}_${toAddress(spender as string)}`;
+export function allowanceKey(token: string, spender?: string): string {
+	return `${toAddress(token)}_${toAddress(spender)}`;
 }
 
 export function	getCounterValue(amount: number | string, price: number): string {
@@ -35,7 +38,7 @@ export function	getCounterValueRaw(amount: number | string, price: number): stri
 	return (`${format.amount(value, 2, 2)}`);
 }
 
-export function getVaultAPY(vaults: TYearnVaultWrapper, vaultAddress: string): string {
+export function getVaultAPY(vaults: Dict<TYearnVault | undefined>, vaultAddress: string): string {
 	if (!vaults?.[toAddress(vaultAddress)]) {
 		return '';
 	}
@@ -85,4 +88,18 @@ export function handleInputChange(
 	}
 	const	raw = ethers.utils.parseUnits(amount || '0', decimals);
 	return ({raw: raw, normalized: amount});
+}
+
+export function getSafeChainID(chainID: number): number {
+	return chainID === 1337 ? 1 : chainID;
+}
+
+export function convertTBalance(balance: TBalanceData): TSimplifiedBalanceData {
+	return {
+		decimals: balance.decimals,
+		symbol: balance.symbol,
+		raw: balance.raw,
+		normalized: balance.normalized,
+		normalizedPrice: balance.normalizedPrice
+	};
 }

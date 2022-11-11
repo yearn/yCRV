@@ -1,22 +1,28 @@
 import React, {createContext, ReactElement, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import Image from 'next/image';
 import {BigNumber, ethers} from 'ethers';
 import useSWR from 'swr';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
-import {defaultTxStatus, performBatchedUpdates, providers, toAddress, Transaction} from '@yearn-finance/web-lib/utils';
+import {defaultTxStatus, format, performBatchedUpdates, providers, toAddress, Transaction} from '@yearn-finance/web-lib/utils';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
-import {TDropdownOption, TNormalizedBN} from 'types/types';
-import {allowanceKey, getAmountWithSlippage, getVaultAPY} from 'utils';
+import {allowanceKey, getAmountWithSlippage, getSafeChainID, getVaultAPY} from 'utils';
 import {approveERC20, widoApproveERC20} from 'utils/actions/approveToken';
 import {deposit} from 'utils/actions/deposit';
 import {widoAllowance} from 'utils/actions/widoAllowance';
+import {widoQuote} from 'utils/actions/widoQuote';
 import {widoZap} from 'utils/actions/widoZap';
 import {zap} from 'utils/actions/zap';
-import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO} from 'utils/zapOptions';
+import {LEGACY_OPTIONS_FROM, LEGACY_OPTIONS_TO, ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
+import {ChainId, getBalances} from 'wido';
 
-type T = 'wido' | 'default';
+import type {Dict, TDropdownOption, TNormalizedBN, TSimplifiedBalanceData} from 'types/types.d';
+import type {Balance} from 'wido';
 
 type TCardTransactor = {
+	shouldUseWido: boolean;
+	allBalances: Dict<TSimplifiedBalanceData>;
+	possibleFroms: TDropdownOption[];
 	selectedOptionFrom: TDropdownOption,
 	selectedOptionTo: TDropdownOption,
 	amount: TNormalizedBN,
@@ -26,6 +32,7 @@ type TCardTransactor = {
 	fromVaultAPY: string,
 	toVaultAPY: string,
 	expectedOutWithSlippage: number,
+	isValidatingExpectedOut: boolean,
 	set_selectedOptionFrom: (option: TDropdownOption) => void,
 	set_selectedOptionTo: (option: TDropdownOption) => void,
 	set_amount: (amount: TNormalizedBN) => void,
@@ -35,6 +42,9 @@ type TCardTransactor = {
 }
 
 const		CardTransactorContext = createContext<TCardTransactor>({
+	shouldUseWido: false,
+	allBalances: {},
+	possibleFroms: ZAP_OPTIONS_FROM,
 	selectedOptionFrom: LEGACY_OPTIONS_FROM[0],
 	selectedOptionTo: LEGACY_OPTIONS_TO[0],
 	amount: {raw: ethers.constants.Zero, normalized: 0},
@@ -44,6 +54,7 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 	fromVaultAPY: '',
 	toVaultAPY: '',
 	expectedOutWithSlippage: 0,
+	isValidatingExpectedOut: false,
 	set_selectedOptionFrom: (): void => undefined,
 	set_selectedOptionTo: (): void => undefined,
 	set_amount: (): void => undefined,
@@ -53,21 +64,31 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 });
 
 type TProps = {
-	type?: T,
 	defaultOptionFrom?: TDropdownOption,
 	defaultOptionTo?: TDropdownOption,
 	children?: ReactElement | null,
 }
 
+const WIDO_RANKING = {
+	[toAddress(process.env.CRV_TOKEN_ADDRESS)]: 1,
+	[toAddress(process.env.YCRV_TOKEN_ADDRESS)]: 2,
+	[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: 3,
+	[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: 4,
+	[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: 5,
+	[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: 6,
+	[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)]: 7,
+	[toAddress('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')]: 8 // eth
+};
+
 function	CardTransactorContextApp({
 	defaultOptionFrom = LEGACY_OPTIONS_FROM[0],
 	defaultOptionTo = LEGACY_OPTIONS_TO[0],
-	children = null,
-	type = 'default'
+	children = null
 }: TProps): ReactElement {
 	const	{provider, chainID, isActive, address} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
 	const	{vaults} = useYearn();
+	const	[allBalances, set_allBalances] = useState<Dict<TSimplifiedBalanceData>>({});
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
@@ -75,6 +96,26 @@ function	CardTransactorContextApp({
 	const	[amount, set_amount] = useState<TNormalizedBN>({raw: ethers.constants.Zero, normalized: 0});
 	const	[hasTypedSomething, set_hasTypedSomething] = useState(false);
 	const 	[allowanceFrom, set_allowanceFrom] = useState<BigNumber>(ethers.constants.Zero);
+	const	[possibleFroms, set_possibleFroms] = useState<TDropdownOption[]>([]);
+	const	safeChainID = useMemo((): number => getSafeChainID(chainID), [chainID]);
+
+	const shouldUseWido = useMemo((): boolean => {
+		const	useYearnArrFrom = [
+			toAddress(process.env.YVBOOST_TOKEN_ADDRESS),
+			toAddress(process.env.YVECRV_TOKEN_ADDRESS),
+			toAddress(process.env.CRV_TOKEN_ADDRESS),
+			toAddress(process.env.YCRV_CURVE_POOL_ADDRESS),
+			toAddress(process.env.STYCRV_TOKEN_ADDRESS),
+			toAddress(process.env.YCRV_TOKEN_ADDRESS),
+			toAddress(process.env.LPYCRV_TOKEN_ADDRESS),
+			'',
+			ethers.constants.AddressZero
+		];
+		if (useYearnArrFrom.includes(toAddress(selectedOptionFrom.value))) {
+			return false;
+		}
+		return true;
+	}, [selectedOptionFrom]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** useEffect to set the amount to the max amount of the selected token once
@@ -94,22 +135,102 @@ function	CardTransactorContextApp({
 		}
 	}, [isActive, selectedOptionFrom, amount.raw, hasTypedSomething, balances]);
 
+	/* 🔵 - Yearn Finance ******************************************************
+	** useEffect to set the current allowance for the selected token based on
+	** the type of swap that will be performed (Wido, Yearn or Vault deposit).
+	**************************************************************************/
 	useEffect((): void => {
 		const fetchWidoTokenAllowance = async (): Promise<void> => {
-			const allowance = await widoAllowance({chainId: chainID, accountAddress: address, tokenAddress: selectedOptionFrom.value});
+			const allowance = await widoAllowance({
+				chainId: safeChainID as ChainId,
+				accountAddress: address,
+				tokenAddress: selectedOptionFrom.value
+			});
 			set_allowanceFrom(BigNumber.from(allowance));
 		};
 		
-		if (isActive && amount.raw.gt(0) &&  type === 'wido') {
+		if (isActive && amount.raw.gt(0) && shouldUseWido) {
 			fetchWidoTokenAllowance();
 		}
 
-		if (type === 'default') {
+		if (!shouldUseWido) {
 			useWalletNonce; // remove warning
 			const allowance = allowances[allowanceKey(selectedOptionFrom.value, selectedOptionFrom.zapVia)];
 			set_allowanceFrom(allowance || ethers.constants.Zero);
 		}
-	}, [address, allowances, amount.raw, chainID, isActive, selectedOptionFrom.value, selectedOptionFrom.zapVia, type, useWalletNonce]);
+	}, [address, allowances, amount.raw, isActive, safeChainID, selectedOptionFrom.value, selectedOptionFrom.zapVia, shouldUseWido, useWalletNonce]);
+
+	/* 🔵 - Yearn Finance ******************************************************
+	** useEffect to fetch the balances from Wido, as long as the possible from
+	** tokens (if balance > 0)
+	**************************************************************************/
+	const widoTokensFetcher = useCallback(async (): Promise<void> => {
+		if (!balances || Object.values(balances).length === 0) {
+			return;
+		}
+
+		const optionsFromAsObject: Dict<TDropdownOption> = {};
+		//Exclude yCRV specific tokens
+		for (const optionFrom of ZAP_OPTIONS_FROM) {
+			optionsFromAsObject[toAddress(optionFrom.value)] = optionFrom;
+		}
+
+		const widoSupportedTokens = await getBalances(address, [safeChainID as ChainId]);
+		const widoOptionsFrom = widoSupportedTokens
+			.filter((option: Balance): boolean => !optionsFromAsObject[toAddress(option.address)])
+			.map(({name, symbol, address, logoURI}): TDropdownOption & {rank: number} => {
+				return ({
+					label: name,
+					symbol: symbol,
+					value: toAddress(address),
+					rank: WIDO_RANKING[toAddress(address)] ?? Number.MAX_SAFE_INTEGER,
+					icon: (
+						<Image
+							alt={name}
+							width={24}
+							height={24}
+							src={logoURI} />
+					)
+				});
+			}).sort((a, b): number => a.rank - b.rank);
+
+		const widoTokens: Dict<TSimplifiedBalanceData> = {};
+		for (const token of widoSupportedTokens) {
+			widoTokens[toAddress(token.address)] = {
+				decimals: token.decimals,
+				symbol: token.symbol,
+				raw: BigNumber.from(token.balance),
+				normalized: Number(ethers.utils.formatUnits(token.balance, token.decimals)),
+				normalizedPrice: Number(token.usdPrice)
+			};
+		}
+
+		if (widoOptionsFrom.length > 0) {
+			const	_possibleFromsYearnInWallet = [];
+			const	_possibleFromsYearnNotInWallet = [];
+			for (const option of ZAP_OPTIONS_FROM) {
+				if (balances[toAddress(option.value)]?.raw.gt(0)) {
+					_possibleFromsYearnInWallet.push(option);
+				} else {
+					_possibleFromsYearnNotInWallet.push(option);
+				}
+			}
+			const	_possibleFroms = [..._possibleFromsYearnInWallet, ...widoOptionsFrom, ..._possibleFromsYearnNotInWallet];
+			const	_allBalances = {...balances, ...widoTokens};
+
+			performBatchedUpdates((): void => {
+				set_allBalances(_allBalances);
+				set_possibleFroms(_possibleFroms);
+				set_selectedOptionFrom((s): TDropdownOption => s.value === '' ? _possibleFroms?.[0] : s);
+				if (_possibleFroms?.[0].value === selectedOptionTo?.value) {
+					set_selectedOptionTo(ZAP_OPTIONS_TO.find((o: TDropdownOption): boolean => o.value !== _possibleFroms?.[0].value) as TDropdownOption);
+				}
+			});
+		}
+	}, [address, balances, safeChainID, selectedOptionTo?.value]);
+	useEffect((): void => {
+		widoTokensFetcher();
+	}, [widoTokensFetcher]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** Perform a smartContract call to the ZAP contract to get the expected
@@ -120,45 +241,85 @@ function	CardTransactorContextApp({
 		_inputToken: string,
 		_outputToken: string,
 		_amountIn: BigNumber
-	): Promise<BigNumber> => {
-		const	currentProvider = provider || providers.getProvider(1);
+	): Promise<{raw: BigNumber, normalized: number}> => {
+		if (shouldUseWido) {
+			try {
+				const request = {
+					fromChainId: safeChainID as ChainId,
+					fromToken: _inputToken,
+					toChainId: safeChainID as ChainId,
+					toToken: _outputToken,
+					amount: _amountIn.toString(),
+					user: address
+				};
+				const {toTokenAmount, expectedSlippage} = await widoQuote(request);
+				return ({
+					raw: format.BN(toTokenAmount),
+					normalized: getAmountWithSlippage(
+						selectedOptionFrom.value,
+						selectedOptionTo.value,
+						format.BN(toTokenAmount),
+						Number(expectedSlippage || 0)
+					)
+				});
+			} catch (error) {
+				return ({raw: ethers.constants.Zero, normalized: 0});
+			}
+		}
 
+		const	currentProvider = provider || providers.getProvider(1);
 		if (_inputToken === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)) {
 			// Direct deposit to vault from crv/yCRV Curve LP Token to lp-yCRV Vault
 			const	contract = new ethers.Contract(
-				process.env.LPYCRV_TOKEN_ADDRESS as string,
+				process.env.LPYCRV_TOKEN_ADDRESS,
 				['function pricePerShare() public view returns (uint256)'],
 				currentProvider
 			);
 			try {
 				const	pps = await contract.pricePerShare() || ethers.constants.Zero;
 				const	_expectedOut = _amountIn.mul(pps).div(ethers.constants.WeiPerEther);
-				return _expectedOut;
+				return ({
+					raw: _expectedOut,
+					normalized: getAmountWithSlippage(
+						selectedOptionFrom.value,
+						selectedOptionTo.value,
+						_expectedOut,
+						slippage
+					)
+				});
 			} catch (error) {
-				return (ethers.constants.Zero);
+				return ({raw: ethers.constants.Zero, normalized: 0});
 			}
 		} else {
 			// Zap in
 			const	contract = new ethers.Contract(
-				process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
+				process.env.ZAP_YEARN_VE_CRV_ADDRESS,
 				['function calc_expected_out(address, address, uint256) public view returns (uint256)'],
 				currentProvider
 			);
 			try {
 				const	_expectedOut = await contract.calc_expected_out(_inputToken, _outputToken, _amountIn) || ethers.constants.Zero;
-				return _expectedOut;
+				return ({
+					raw: _expectedOut,
+					normalized: getAmountWithSlippage(
+						selectedOptionFrom.value,
+						selectedOptionTo.value,
+						_expectedOut,
+						slippage
+					)
+				});
 			} catch (error) {
-				return (ethers.constants.Zero);
+				return ({raw: ethers.constants.Zero, normalized: 0});
 			}
 		}
-	}, [provider]);
+	}, [address, provider, safeChainID, selectedOptionFrom.value, selectedOptionTo.value, shouldUseWido, slippage]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	** SWR hook to get the expected out for a given in/out pair with a specific
 	** amount. This hook is called every 10s or when amount/in or out changes.
 	** Calls the expectedOutFetcher callback.
 	**************************************************************************/
-	const	{data: expectedOut} = useSWR(isActive && amount.raw.gt(0) ? [
+	const	{data: expectedOut, isValidating: isValidatingExpectedOut} = useSWR(isActive && amount.raw.gt(0) ? [
 		selectedOptionFrom.value,
 		selectedOptionTo.value,
 		amount.raw
@@ -169,11 +330,11 @@ function	CardTransactorContextApp({
 	** perform the swap.
 	**************************************************************************/
 	async function	onApproveFrom(): Promise<void> {
-		if (type === 'wido') {
+		if (shouldUseWido) {
 			new Transaction(provider, widoApproveERC20, set_txStatusApprove)
 				.populate(
 					toAddress(selectedOptionFrom.value),
-					chainID,
+					safeChainID,
 					ethers.constants.MaxUint256
 				)
 				.onSuccess(async (): Promise<void> => {
@@ -197,17 +358,20 @@ function	CardTransactorContextApp({
 	** supported token B.
 	**************************************************************************/
 	async function	onZap(): Promise<void> {
-		if (type === 'wido') {
+		if (shouldUseWido) {
 			new Transaction(provider, widoZap, set_txStatusZap).populate({
-				fromChainId: chainID,
+				fromChainId: safeChainID,
 				fromToken: toAddress(selectedOptionFrom.value),
-				toChainId: chainID,
+				toChainId: safeChainID,
 				toToken: toAddress(selectedOptionTo.value),
 				amount: amount.raw,
 				user: toAddress(address)
 			}).onSuccess(async (): Promise<void> => {
-				set_amount({raw: ethers.constants.Zero, normalized: 0});
-				await refresh();
+				const _balances = await refresh();
+				set_amount({
+					raw: _balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+					normalized: _balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+				});
 			}).perform();
 			return;
 		}
@@ -218,8 +382,11 @@ function	CardTransactorContextApp({
 				toAddress(selectedOptionTo.value), //destination vault
 				amount.raw //amount_in
 			).onSuccess(async (): Promise<void> => {
-				set_amount({raw: ethers.constants.Zero, normalized: 0});
-				await refresh();
+				const _balances = await refresh();
+				set_amount({
+					raw: _balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+					normalized: _balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+				});
 			}).perform();
 			return;
 		}
@@ -229,11 +396,14 @@ function	CardTransactorContextApp({
 			toAddress(selectedOptionFrom.value), //_input_token
 			toAddress(selectedOptionTo.value), //_output_token
 			amount.raw, //amount_in
-			expectedOut, //_min_out
+			expectedOut?.raw, //_min_out
 			slippage
 		).onSuccess(async (): Promise<void> => {
-			set_amount({raw: ethers.constants.Zero, normalized: 0});
-			await refresh();
+			const _balances = await refresh();
+			set_amount({
+				raw: _balances[toAddress(selectedOptionFrom.value)]?.raw || ethers.constants.Zero,
+				normalized: _balances[toAddress(selectedOptionFrom.value)]?.normalized || 0
+			});
 		}).perform();
 	}
 
@@ -244,25 +414,22 @@ function	CardTransactorContextApp({
 	const	fromVaultAPY = useMemo((): string => getVaultAPY(vaults, selectedOptionFrom.value), [vaults, selectedOptionFrom]);
 	const	toVaultAPY = useMemo((): string => getVaultAPY(vaults, selectedOptionTo.value), [vaults, selectedOptionTo]);
 
-	const	expectedOutWithSlippage = useMemo((): number => getAmountWithSlippage(
-		selectedOptionFrom.value,
-		selectedOptionTo.value,
-		expectedOut || ethers.constants.Zero,
-		slippage
-	), [expectedOut, selectedOptionFrom.value, selectedOptionTo.value, slippage]);
-
 	return (
 		<CardTransactorContext.Provider
 			value={{
+				shouldUseWido,
+				possibleFroms,
 				selectedOptionFrom,
 				selectedOptionTo,
+				allBalances,
 				amount,
 				txStatusApprove,
 				txStatusZap,
 				allowanceFrom,
 				fromVaultAPY,
 				toVaultAPY,
-				expectedOutWithSlippage,
+				expectedOutWithSlippage: expectedOut?.normalized || 0,
+				isValidatingExpectedOut: isValidatingExpectedOut,
 				set_selectedOptionFrom,
 				set_selectedOptionTo,
 				set_amount,

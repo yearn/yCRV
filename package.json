@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": false,
 	"scripts": {
-		"dev": "next",
+		"dev": "next dev",
 		"dev:ts": "tsc --watch",
 		"start": "tsc && next build && next start",
 		"build": "tsc && next build",
@@ -11,7 +11,7 @@
 		"lint": "eslint . --ext .js,.jsx,.ts,.tsx"
 	},
 	"dependencies": {
-		"@yearn-finance/web-lib": "^0.14.0",
+		"@yearn-finance/web-lib": "^0.15.6",
 		"axios": "^0.27.2",
 		"ethcall": "^4.8.4",
 		"ethers": "^5.7.1",

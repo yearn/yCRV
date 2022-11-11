@@ -10,7 +10,7 @@ export async function	addLiquidity(
 
 	try {
 		const	contract = new ethers.Contract(
-			process.env.YVECRV_POOL_LP_ADDRESS as string,
+			process.env.YVECRV_POOL_LP_ADDRESS,
 			['function add_liquidity(uint256[2], uint256)'],
 			signer
 		);

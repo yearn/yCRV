@@ -1,13 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
 import {toAddress} from '@yearn-finance/web-lib/utils';
-import {TDropdownOption} from 'types/types';
+
+import type {TDropdownOption} from 'types/types.d';
 
 const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [
 	{
 		label: 'yvBOOST',
-		value: toAddress(process.env.YVBOOST_TOKEN_ADDRESS as string),
-		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
+		symbol: 'yvBOOST',
+		value: toAddress(process.env.YVBOOST_TOKEN_ADDRESS),
+		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 		icon: (
 			<Image
 				alt={'yvBOOST'}
@@ -17,8 +19,9 @@ const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [
 		)
 	}, {
 		label: 'yveCRV',
-		value: toAddress(process.env.YVECRV_TOKEN_ADDRESS as string),
-		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
+		symbol: 'yveCRV',
+		value: toAddress(process.env.YVECRV_TOKEN_ADDRESS),
+		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 		icon: (
 			<Image
 				alt={'yveCRV'}
@@ -34,8 +37,9 @@ const	LEGACY_OPTIONS_FROM: TDropdownOption[] = [
 const	LEGACY_OPTIONS_TO: TDropdownOption[] = [
 	{
 		label: 'st-yCRV',
-		value: toAddress(process.env.STYCRV_TOKEN_ADDRESS as string),
-		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
+		symbol: 'st-yCRV',
+		value: toAddress(process.env.STYCRV_TOKEN_ADDRESS),
+		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 		icon: (
 			<Image
 				alt={'st-yCRV'}
@@ -47,8 +51,9 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [
 		)
 	}, {
 		label: 'yCRV',
-		value: toAddress(process.env.YCRV_TOKEN_ADDRESS as string),
-		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
+		symbol: 'yCRV',
+		value: toAddress(process.env.YCRV_TOKEN_ADDRESS),
+		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 		icon: (
 			<Image
 				alt={'yCRV'}
@@ -61,8 +66,9 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [
 	},
 	{
 		label: 'lp-yCRV',
-		value: toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
-		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
+		symbol: 'lp-yCRV',
+		value: toAddress(process.env.LPYCRV_TOKEN_ADDRESS),
+		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 		icon: (
 			<Image
 				alt={'lp-yCRV'}
@@ -75,7 +81,7 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [
 	} 
 // {
 // 	label: 'vl-yCRV',
-// 	value: toAddress(process.env.VLYCRV_TOKEN_ADDRESS as string),
+// 	value: toAddress(process.env.VLYCRV_TOKEN_ADDRESS),
 // 	icon: (
 // 		<Image
 // 			alt={'vl-yCRV'}
@@ -91,8 +97,9 @@ const	LEGACY_OPTIONS_TO: TDropdownOption[] = [
 const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 	{
 		label: 'CRV',
-		value: toAddress(process.env.CRV_TOKEN_ADDRESS as string),
-		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS as string),
+		symbol: 'CRV',
+		value: toAddress(process.env.CRV_TOKEN_ADDRESS),
+		zapVia: toAddress(process.env.ZAP_YEARN_VE_CRV_ADDRESS),
 		icon: (
 			<Image
 				alt={'CRV'}
@@ -104,8 +111,9 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 	...LEGACY_OPTIONS_TO,
 	{
 		label: 'Curve CRV/yCRV',
-		value: toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string),
-		zapVia: toAddress(process.env.LPYCRV_TOKEN_ADDRESS as string),
+		symbol: 'CRV/yCRV',
+		value: toAddress(process.env.YCRV_CURVE_POOL_ADDRESS),
+		zapVia: toAddress(process.env.LPYCRV_TOKEN_ADDRESS),
 		icon: (
 			<Image
 				alt={'Curve CRV/yCRV'}
@@ -113,7 +121,8 @@ const	ZAP_OPTIONS_FROM: TDropdownOption[] = [
 				height={24}
 				src={`${process.env.BASE_YEARN_ASSETS_URI}/1/${toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)}/logo-128.png`} />
 		)
-	}
+	},
+	...LEGACY_OPTIONS_FROM
 ];
 
 const	ZAP_OPTIONS_TO: TDropdownOption[] = [...LEGACY_OPTIONS_TO];

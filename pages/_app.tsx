@@ -45,16 +45,6 @@ function	WithLayout(props: AppProps): ReactElement {
 function	MyApp(props: AppProps): ReactElement {
 	const	{Component, pageProps} = props;
 	
-	const isNop = false;
-	if (isNop) {
-		return (
-			<WithLayout
-				Component={Component}
-				pageProps={pageProps}
-				router={props.router} />
-		);
-	}
-
 	return (
 		<WithYearn
 			options={{

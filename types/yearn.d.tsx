@@ -1,10 +1,3 @@
-import {ReactElement} from 'react';
-import {BigNumber} from 'ethers';
-
-export type TYearnVaultWrapper = {
-	[key: string]: TYearnVault | undefined
-}
-
 export type TYearnVault = {
     inception: number,
     address: string,
@@ -72,56 +65,6 @@ export type TYearnVault = {
         available: boolean,
         address: string,
     }
-}
-
-export type TCurveGauges = {
-	swap: string
-	swap_token: string
-	name: string
-	gauge: string
-	type: string
-	side_chain: boolean
-	is_killed: boolean
-	factory: boolean
-	gauge_controller: {
-		get_gauge_weight: string
-		gauge_relative_weight: string
-		inflation_rate: string
-	}
-	gauge_data: {
-		working_supply: string
-		inflation_rate: string
-	}
-	swap_data: {
-		virtual_price: string
-	}
-}
-
-export type	TClaimable = {
-	raw: BigNumber,
-	normalized: number,
-}
-
-export type TDropdownOption = {
-	icon?: ReactElement;
-	label: string;
-	value: string;
-	zapVia?: string;
-};
-
-export type TDropdownProps = {
-	options: TDropdownOption[];
-	defaultOption: TDropdownOption;
-	selected?: TDropdownOption;
-	placeholder?: string;
-	onSelect:
-		| React.Dispatch<React.SetStateAction<TDropdownOption>>
-		| ((option: TDropdownOption) => void);
-};
-
-export type	TNormalizedBN = {
-	raw: BigNumber,
-	normalized: number | string,
 }
 
 export type TYDaemonHarvests = {

@@ -13,7 +13,7 @@ export async function	zap(
 
 	try {
 		const	contract = new ethers.Contract(
-			process.env.ZAP_YEARN_VE_CRV_ADDRESS as string,
+			process.env.ZAP_YEARN_VE_CRV_ADDRESS,
 			['function zap(address _input, address _output, uint256 _amount, uint256 _minOut, address _recipient) external returns (uint256)'],
 			signer
 		);
