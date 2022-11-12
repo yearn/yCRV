@@ -48,15 +48,28 @@ export function getVaultAPY(vaults: Dict<TYearnVault | undefined>, vaultAddress:
 		return 'APY 0.00%';
 	}
 
-	if (toAddress(vaultAddress) == toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
-		return `APY ${format.amount((vaults?.[toAddress(vaultAddress)]?.apy?.points?.week_ago || 0) * 100, 2, 2)}%`;
-	}
-
 	if (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy) {
 		return `APY ${format.amount((vaults?.[toAddress(vaultAddress)]?.apy?.net_apy || 0) * 100, 2, 2)}%`;
 	}
 
 	return 'APY 0.00%';
+}
+
+export function getVaultRawAPY(vaults: TYearnVaultWrapper, vaultAddress: string): number {
+	if (!vaults?.[toAddress(vaultAddress)]) {
+		return 0;
+	}
+
+	if (toAddress(vaultAddress) == toAddress(process.env.YVECRV_TOKEN_ADDRESS)
+		|| toAddress(vaultAddress) == toAddress(process.env.YVBOOST_TOKEN_ADDRESS)) {
+		return 0;
+	}
+
+	if (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy) {
+		return (vaults?.[toAddress(vaultAddress)]?.apy?.net_apy || 0) * 100;
+	}
+
+	return 0;
 }
 
 export function getAmountWithSlippage(from: string, to: string, value: BigNumber, slippage: number): number {
