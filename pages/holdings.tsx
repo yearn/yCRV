@@ -105,7 +105,6 @@ function	Stats(): ReactElement {
 	), [balances, vaults]);
 
 	const	latestCurveFeesValue = useMemo((): number => {
-		console.log(curveWeeklyFees);
 		if (curveWeeklyFees?.weeklyFeesTable?.[0].rawFees > 0) {
 			return curveWeeklyFees.weeklyFeesTable[0].rawFees;
 		} else {
