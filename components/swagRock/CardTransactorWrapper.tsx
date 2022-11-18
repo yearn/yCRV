@@ -37,8 +37,9 @@ type TCardTransactor = {
 	set_selectedOptionTo: (option: TDropdownOption) => void,
 	set_amount: (amount: TNormalizedBN) => void,
 	set_hasTypedSomething: (hasTypedSomething: boolean) => void,
-	onApproveFrom: () => void,
-	onZap: () => void
+	onApproveFrom: () => Promise<void>,
+	onIncreaseCRVAllowance: () => Promise<void>,
+	onZap: () => Promise<void>
 }
 
 const		CardTransactorContext = createContext<TCardTransactor>({
@@ -59,8 +60,9 @@ const		CardTransactorContext = createContext<TCardTransactor>({
 	set_selectedOptionTo: (): void => undefined,
 	set_amount: (): void => undefined,
 	set_hasTypedSomething: (): void => undefined,
-	onApproveFrom: (): void => undefined,
-	onZap: (): void => undefined
+	onApproveFrom: (): any => undefined,
+	onZap: (): any => undefined,
+	onIncreaseCRVAllowance: (): any => undefined
 });
 
 type TProps = {
@@ -354,6 +356,27 @@ function	CardTransactorContextApp({
 	}
 
 	/* 🔵 - Yearn Finance ******************************************************
+	** CRV token require the allowance to be reset to 0 before being able to
+	** increase it. This function is called when the user wants to increase the
+	** allowance of the CRV token.
+	**************************************************************************/
+	async function	onIncreaseCRVAllowance(): Promise<void> {
+		await new Transaction(provider, approveERC20, set_txStatusApprove).populate(
+			toAddress(selectedOptionFrom.value),
+			selectedOptionFrom.zapVia,
+			0
+		).perform();
+
+		new Transaction(provider, approveERC20, set_txStatusApprove).populate(
+			toAddress(selectedOptionFrom.value),
+			selectedOptionFrom.zapVia,
+			ethers.constants.MaxUint256
+		).onSuccess(async (): Promise<void> => {
+			await refresh();
+		}).perform();
+	}
+
+	/* 🔵 - Yearn Finance ******************************************************
 	** Execute a zap using the ZAP contract to migrate from a token A to a
 	** supported token B.
 	**************************************************************************/
@@ -435,6 +458,7 @@ function	CardTransactorContextApp({
 				set_amount,
 				set_hasTypedSomething,
 				onApproveFrom,
+				onIncreaseCRVAllowance,
 				onZap
 			}}>
 			{children}
