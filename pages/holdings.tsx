@@ -111,12 +111,17 @@ function	Stats(): ReactElement {
 
 	const	formatedYouEarned = useMemo((): string => (
 		getCounterValueRaw(
-			(earned?.realizedGains || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0)
+			(earned?.['0x27B5739e22ad9033bcBf192059122d163b60349D']?.realizedGains || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0)
 			+
-			(earned?.unrealizedGains || 0) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0),
+			format.toNormalizedValue(
+				format.BN(earned?.['0x27B5739e22ad9033bcBf192059122d163b60349D']?.unrealizedGains || 0), 18
+			) * (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0),
 			1
 		)
 	), [earned, vaults]);
+
+	console.warn(formatedYouEarned);
+	console.warn((earned?.unrealizedGains || 0), (vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0));
 
 	return (
 		<section className={'mt-4 grid w-full grid-cols-12 gap-y-10 pb-10 md:mt-20 md:gap-x-10 md:gap-y-20'}>
