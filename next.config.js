@@ -34,8 +34,8 @@ module.exports = (phase) => withPWA({
 		ALCHEMY_KEY: process.env.ALCHEMY_KEY,
 		INFURA_KEY: process.env.INFURA_KEY,
 
-		YDAEMON_BASE_URI: 'https://api.ycorpo.com',
-		// YDAEMON_BASE_URI: 'https://ydaemon.yearn.finance',
+		// YDAEMON_BASE_URI: 'https://api.ycorpo.com',
+		YDAEMON_BASE_URI: 'https://ydaemon.yearn.finance',
 		// YDAEMON_BASE_URI: 'http://localhost:8080',
 		BASE_YEARN_ASSETS_URI: 'https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/',
 
