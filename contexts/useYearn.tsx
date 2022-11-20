@@ -45,7 +45,6 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	**	apy.net_apy
 	***************************************************************************/
 	const {settings} = useSettings();
-	console.log(settings)
 	const	{data: yveCRVdata} = useSWR(`${settings.apiBaseURI}/v1/chains/1/vaults/all`, fetcherLegacy);
 	const	{data: prices} = useSWR(`${settings.yDaemonBaseURI}/1/prices/some/${process.env.YCRV_TOKEN_ADDRESS},${process.env.YCRV_CURVE_POOL_ADDRESS},${process.env.CRV_TOKEN_ADDRESS}?humanized=true`, baseFetcher);
 	const	{data} = useSWR(`${settings.yDaemonBaseURI}/1/vaults/all`, fetcher);
