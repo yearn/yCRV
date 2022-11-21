@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {Popover, Transition} from '@headlessui/react';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {AddToMetamask, Wallet} from '@yearn-finance/web-lib/icons';
-import {format, toAddress} from '@yearn-finance/web-lib/utils';
+import {format, TMetamaskInjectedProvider, toAddress} from '@yearn-finance/web-lib/utils';
 import {useWallet} from 'contexts/useWallet';
 
 export default function BalanceReminderPopover(): ReactElement {
@@ -12,7 +12,7 @@ export default function BalanceReminderPopover(): ReactElement {
 
 	async function addTokenToMetamask(address: string, symbol: string, decimals: number, image: string): Promise<void> {
 		try {
-			await provider.send('wallet_watchAsset', {
+			await (provider as TMetamaskInjectedProvider).send('wallet_watchAsset', {
 				type: 'ERC20',
 				options: {
 					address,
