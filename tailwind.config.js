@@ -24,6 +24,9 @@ module.exports = {
 			height: {
 				'inherit': 'inherit'
 			},
+			width: {
+				'22': '5.5rem'
+			},
 			screens: {
 				'lg': '1200px'
 			},
