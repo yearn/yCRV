@@ -55,11 +55,6 @@ function	Header(): ReactElement {
 							{'About'}
 						</p>
 					</Link>
-					<Link href={'/settings'}>
-						<p className={`yveCRV--nav-link ${router.pathname === '/settings' ? 'active' : '' }`}>
-							{'Settings'}
-						</p>
-					</Link>
 				</nav>
 				<div className={'flex w-1/3 md:hidden'}>
 					<button onClick={(): void => set_hasMobileMenu(true)}>
@@ -143,13 +138,6 @@ function	Header(): ReactElement {
 					<div className={'mobile-nav-item'} onClick={(): void => set_hasMobileMenu(false)}>
 						<p className={'font-bold'}>
 							{'About'}
-						</p>
-					</div>
-				</Link>
-				<Link href={'/settings'}>
-					<div className={'mobile-nav-item'} onClick={(): void => set_hasMobileMenu(false)}>
-						<p className={'font-bold'}>
-							{'Settings'}
 						</p>
 					</div>
 				</Link>

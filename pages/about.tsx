@@ -1,10 +1,50 @@
-import React, {ReactElement, useState} from 'react';
+import React, {ReactElement, useMemo, useState} from 'react';
 import {Button} from '@yearn-finance/web-lib/components';
+import {useSettings} from '@yearn-finance/web-lib/contexts';
 import {useWallet} from 'contexts/useWallet';
 
+type TWrappedInput = {
+	title: string;
+	initialValue: string;
+	onSave: (value: string) => void;
+}
+
+function	WrappedInput({title, initialValue, onSave}: TWrappedInput): ReactElement {
+	const	[isFocused, set_isFocused] = useState(false);
+	const	[value, set_value] = useState(initialValue);
+	const	isInitialValue = useMemo((): boolean => value === initialValue, [value, initialValue]);
+
+	return (
+		<label>
+			<p className={'pb-1 text-neutral-900'}>{title}</p>
+			<div className={'flex flex-row space-x-2'}>
+				<div data-focused={isFocused} className={'yearn--input relative w-full'}>
+					<input
+						onFocus={(): void => set_isFocused(true)}
+						onBlur={(): void => set_isFocused(false)}
+						className={'h-10 w-full overflow-x-scroll border-2 border-neutral-700 bg-neutral-0 p-2 outline-none scrollbar-none'}
+						placeholder={'Use default RPC'}
+						value={value}
+						type={'text'}
+						onChange={(e): void => set_value(e.target.value)}
+					/>
+				</div>
+				<Button
+					disabled={isInitialValue}
+					className={'w-full md:w-48'}
+					onClick={(): void => onSave(value)}>
+					{'Submit'}
+				</Button>
+			</div>
+		</label>
+	);
+}
+
 function	About(): ReactElement {
+	const	{onUpdateBaseSettings, onUpdateNetworks, settings: baseAPISettings} = useSettings();
 	const	{slippage, set_slippage} = useWallet();
 	const	[localSlippage, set_localSlippage] = useState(slippage);
+	const	[, set_nonce] = useState(0);
 
 	return (
 		<section className={'mt-4 grid w-full grid-cols-1 gap-10 pb-10 md:mt-20 md:grid-cols-2'}>
@@ -45,7 +85,6 @@ function	About(): ReactElement {
 				</div>
 			</div>
 
-
 			<div className={'w-full bg-neutral-100 p-10'}>
 				<div aria-label={'Better tokens, better yield'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'Better tokens,'}</h2>
@@ -64,7 +103,6 @@ function	About(): ReactElement {
 					<p className={'text-neutral-600'}>{'Whichever option you pick, rewards are auto claimed and auto compound - giving you supercharged yield without you having to lift a finger. After all, lazy yield is the best yield.'}</p>
 				</div>
 			</div>
-
 
 			<div className={'w-full bg-neutral-100 p-10'}>
 				<div aria-label={'“But ser... I have yveCRV and yvBOOST”'} className={'flex flex-col pb-6'}>
@@ -146,7 +184,6 @@ function	About(): ReactElement {
 				</div>
 			</div>
 
-
 			<div className={'w-full bg-neutral-100 p-10'}>
 				<div aria-label={'‘Mum... where do yields come from?’'} className={'flex flex-col pb-6'}>
 					<h2 className={'text-3xl font-bold'}>{'‘Mum... where do '}</h2>
@@ -170,6 +207,34 @@ function	About(): ReactElement {
 					</p>
 				</div>
 			</div>
+
+			<div className={'bg-neutral-100 p-10'}>
+				<div className={'flex w-full flex-row justify-between pb-6'}>
+					<h2 className={'text-3xl font-bold'}>{'Settings'}</h2>
+				</div>
+				<div className={'text-justify'}>
+					<p className={'pb-6'}>
+						{'This page allows you to configure the default settings for this application, such as the yDaemon API base URI and the default network.'}
+					</p>
+					<div className={'grid grid-cols-1 gap-4'}>
+						<WrappedInput
+							title={'yDaemon API URI'}
+							initialValue={baseAPISettings.yDaemonBaseURI}
+							onSave={(value): void => onUpdateBaseSettings({
+								...baseAPISettings,
+								yDaemonBaseURI: value
+							})} />
+						<WrappedInput
+							title={'Ethereum RPC endpoint'}
+							initialValue={''}
+							onSave={(value): void => {
+								onUpdateNetworks({1: {rpcURI: value}});
+								set_nonce((n: number): number => n + 1);
+							}} />
+					</div>
+				</div>
+			</div>
+
 		</section>
 	);
 }
