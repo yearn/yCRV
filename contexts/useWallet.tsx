@@ -11,6 +11,7 @@ import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
 import type * as TWalletTypes from 'contexts/useWallet.d';
 import type {TClaimable} from 'types/types';
+import useYearn from './useYearn';
 
 const	defaultProps = {
 	balances: {},
@@ -39,21 +40,24 @@ const	defaultData = {
 const	WalletContext = createContext<TWalletTypes.TWalletContext>(defaultProps);
 export const WalletContextApp = ({children}: {children: ReactElement}): ReactElement => {
 	const	[nonce] = useState<number>(0);
+	const	{prices} = useYearn();
 	const	{provider, address, isActive} = useWeb3();
 	const	{data, update: updateBalances, isLoading} = useBalances({
 		key: nonce,
 		provider: provider || providers.getProvider(1),
+		prices,
 		tokens: [
-			{token: process.env.YVBOOST_TOKEN_ADDRESS},
-			{token: process.env.YCRV_TOKEN_ADDRESS},
-			{token: process.env.YCRV_CURVE_POOL_ADDRESS},
-			{token: process.env.STYCRV_TOKEN_ADDRESS},
-			{token: process.env.LPYCRV_TOKEN_ADDRESS},
-			{token: process.env.YVECRV_TOKEN_ADDRESS},
-			{token: process.env.YVECRV_POOL_LP_ADDRESS},
-			{token: process.env.CRV_TOKEN_ADDRESS},
-			{token: process.env.THREECRV_TOKEN_ADDRESS}
-		]
+			{token: process.env.YVBOOST_TOKEN_ADDRESS as string},
+			{token: process.env.YCRV_TOKEN_ADDRESS as string},
+			{token: process.env.YCRV_CURVE_POOL_ADDRESS as string},
+			{token: process.env.STYCRV_TOKEN_ADDRESS as string},
+			{token: process.env.LPYCRV_TOKEN_ADDRESS as string},
+			{token: process.env.YVECRV_TOKEN_ADDRESS as string},
+			{token: process.env.YVECRV_POOL_LP_ADDRESS as string},
+			{token: process.env.CRV_TOKEN_ADDRESS as string},
+			{token: process.env.THREECRV_TOKEN_ADDRESS as string}
+		],
+		effectDependencies: []
 	});
 	const	[yveCRVClaimable, set_yveCRVClaimable] = useState<TClaimable>({raw: ethers.constants.Zero, normalized: 0});
 	const	[allowances, set_allowances] = useState<{[key: string]: BigNumber}>({[ethers.constants.AddressZero]: ethers.constants.Zero});
