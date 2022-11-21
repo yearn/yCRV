@@ -46,12 +46,11 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	**	we need to fetch the data from the API, especially to get the
 	**	apy.net_apy
 	***************************************************************************/
-
-	const {settings} = useSettings();
-	const	{data: yveCRVdata} = useSWR(`${settings.apiBaseURI}/v1/chains/1/vaults/all`, fetcherLegacy);
-	const	{data: prices} = useSWR(`${settings.yDaemonBaseURI}/1/prices/all`, baseFetcher);
-	const	{data} = useSWR(`${settings.yDaemonBaseURI}/1/vaults/all`, fetcher);
-	const	{data: yCRVHarvests} = useSWR(`${settings.yDaemonBaseURI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
+	const	{settings: webLibSettings} = useSettings();
+	const	{data: yveCRVdata} = useSWR(`${webLibSettings.apiBaseURI}/v1/chains/1/vaults/all`, fetcherLegacy);
+	const	{data: prices} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/prices/all`, baseFetcher);
+	const	{data} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/all`, fetcher);
+	const	{data: yCRVHarvests} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Setup and render the Context provider to use in the app.
