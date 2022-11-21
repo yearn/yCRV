@@ -1627,32 +1627,6 @@
     bech32 "1.1.4"
     ws "7.4.6"
 
-"@ethersproject/providers@5.7.1":
-  version "5.7.1"
-  resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.7.1.tgz#b0799b616d5579cd1067a8ebf1fc1ec74c1e122c"
-  integrity sha512-vZveG/DLyo+wk4Ga1yx6jSEHrLPgmTt+dFv0dv8URpVCRf0jVhalps1jq/emN/oXnMRsC7cQgAF32DcXLL7BPQ==
-  dependencies:
-    "@ethersproject/abstract-provider" "^5.7.0"
-    "@ethersproject/abstract-signer" "^5.7.0"
-    "@ethersproject/address" "^5.7.0"
-    "@ethersproject/base64" "^5.7.0"
-    "@ethersproject/basex" "^5.7.0"
-    "@ethersproject/bignumber" "^5.7.0"
-    "@ethersproject/bytes" "^5.7.0"
-    "@ethersproject/constants" "^5.7.0"
-    "@ethersproject/hash" "^5.7.0"
-    "@ethersproject/logger" "^5.7.0"
-    "@ethersproject/networks" "^5.7.0"
-    "@ethersproject/properties" "^5.7.0"
-    "@ethersproject/random" "^5.7.0"
-    "@ethersproject/rlp" "^5.7.0"
-    "@ethersproject/sha2" "^5.7.0"
-    "@ethersproject/strings" "^5.7.0"
-    "@ethersproject/transactions" "^5.7.0"
-    "@ethersproject/web" "^5.7.0"
-    bech32 "1.1.4"
-    ws "7.4.6"
-
 "@ethersproject/providers@5.7.2":
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.7.2.tgz#f8b1a4f275d7ce58cf0a2eec222269a08beb18cb"
@@ -3331,10 +3305,10 @@
     "@web3-react/types" "^8.0.20-beta.0"
     eventemitter3 "^4.0.7"
 
-"@yearn-finance/web-lib@^0.15.8":
-  version "0.15.8"
-  resolved "https://registry.yarnpkg.com/@yearn-finance/web-lib/-/web-lib-0.15.8.tgz#d0b33a46e1de3d214081c00ef0caf844eb04eef2"
-  integrity sha512-MAsimSjpFaEed37tL6gf5YvkJ+6eWpU5z2XtglDXMCB6vh2p41deXy8QC3AvFEwWyAVk0lhOoAuVFpyjKi8bxA==
+"@yearn-finance/web-lib@^0.16.3":
+  version "0.16.3"
+  resolved "https://registry.yarnpkg.com/@yearn-finance/web-lib/-/web-lib-0.16.3.tgz#1c61120769e4aeab54de8d3b0a53c16772aa4420"
+  integrity sha512-On+3AOZ+7oTEZohOSmkCryeNvG2i6n04qLtVr6egwugPx19M20D8iM52sKwtXvXDKVXbASZ8OWYnk+6Eghmckw==
   dependencies:
     "@coinbase/wallet-sdk" "^3.5.4"
     "@ethersproject/experimental" "^5.7.0"
@@ -5695,7 +5669,7 @@ ethers@5.3.1:
     "@ethersproject/web" "5.3.0"
     "@ethersproject/wordlists" "5.3.0"
 
-ethers@5.6.9, ethers@^5.6.8:
+ethers@5.6.9:
   version "5.6.9"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.6.9.tgz#4e12f8dfcb67b88ae7a78a9519b384c23c576a4d"
   integrity sha512-lMGC2zv9HC5EC+8r429WaWu3uWJUCgUCt8xxKCFqkrFuBDZXDYIdzDUECxzjf2BMF8IVBByY1EBoGSL3RTm8RA==
@@ -5731,7 +5705,7 @@ ethers@5.6.9, ethers@^5.6.8:
     "@ethersproject/web" "5.6.1"
     "@ethersproject/wordlists" "5.6.1"
 
-ethers@5.7.2, ethers@^5.7.2:
+ethers@5.7.2, ethers@^5.6.8, ethers@^5.7.0, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -5755,42 +5729,6 @@ ethers@5.7.2, ethers@^5.7.2:
     "@ethersproject/pbkdf2" "5.7.0"
     "@ethersproject/properties" "5.7.0"
     "@ethersproject/providers" "5.7.2"
-    "@ethersproject/random" "5.7.0"
-    "@ethersproject/rlp" "5.7.0"
-    "@ethersproject/sha2" "5.7.0"
-    "@ethersproject/signing-key" "5.7.0"
-    "@ethersproject/solidity" "5.7.0"
-    "@ethersproject/strings" "5.7.0"
-    "@ethersproject/transactions" "5.7.0"
-    "@ethersproject/units" "5.7.0"
-    "@ethersproject/wallet" "5.7.0"
-    "@ethersproject/web" "5.7.1"
-    "@ethersproject/wordlists" "5.7.0"
-
-ethers@^5.7.0:
-  version "5.7.1"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.1.tgz#48c83a44900b5f006eb2f65d3ba6277047fd4f33"
-  integrity sha512-5krze4dRLITX7FpU8J4WscXqADiKmyeNlylmmDLbS95DaZpBhDe2YSwRQwKXWNyXcox7a3gBgm/MkGXV1O1S/Q==
-  dependencies:
-    "@ethersproject/abi" "5.7.0"
-    "@ethersproject/abstract-provider" "5.7.0"
-    "@ethersproject/abstract-signer" "5.7.0"
-    "@ethersproject/address" "5.7.0"
-    "@ethersproject/base64" "5.7.0"
-    "@ethersproject/basex" "5.7.0"
-    "@ethersproject/bignumber" "5.7.0"
-    "@ethersproject/bytes" "5.7.0"
-    "@ethersproject/constants" "5.7.0"
-    "@ethersproject/contracts" "5.7.0"
-    "@ethersproject/hash" "5.7.0"
-    "@ethersproject/hdnode" "5.7.0"
-    "@ethersproject/json-wallets" "5.7.0"
-    "@ethersproject/keccak256" "5.7.0"
-    "@ethersproject/logger" "5.7.0"
-    "@ethersproject/networks" "5.7.1"
-    "@ethersproject/pbkdf2" "5.7.0"
-    "@ethersproject/properties" "5.7.0"
-    "@ethersproject/providers" "5.7.1"
     "@ethersproject/random" "5.7.0"
     "@ethersproject/rlp" "5.7.0"
     "@ethersproject/sha2" "5.7.0"
@@ -8573,13 +8511,6 @@ postcss-load-config@^3.1.4:
     lilconfig "^2.0.5"
     yaml "^1.10.2"
 
-postcss-nested@5.0.6:
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/postcss-nested/-/postcss-nested-5.0.6.tgz#466343f7fc8d3d46af3e7dba3fcd47d052a945bc"
-  integrity sha512-rKqm2Fk0KbA8Vt3AdGN0FB9OBOMDVajMG6ZCf/GoHgdxUJ4sBFp0A/uMIRm+MJUdo33YXEtjqIz8u7DAp8B7DA==
-  dependencies:
-    postcss-selector-parser "^6.0.6"
-
 postcss-nested@6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/postcss-nested/-/postcss-nested-6.0.0.tgz#1572f1984736578f360cffc7eb7dca69e30d1735"
@@ -8595,7 +8526,7 @@ postcss-nesting@^10.2.0:
     "@csstools/selector-specificity" "^2.0.0"
     postcss-selector-parser "^6.0.10"
 
-postcss-selector-parser@6.0.10, postcss-selector-parser@^6.0.10, postcss-selector-parser@^6.0.6:
+postcss-selector-parser@6.0.10, postcss-selector-parser@^6.0.10:
   version "6.0.10"
   resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.0.10.tgz#79b61e2c0d1bfc2602d549e11d0876256f8df88d"
   integrity sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==
@@ -8608,7 +8539,7 @@ postcss-value-parser@^4.0.0, postcss-value-parser@^4.2.0:
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-postcss@8.4.14, postcss@^8.4.14, postcss@^8.4.4:
+postcss@8.4.14, postcss@^8.4.4:
   version "8.4.14"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.14.tgz#ee9274d5622b4858c1007a74d76e42e56fd21caf"
   integrity sha512-E398TUmfAYFPBSdzgeieK2Y1+1cpdxJx8yXbK/m57nRhKSmk1GB2tO4lbLBtlkfPQTDKfe4Xqv1ASWPpayPEig==
@@ -9765,35 +9696,7 @@ synckit@^0.8.4:
     "@pkgr/utils" "^2.3.1"
     tslib "^2.4.0"
 
-tailwindcss@^3.1.3:
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.1.6.tgz#bcb719357776c39e6376a8d84e9834b2b19a49f1"
-  integrity sha512-7skAOY56erZAFQssT1xkpk+kWt2NrO45kORlxFPXUt3CiGsVPhH1smuH5XoDH6sGPXLyBv+zgCKA2HWBsgCytg==
-  dependencies:
-    arg "^5.0.2"
-    chokidar "^3.5.3"
-    color-name "^1.1.4"
-    detective "^5.2.1"
-    didyoumean "^1.2.2"
-    dlv "^1.1.3"
-    fast-glob "^3.2.11"
-    glob-parent "^6.0.2"
-    is-glob "^4.0.3"
-    lilconfig "^2.0.5"
-    normalize-path "^3.0.0"
-    object-hash "^3.0.0"
-    picocolors "^1.0.0"
-    postcss "^8.4.14"
-    postcss-import "^14.1.0"
-    postcss-js "^4.0.0"
-    postcss-load-config "^3.1.4"
-    postcss-nested "5.0.6"
-    postcss-selector-parser "^6.0.10"
-    postcss-value-parser "^4.2.0"
-    quick-lru "^5.1.1"
-    resolve "^1.22.1"
-
-tailwindcss@^3.2.1, tailwindcss@^3.2.2:
+tailwindcss@^3.1.3, tailwindcss@^3.2.1, tailwindcss@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.2.2.tgz#705f78cec8f4de2feb52abdb7a8a056e67f2d736"
   integrity sha512-c2GtSdqg+harR4QeoTmex0Ngfg8IIHNeLQH5yr2B9uZbZR1Xt1rYbjWOWTcj3YLTZhrmZnPowoQDbSRFyZHQ5Q==
