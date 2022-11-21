@@ -23,7 +23,7 @@ function	WrappedInput({title, caption, initialValue, onSave}: TWrappedInput): Re
 				<input
 					onFocus={(): void => set_isFocused(true)}
 					onBlur={(): void => set_isFocused(false)}
-					className={'h-10 w-full overflow-x-scroll p-2 outline-none scrollbar-none border-2 border-neutral-700 bg-neutral-0'}
+					className={'h-10 w-full overflow-x-scroll border-2 border-neutral-700 bg-neutral-0 p-2 outline-none scrollbar-none'}
 					placeholder={'Use default RPC'}
 					value={value}
 					type={'text'}
@@ -32,12 +32,12 @@ function	WrappedInput({title, caption, initialValue, onSave}: TWrappedInput): Re
 				<div className={`absolute inset-y-0 right-2 flex justify-center ${isInitialValue ? 'pointer-events-none opacity-0' : 'opacity-100'} transition-opacity`}>
 					<button
 						onClick={(): void => onSave(value)}
-						className={'flex h-8 yearn--button bg-neutral-900'}>
+						className={'yearn--button flex h-8 bg-neutral-900'}>
 						<p className={'text-sm text-neutral-0 '}>{'Save'}</p>
 					</button>
 				</div>
 			</div>
-			<p className={'mt-1 pl-2 text-xs transition-colors text-neutral-600'}>
+			<p className={'mt-1 pl-2 text-xs text-neutral-600 transition-colors'}>
 				{caption}
 			</p>
 		</label>
@@ -50,7 +50,7 @@ function	SectionRPCEndpoints(): ReactElement {
 	const	[, set_nonce] = useState(0);
 
 	return (
-		<Card className="bg-neutral-100 p-10">
+		<Card className={'bg-neutral-100 p-10'}>
 			<div className={'flex w-full flex-row justify-between pb-4'}>
 				<h2 className={'text-3xl font-bold'}>{'RPC Endpoints'}</h2>
 			</div>
@@ -105,7 +105,7 @@ function	SectionYearnAPIBaseURI(): ReactElement {
 	const	{onUpdateBaseSettings, settings: baseAPISettings} = useSettings();
 
 	return (
-		<Card className="bg-neutral-100 p-10">
+		<Card className={'bg-neutral-100 p-10'}>
 			<div className={'flex w-full flex-row justify-between pb-4'}>
 				<h2 className={'text-3xl font-bold'}>{'Yearn\'s APIs'}</h2>
 			</div>
