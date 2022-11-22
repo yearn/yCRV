@@ -19,7 +19,7 @@ import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapp
 function	CardZap(): ReactElement {
 	const	{isActive} = useWeb3();
 	const	{balances} = useWallet();
-	const	{vaults, ycrvPrice, ycrvCurvePoolPrice} = useYearn();
+	const	{vaults, crvPrice, ycrvPrice, ycrvCurvePoolPrice} = useYearn();
 	const	{
 		txStatusApprove, txStatusZap,
 		selectedOptionFrom, set_selectedOptionFrom,
@@ -158,11 +158,13 @@ function	CardZap(): ReactElement {
 					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
 							amount?.normalized || 0,
-							toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
-								? ycrvPrice || 0
-								: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
-									? ycrvCurvePoolPrice || 0
-									: balances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
+							toAddress(selectedOptionFrom.value) === toAddress(process.env.CRV_TOKEN_ADDRESS)
+								? crvPrice || 0
+								: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_TOKEN_ADDRESS)
+									? ycrvPrice || 0
+									: toAddress(selectedOptionFrom.value) === toAddress(process.env.YCRV_CURVE_POOL_ADDRESS)
+										? ycrvCurvePoolPrice || 0
+										: balances?.[toAddress(selectedOptionFrom.value)]?.normalizedPrice
 									|| vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price
 									|| 0
 						)}
