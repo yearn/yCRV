@@ -23,7 +23,7 @@ function	WrappedInput({title, initialValue, onSave}: TWrappedInput): ReactElemen
 						onFocus={(): void => set_isFocused(true)}
 						onBlur={(): void => set_isFocused(false)}
 						className={'h-10 w-full overflow-x-scroll border-2 border-neutral-700 bg-neutral-0 p-2 outline-none scrollbar-none'}
-						placeholder={'Use default RPC'}
+						placeholder={'Use default'}
 						value={value}
 						type={'text'}
 						onChange={(e): void => set_value(e.target.value)}
