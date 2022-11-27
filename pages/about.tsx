@@ -146,7 +146,7 @@ function	About(): ReactElement {
 							className={'text-neutral-900 underline'}
 							rel={'noreferrer'}>{'SecureRpc'}
 						</a>
-						{' rpc.'}
+						{'.'}
 					</p>
 					<p className={'text-neutral-600'}>
 						{'If the above sentence causes your brain to wrinkle and eyes to glaze over, then you do not need to worry about this step. '}
