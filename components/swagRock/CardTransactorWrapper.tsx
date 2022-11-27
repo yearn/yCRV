@@ -2,7 +2,7 @@ import React, {createContext, ReactElement, useCallback, useContext, useEffect, 
 import {BigNumber, ethers} from 'ethers';
 import useSWR from 'swr';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
-import {defaultTxStatus, performBatchedUpdates, providers, toAddress, Transaction} from '@yearn-finance/web-lib/utils';
+import {defaultTxStatus, format, performBatchedUpdates, providers, toAddress, Transaction} from '@yearn-finance/web-lib/utils';
 import {useWallet} from 'contexts/useWallet';
 import {useYearn} from 'contexts/useYearn';
 import {TDropdownOption, TNormalizedBN} from 'types/types';
@@ -57,7 +57,7 @@ function	CardTransactorContextApp({
 }): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
-	const	{vaults} = useYearn();
+	const	{vaults, styCRVExperimentalAPY} = useYearn();
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
@@ -204,8 +204,18 @@ function	CardTransactorContextApp({
 	** Set of memorized values to limit the number of re-rendering of the
 	** component.
 	**************************************************************************/
-	const	fromVaultAPY = useMemo((): string => getVaultAPY(vaults, selectedOptionFrom.value), [vaults, selectedOptionFrom]);
-	const	toVaultAPY = useMemo((): string => getVaultAPY(vaults, selectedOptionTo.value), [vaults, selectedOptionTo]);
+	const	fromVaultAPY = useMemo((): string => {
+		if (toAddress(selectedOptionFrom.value) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
+			return `APY ${format.amount(styCRVExperimentalAPY * 100, 2, 2)} %`;
+		}
+		return getVaultAPY(vaults, selectedOptionFrom.value);
+	}, [vaults, selectedOptionFrom, styCRVExperimentalAPY]);
+	const	toVaultAPY = useMemo((): string => {
+		if (toAddress(selectedOptionTo.value) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
+			return `APY ${format.amount(styCRVExperimentalAPY * 100, 2, 2)} %`;
+		}
+		return getVaultAPY(vaults, selectedOptionTo.value);
+	}, [vaults, selectedOptionTo, styCRVExperimentalAPY]);
 
 	const	expectedOutWithSlippage = useMemo((): number => getAmountWithSlippage(
 		selectedOptionFrom.value,

@@ -138,7 +138,7 @@ function	Harvests(): ReactElement {
 function	Stats(): ReactElement {
 	const	{provider} = useWeb3();
 	const	{balances} = useWallet();
-	const	{vaults, ycrvPrice} = useYearn();
+	const	{vaults, ycrvPrice, styCRVExperimentalAPY} = useYearn();
 	const	{curveWeeklyFees, cgPrices} = useCurve();
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -191,7 +191,7 @@ function	Stats(): ReactElement {
 	}, [provider]);
 	const	{data} = useSWR('numbers', numbersFetchers, {refreshInterval: 10000, shouldRetryOnError: false});
 
-	const	stCRVRawAPY = useMemo((): number => getVaultRawAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [vaults]);
+	const	stCRVRawAPY = useMemo((): number => (styCRVExperimentalAPY * 100) || getVaultRawAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [styCRVExperimentalAPY, vaults]);
 	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
 
 	const	formatBigNumberOver10K = useCallback((v: BigNumber): string => {

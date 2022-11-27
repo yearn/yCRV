@@ -48,9 +48,8 @@ function	MyApp(props: AppProps): ReactElement {
 	return (
 		<WithYearn
 			options={{
-				ui: {
-					shouldUseThemes: false
-				}
+				baseSettings: {yDaemonBaseURI: process.env.YDAEMON_BASE_URI as string},
+				ui: {shouldUseThemes: false}
 			}}>
 			<WalletContextApp>
 				<YearnContextApp>

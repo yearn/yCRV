@@ -141,10 +141,10 @@ function	About(): ReactElement {
 					<p className={'pb-4 text-neutral-600'}>
 						{'For advanced apes users worried about MEV we advise using '}
 						<a
-							href={'https://docs.flashbots.net/flashbots-protect/rpc/quick-start/'}
+							href={'https://securerpc.com/'}
 							target={'_blank'}
 							className={'text-neutral-900 underline'}
-							rel={'noreferrer'}>{'flashbots'}
+							rel={'noreferrer'}>{'SecureRpc'}
 						</a>
 						{' rpc.'}
 					</p>

@@ -11,6 +11,7 @@ export type	TYearnContext = {
 	crvPrice: number,
 	ycrvPrice: number,
 	ycrvCurvePoolPrice: number,
+	styCRVExperimentalAPY: number,
 	prices: TDict<string>,
 	yCRVHarvests: TYDaemonHarvests[],
 	vaults: TYearnVaultWrapper
@@ -19,6 +20,7 @@ const	defaultProps: TYearnContext = {
 	crvPrice: 0,
 	ycrvPrice: 0,
 	ycrvCurvePoolPrice: 0,
+	styCRVExperimentalAPY: 0,
 	prices: {},
 	yCRVHarvests: [],
 	vaults: {[ethers.constants.AddressZero]: undefined}
@@ -51,6 +53,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	const	{data: prices} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/prices/all`, baseFetcher);
 	const	{data} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/all`, fetcher);
 	const	{data: yCRVHarvests} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
+	const	{data: styCRVExperimentalAPY} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/apy/${process.env.STYCRV_TOKEN_ADDRESS}`, baseFetcher);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Setup and render the Context provider to use in the app.
@@ -60,6 +63,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 			value={{
 				yCRVHarvests,
 				prices,
+				styCRVExperimentalAPY,
 				crvPrice: format.toNormalizedValue((prices?.[toAddress(process.env.CRV_TOKEN_ADDRESS as string)] || 0), 6),
 				ycrvPrice: format.toNormalizedValue((prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS as string)] || 0), 6),
 				ycrvCurvePoolPrice: format.toNormalizedValue((prices?.[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string)] || 0), 6),

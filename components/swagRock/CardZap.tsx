@@ -130,7 +130,7 @@ function	CardZap(): ReactElement {
 				</label>
 				<div className={'flex flex-col space-y-1'}>
 					<p className={'text-base text-neutral-600'}>{'Amount'}</p>
-					<div className={'flex h-10 items-center bg-neutral-300 p-2'}>
+					<div aria-label={'input amount in token'} className={'flex h-10 items-center bg-neutral-300 p-2'}>
 						<div className={'flex h-10 flex-row items-center justify-between bg-neutral-300 py-4 px-0'}>
 							<input
 								className={`w-full overflow-x-scroll border-none bg-transparent py-4 px-0 font-bold outline-none scrollbar-none ${isActive ? '' : 'cursor-not-allowed'}`}
@@ -155,7 +155,7 @@ function	CardZap(): ReactElement {
 							</button>
 						</div>
 					</div>
-					<p className={'pl-2 text-xs font-normal text-neutral-600'}>
+					<p aria-label={'value in USD'} className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{getCounterValue(
 							amount?.normalized || 0,
 							toAddress(selectedOptionFrom.value) === toAddress(process.env.CRV_TOKEN_ADDRESS)
