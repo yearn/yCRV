@@ -11,18 +11,14 @@ export type	TYearnContext = {
 	crvPrice: number,
 	ycrvPrice: number,
 	ycrvCurvePoolPrice: number,
-	styCRVExperimentalAPY: number,
 	prices: TDict<string>,
-	yCRVHarvests: TYDaemonHarvests[],
 	vaults: TYearnVaultWrapper
 }
 const	defaultProps: TYearnContext = {
 	crvPrice: 0,
 	ycrvPrice: 0,
 	ycrvCurvePoolPrice: 0,
-	styCRVExperimentalAPY: 0,
 	prices: {},
-	yCRVHarvests: [],
 	vaults: {[ethers.constants.AddressZero]: undefined}
 };
 
@@ -51,9 +47,7 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	const	{settings: webLibSettings} = useSettings();
 	const	{data: yveCRVdata} = useSWR(`${webLibSettings.apiBaseURI}/v1/chains/1/vaults/all`, fetcherLegacy);
 	const	{data: prices} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/prices/all`, baseFetcher);
-	const	{data} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/all`, fetcher);
-	const	{data: yCRVHarvests} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
-	const	{data: styCRVExperimentalAPY} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/apy/${process.env.STYCRV_TOKEN_ADDRESS}`, baseFetcher);
+	const	{data: vaults} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/all`, fetcher);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Setup and render the Context provider to use in the app.
@@ -61,17 +55,15 @@ export const YearnContextApp = ({children}: {children: React.ReactElement}): Rea
 	return (
 		<YearnContext.Provider
 			value={{
-				yCRVHarvests,
 				prices,
-				styCRVExperimentalAPY,
 				crvPrice: format.toNormalizedValue((prices?.[toAddress(process.env.CRV_TOKEN_ADDRESS as string)] || 0), 6),
 				ycrvPrice: format.toNormalizedValue((prices?.[toAddress(process.env.YCRV_TOKEN_ADDRESS as string)] || 0), 6),
 				ycrvCurvePoolPrice: format.toNormalizedValue((prices?.[toAddress(process.env.YCRV_CURVE_POOL_ADDRESS as string)] || 0), 6),
 				vaults: {
 					[toAddress(process.env.YVECRV_TOKEN_ADDRESS)]: (yveCRVdata || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVECRV_TOKEN_ADDRESS)),
-					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
-					[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)),
-					[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: (data || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS))
+					[toAddress(process.env.YVBOOST_TOKEN_ADDRESS)]: (vaults || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.YVBOOST_TOKEN_ADDRESS)),
+					[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]: (vaults || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)),
+					[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]: (vaults || []).find((item: TYearnVault): boolean => toAddress(item.address) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS))
 				}
 			}}>
 			{children}

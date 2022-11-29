@@ -6,6 +6,7 @@ import Header from 'components/Header';
 import Meta from 'components/Meta';
 import {CurveContextApp} from 'contexts/useCurve';
 import {WalletContextApp} from 'contexts/useWallet';
+import {YCRVContextApp} from 'contexts/useYCRV';
 import {YearnContextApp} from 'contexts/useYearn';
 
 import	'../style.css';
@@ -53,15 +54,17 @@ function	MyApp(props: AppProps): ReactElement {
 			}}>
 			<WalletContextApp>
 				<YearnContextApp>
-					<CurveContextApp>
-						<>
-							<Meta />
-							<WithLayout
-								Component={Component}
-								pageProps={pageProps}
-								router={props.router} />
-						</>
-					</CurveContextApp>
+					<YCRVContextApp>
+						<CurveContextApp>
+							<>
+								<Meta />
+								<WithLayout
+									Component={Component}
+									pageProps={pageProps}
+									router={props.router} />
+							</>
+						</CurveContextApp>
+					</YCRVContextApp>
 				</YearnContextApp>
 			</WalletContextApp>
 		</WithYearn>

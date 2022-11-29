@@ -15,7 +15,6 @@ import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'utils/zapOptions';
 
 import CardTransactorContextApp, {useCardTransactor} from './CardTransactorWrapper';
 
-
 function	CardZap(): ReactElement {
 	const	{isActive} = useWeb3();
 	const	{balances} = useWallet();
