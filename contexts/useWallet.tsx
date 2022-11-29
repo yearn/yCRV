@@ -9,9 +9,10 @@ import {ABI, format, performBatchedUpdates, providers, toAddress} from '@yearn-f
 import {allowanceKey} from 'utils';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
+import useYearn from './useYearn';
+
 import type * as TWalletTypes from 'contexts/useWallet.d';
 import type {TClaimable} from 'types/types';
-import useYearn from './useYearn';
 
 const	defaultProps = {
 	balances: {},
