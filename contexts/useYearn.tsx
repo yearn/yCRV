@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import {useSettings} from '@yearn-finance/web-lib/contexts';
 import {format, TDict, toAddress} from '@yearn-finance/web-lib/utils';
 
-import type {TYDaemonHarvests, TYearnVault, TYearnVaultWrapper} from 'types/types';
+import type {TYearnVault, TYearnVaultWrapper} from 'types/types';
 
 export type	TYearnContext = {
 	crvPrice: number,
