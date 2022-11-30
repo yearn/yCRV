@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {defaultTxStatus, format, performBatchedUpdates, providers, toAddress, Transaction} from '@yearn-finance/web-lib/utils';
 import {useWallet} from 'contexts/useWallet';
+import {useYCRV} from 'contexts/useYCRV';
 import {useYearn} from 'contexts/useYearn';
 import {TDropdownOption, TNormalizedBN} from 'types/types';
 import {allowanceKey, getAmountWithSlippage, getVaultAPY} from 'utils';
@@ -57,7 +58,8 @@ function	CardTransactorContextApp({
 }): ReactElement {
 	const	{provider, isActive} = useWeb3();
 	const	{allowances, useWalletNonce, balances, refresh, slippage} = useWallet();
-	const	{vaults, styCRVExperimentalAPY} = useYearn();
+	const	{vaults} = useYearn();
+	const	{styCRVAPY} = useYCRV();
 	const	[txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const	[txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 	const	[selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
@@ -206,16 +208,17 @@ function	CardTransactorContextApp({
 	**************************************************************************/
 	const	fromVaultAPY = useMemo((): string => {
 		if (toAddress(selectedOptionFrom.value) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
-			return `APY ${format.amount(styCRVExperimentalAPY * 100, 2, 2)} %`;
+			return `APY ${format.amount(styCRVAPY, 2, 2)} %`;
 		}
 		return getVaultAPY(vaults, selectedOptionFrom.value);
-	}, [vaults, selectedOptionFrom, styCRVExperimentalAPY]);
+	}, [vaults, selectedOptionFrom, styCRVAPY]);
+
 	const	toVaultAPY = useMemo((): string => {
 		if (toAddress(selectedOptionTo.value) === toAddress(process.env.STYCRV_TOKEN_ADDRESS)) {
-			return `APY ${format.amount(styCRVExperimentalAPY * 100, 2, 2)} %`;
+			return `APY ${format.amount(styCRVAPY, 2, 2)} %`;
 		}
 		return getVaultAPY(vaults, selectedOptionTo.value);
-	}, [vaults, selectedOptionTo, styCRVExperimentalAPY]);
+	}, [vaults, selectedOptionTo, styCRVAPY]);
 
 	const	expectedOutWithSlippage = useMemo((): number => getAmountWithSlippage(
 		selectedOptionFrom.value,

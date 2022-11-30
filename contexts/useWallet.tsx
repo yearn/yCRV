@@ -6,10 +6,9 @@ import NProgress from 'nprogress';
 import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import {useBalances, useClientEffect} from '@yearn-finance/web-lib/hooks';
 import {ABI, format, performBatchedUpdates, providers, toAddress} from '@yearn-finance/web-lib/utils';
+import {useYearn} from 'contexts/useYearn';
 import {allowanceKey} from 'utils';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
-
-import useYearn from './useYearn';
 
 import type * as TWalletTypes from 'contexts/useWallet.d';
 import type {TClaimable} from 'types/types';

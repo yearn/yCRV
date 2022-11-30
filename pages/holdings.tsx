@@ -1,36 +1,31 @@
 import React, {ReactElement, useCallback, useMemo, useState} from 'react';
 import Image from 'next/image';
-import {Contract} from 'ethcall';
 import {BigNumber, ethers} from 'ethers';
-import useSWR from 'swr';
 import {Button} from '@yearn-finance/web-lib/components';
-import {useWeb3} from '@yearn-finance/web-lib/contexts';
 import IconLinkOut from '@yearn-finance/web-lib/icons/IconLinkOut';
-import {format, providers, toAddress, truncateHex} from '@yearn-finance/web-lib/utils';
+import {format, toAddress, truncateHex} from '@yearn-finance/web-lib/utils';
 import ValueAnimation from 'components/ValueAnimation';
 import {useCurve} from 'contexts/useCurve';
 import {useWallet} from 'contexts/useWallet';
+import {useYCRV} from 'contexts/useYCRV';
 import {useYearn} from 'contexts/useYearn';
 import {TYDaemonHarvests} from 'types/types';
-import {getCounterValue, getCounterValueRaw, getVaultAPY, getVaultRawAPY} from 'utils';
-import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
-import STYCRV_ABI from 'utils/abi/styCRV.abi';
-import YVECRV_ABI from 'utils/abi/yveCRV.abi';
+import {getCounterValue, getCounterValueRaw, getVaultAPY} from 'utils';
 
 function	Harvests(): ReactElement {
-	const	{yCRVHarvests} = useYearn();
+	const	{harvests} = useYCRV();
 	const	[category, set_category] = useState('all');
 
 	const	filteredHarvests = useMemo((): TYDaemonHarvests[] => {
-		const	_yCRVHarvests = [...(yCRVHarvests || [])];
+		const	_harvests = [...(harvests || [])];
 		if (category === 'st-yCRV') {
-			return _yCRVHarvests.filter((harvest): boolean => toAddress(harvest.vaultAddress) === toAddress(process.env.STYCRV_TOKEN_ADDRESS));
+			return _harvests.filter((harvest): boolean => toAddress(harvest.vaultAddress) === toAddress(process.env.STYCRV_TOKEN_ADDRESS));
 		}
 		if (category === 'lp-yCRV') {
-			return _yCRVHarvests.filter((harvest): boolean => toAddress(harvest.vaultAddress) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS));
+			return _harvests.filter((harvest): boolean => toAddress(harvest.vaultAddress) === toAddress(process.env.LPYCRV_TOKEN_ADDRESS));
 		}
-		return _yCRVHarvests;
-	}, [category, yCRVHarvests]);
+		return _harvests;
+	}, [category, harvests]);
 
 	return (
 		<div className={'col-span-12 flex w-full flex-col bg-neutral-100'}>
@@ -135,63 +130,12 @@ function	Harvests(): ReactElement {
 	);
 }
 
-function	Stats(): ReactElement {
-	const	{provider} = useWeb3();
+function	Holdings(): ReactElement {
 	const	{balances} = useWallet();
-	const	{vaults, ycrvPrice, styCRVExperimentalAPY} = useYearn();
+	const	{holdings, styCRVMegaBoost, styCRVAPY} = useYCRV();
+	const	{vaults, ycrvPrice} = useYearn();
 	const	{curveWeeklyFees, cgPrices} = useCurve();
 
-	/* 🔵 - Yearn Finance ******************************************************
-	** SWR hook to get the expected out for a given in/out pair with a specific
-	** amount. This hook is called every 10s or when amount/in or out changes.
-	** Calls the expectedOutFetcher callback.
-	**************************************************************************/
-	const numbersFetchers = useCallback(async (): Promise<{[key: string]: BigNumber}> => {
-		const	currentProvider = provider || providers.getProvider(1);
-		const	ethcallProvider = await providers.newEthCallProvider(currentProvider);
-
-		const	yCRVContract = new Contract(process.env.YCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	styCRVContract = new Contract(process.env.STYCRV_TOKEN_ADDRESS as string, STYCRV_ABI);
-		const	lpyCRVContract = new Contract(process.env.LPYCRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	yveCRVContract = new Contract(process.env.YVECRV_TOKEN_ADDRESS as string, YVECRV_ABI);
-		const	veEscrowContract = new Contract(process.env.VECRV_ADDRESS as string, YVECRV_ABI);
-		const	crvYCRVLpContract = new Contract(process.env.YCRV_CURVE_POOL_ADDRESS as string, CURVE_CRV_YCRV_LP_ABI);
-
-		const	[
-			yveCRVTotalSupply,
-			yveCRVInYCRV,
-			veCRVBalance,
-			veCRVTotalSupply,
-			yCRVTotalSupply,
-			styCRVTotalSupply,
-			lpyCRVTotalSupply,
-			crvYCRVPeg
-		] = await ethcallProvider.tryAll([
-			yveCRVContract.totalSupply(),
-			yveCRVContract.balanceOf(process.env.YCRV_TOKEN_ADDRESS),
-			veEscrowContract.balanceOf(process.env.VECRV_YEARN_TREASURY_ADDRESS),
-			veEscrowContract.totalSupply(),
-			yCRVContract.totalSupply(),
-			styCRVContract.totalAssets(),
-			lpyCRVContract.totalSupply(),
-			crvYCRVLpContract.get_dy(1, 0, ethers.constants.WeiPerEther)
-		]) as [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
-
-		return ({
-			['legacy']: yveCRVTotalSupply.sub(yveCRVInYCRV),
-			['treasury']: veCRVBalance.sub(yveCRVTotalSupply.sub(yveCRVInYCRV)).sub(yCRVTotalSupply),
-			['yCRVSupply']: yCRVTotalSupply,
-			['styCRVSupply']: styCRVTotalSupply,
-			['lpyCRVSupply']: lpyCRVTotalSupply,
-			['crvYCRVPeg']: crvYCRVPeg,
-			['boostMultiplier']: veCRVBalance.mul(1e4).div(styCRVTotalSupply),
-			['veCRVTotalSupply']: veCRVTotalSupply,
-			[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)]: veCRVBalance
-		});
-	}, [provider]);
-	const	{data} = useSWR('numbers', numbersFetchers, {refreshInterval: 10000, shouldRetryOnError: false});
-
-	const	stCRVRawAPY = useMemo((): number => (styCRVExperimentalAPY * 100) || getVaultRawAPY(vaults, process.env.STYCRV_TOKEN_ADDRESS as string), [styCRVExperimentalAPY, vaults]);
 	const	lpCRVAPY = useMemo((): string => getVaultAPY(vaults, process.env.LPYCRV_TOKEN_ADDRESS as string), [vaults]);
 
 	const	formatBigNumberOver10K = useCallback((v: BigNumber): string => {
@@ -209,10 +153,10 @@ function	Stats(): ReactElement {
 	}, []);
 
 	const	formatedYearnHas = useMemo((): string => (
-		data?.[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)] ?
-			format.amount(format.toNormalizedValue(data[toAddress(process.env.VECRV_YEARN_TREASURY_ADDRESS)], 18), 0, 0)
+		holdings?.veCRVBalance ?
+			format.amount(format.toNormalizedValue(holdings.veCRVBalance, 18), 0, 0)
 			: ''
-	), [data]);
+	), [holdings]);
 
 	const	formatedYouHave = useMemo((): string => (
 		getCounterValueRaw(
@@ -234,18 +178,14 @@ function	Stats(): ReactElement {
 	const	currentVeCRVAPY = useMemo((): number => {
 		return (
 			latestCurveFeesValue / (
-				format.toNormalizedValue(format.BN(data?.veCRVTotalSupply), 18) * cgPrices?.['curve-dao-token'].usd
+				format.toNormalizedValue(format.BN(holdings?.veCRVTotalSupply), 18) * cgPrices?.['curve-dao-token'].usd
 			) * 52 * 100
 		);
-	}, [data, latestCurveFeesValue, cgPrices]);
+	}, [holdings, latestCurveFeesValue, cgPrices]);
 
 	const	curveAdminFeePercent = useMemo((): number => {
-		return (
-			currentVeCRVAPY
-			*
-			Number(data?.boostMultiplier) / 10000
-		);
-	}, [data, currentVeCRVAPY]);
+		return (currentVeCRVAPY * Number(holdings?.boostMultiplier) / 10000);
+	}, [holdings, currentVeCRVAPY]);
 
 	return (
 		<section className={'mt-4 grid w-full grid-cols-12 gap-y-10 pb-10 md:mt-20 md:gap-x-10 md:gap-y-20'}>
@@ -273,32 +213,40 @@ function	Stats(): ReactElement {
 				<div className={'w-full bg-neutral-100 p-6 md:w-[412px] md:min-w-[412px]'}>
 					<div className={'grid w-full gap-6 md:col-span-5'}>
 						<div>
-							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
-								{data?.treasury ? `${formatBigNumberOver10K(data?.treasury || 0)} ` : '- '}
+							<b
+								suppressHydrationWarning
+								className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
+								{holdings?.treasury ? `${formatBigNumberOver10K(holdings?.treasury || 0)} ` : '- '}
 								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'veCRV'}</span>
 							</b>
 							<p className={'text-lg text-neutral-500'}>{'Yearn Treasury'}</p>
 						</div>
 						<div>
-							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
-								{data?.legacy ? `${formatBigNumberOver10K(data?.legacy || 0)} ` : '- '}
+							<b
+								suppressHydrationWarning
+								className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
+								{holdings?.legacy ? `${formatBigNumberOver10K(holdings?.legacy || 0)} ` : '- '}
 								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'yveCRV'}</span>
 							</b>
 							<p className={'text-lg text-neutral-500'}>{'Legacy system'}</p>
 						</div>
 						<div>
-							<b className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
-								{data?.yCRVSupply ? `${formatBigNumberOver10K(data?.yCRVSupply || 0)} ` : '- '}
+							<b
+								suppressHydrationWarning
+								className={'pb-2 text-3xl tabular-nums text-neutral-900'}>
+								{holdings?.yCRVSupply ? `${formatBigNumberOver10K(holdings?.yCRVSupply || 0)} ` : '- '}
 								<span className={'text-base tabular-nums text-neutral-600 md:text-3xl md:text-neutral-900'}>{'yCRV'}</span>
 							</b>
 
-							<p className={'text-lg text-neutral-500'}>
+							<p
+								suppressHydrationWarning
+								className={'text-lg text-neutral-500'}>
 								{`(Price = $${(
 									ycrvPrice ? format.amount(ycrvPrice, 2, 2) : '0.00'
 								)} | Peg = ${(
-									data?.crvYCRVPeg ? (
+									holdings?.crvYCRVPeg ? (
 										format.amount(
-											(format.toNormalizedValue(data?.crvYCRVPeg || ethers.constants.Zero, 18) + 0.0015) * 100, 2, 2)
+											(format.toNormalizedValue(holdings?.crvYCRVPeg || ethers.constants.Zero, 18) + 0.0015) * 100, 2, 2)
 									): '0.0000'
 								)}%)`}
 							</p>
@@ -324,34 +272,44 @@ function	Stats(): ReactElement {
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
-							<b className={'text-base tabular-nums text-neutral-900'}>
-								{stCRVRawAPY ? `${format.amount(stCRVRawAPY, 2, 2)}%*` : '0.00%'}
+							<b
+								suppressHydrationWarning
+								className={'text-base tabular-nums text-neutral-900'}>
+								{styCRVAPY ? `${format.amount(styCRVAPY, 2, 2)}%*` : '0.00%'}
 							</b>
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Total Assets: '}</span>
-							<p className={'text-base tabular-nums text-neutral-900'}>
-								{data?.styCRVSupply ? getCounterValue(
-									format.toNormalizedValue(data?.styCRVSupply || ethers.constants.Zero, 18),
+							<p
+								suppressHydrationWarning
+								className={'text-base tabular-nums text-neutral-900'}>
+								{holdings?.styCRVSupply ? getCounterValue(
+									format.toNormalizedValue(holdings.styCRVSupply || ethers.constants.Zero, 18),
 									vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
 								) : '0.00'}
 							</p>
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'yCRV Deposits: '}</span>
-							<p className={'text-base tabular-nums text-neutral-900'}>
-								{data?.styCRVSupply ? `${formatBigNumberOver10K(data?.styCRVSupply || 0)} ` : '0.00'}
+							<p
+								suppressHydrationWarning
+								className={'text-base tabular-nums text-neutral-900'}>
+								{holdings?.styCRVSupply ? `${formatBigNumberOver10K(holdings?.styCRVSupply || 0)} ` : '0.00'}
 							</p>
 						</div>
 						<div className={'flex flex-row items-baseline justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'My Balance: '}</span>
 							<div>
-								<p className={'text-base tabular-nums text-neutral-900'}>
+								<p
+									suppressHydrationWarning
+									className={'text-base tabular-nums text-neutral-900'}>
 									{balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized ? (
 										formatNumberOver10K(balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized || 0)
 									) : '0.00'}
 								</p>
-								<p className={'text-xs tabular-nums text-neutral-600'}>
+								<p
+									suppressHydrationWarning
+									className={'text-xs tabular-nums text-neutral-600'}>
 									{balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)] ? getCounterValue(
 										balances[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.normalized,
 										vaults?.[toAddress(process.env.STYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
@@ -370,34 +328,44 @@ function	Stats(): ReactElement {
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'mr-auto inline font-normal text-neutral-400 md:hidden'}>{'APY: '}</span>
-							<b className={'text-base tabular-nums text-neutral-900'}>
+							<b
+								suppressHydrationWarning
+								className={'text-base tabular-nums text-neutral-900'}>
 								{lpCRVAPY ? `${(lpCRVAPY || '').replace('APY', '')}` : '0.00%'}
 							</b>
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'Total Assets: '}</span>
-							<p className={'text-base tabular-nums text-neutral-900'}>
-								{data?.lpyCRVSupply ? getCounterValue(
-									format.toNormalizedValue(data?.lpyCRVSupply || ethers.constants.Zero, 18),
+							<p
+								suppressHydrationWarning
+								className={'text-base tabular-nums text-neutral-900'}>
+								{holdings?.lpyCRVSupply ? getCounterValue(
+									format.toNormalizedValue(holdings?.lpyCRVSupply || ethers.constants.Zero, 18),
 									vaults?.[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
 								) : '0.00'}
 							</p>
 						</div>
 						<div className={'flex flex-row items-center justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'yCRV Deposits: '}</span>
-							<p className={'text-base tabular-nums text-neutral-900'}>
-								{data?.lpyCRVSupply ? `${formatBigNumberOver10K(data?.lpyCRVSupply || 0)} ` : '0.00'}
+							<p
+								suppressHydrationWarning
+								className={'text-base tabular-nums text-neutral-900'}>
+								{holdings?.lpyCRVSupply ? `${formatBigNumberOver10K(holdings?.lpyCRVSupply || 0)} ` : '0.00'}
 							</p>
 						</div>
 						<div className={'flex flex-row items-baseline justify-between'}>
 							<span className={'inline text-sm font-normal text-neutral-400 md:hidden'}>{'My Balance: '}</span>
 							<div>
-								<p className={'text-base tabular-nums text-neutral-900'}>
+								<p
+									suppressHydrationWarning
+									className={'text-base tabular-nums text-neutral-900'}>
 									{balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized ? (
 										formatNumberOver10K(balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized || 0)
 									) : '0.00'}
 								</p>
-								<p className={'text-xs tabular-nums text-neutral-600'}>
+								<p
+									suppressHydrationWarning
+									className={'text-xs tabular-nums text-neutral-600'}>
 									{balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)] ? getCounterValue(
 										balances[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.normalized,
 										vaults?.[toAddress(process.env.LPYCRV_TOKEN_ADDRESS)]?.tvl?.price || 0
@@ -446,14 +414,25 @@ function	Stats(): ReactElement {
 					</div>
 
 					<div>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
-							{stCRVRawAPY ? `*${format.amount(stCRVRawAPY, 2, 2)}% APY: ` : '*0.00% APY: '}
+						<p
+							suppressHydrationWarning
+							className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
+							{styCRVAPY ? `*${format.amount(styCRVAPY, 2, 2)}% APY: ` : '*0.00% APY: '}
 						</p>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
-							{`∙ ${curveAdminFeePercent ? format.amount(curveAdminFeePercent, 2, 2) : '0.00'}% Curve Admin Fees (${format.amount(Number(data?.boostMultiplier) / 10000, 2, 2)}x boost)`}
+						<p
+							suppressHydrationWarning
+							className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
+							{`∙ ${curveAdminFeePercent ? format.amount(curveAdminFeePercent, 2, 2) : '0.00'}% Curve Admin Fees (${format.amount(Number(holdings?.boostMultiplier) / 10000, 2, 2)}x boost)`}
 						</p>
-						<p className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
-							{`∙ ${stCRVRawAPY && curveAdminFeePercent ? format.amount(stCRVRawAPY - curveAdminFeePercent, 2, 2) : '0.00'}% Gauge Voting Bribes`}
+						<p
+							suppressHydrationWarning
+							className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
+							{`∙ ${styCRVAPY && curveAdminFeePercent ? format.amount(styCRVAPY - curveAdminFeePercent, 2, 2) : '0.00'}% Gauge Voting Bribes`}
+						</p>
+						<p
+							suppressHydrationWarning
+							className={'text-sm tabular-nums text-neutral-400 md:text-base'}>
+							{`∙ ${styCRVMegaBoost ? format.amount(styCRVMegaBoost * 100, 2, 2) : '0.00'}% Mega Boost`}
 						</p>
 					</div>
 				</div>
@@ -465,4 +444,4 @@ function	Stats(): ReactElement {
 	);
 }
 
-export default Stats;
+export default Holdings;
