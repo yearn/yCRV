@@ -9,7 +9,7 @@ import CURVE_CRV_YCRV_LP_ABI from 'utils/abi/curveCrvYCrvLp.abi';
 import STYCRV_ABI from 'utils/abi/styCRV.abi';
 import YVECRV_ABI from 'utils/abi/yveCRV.abi';
 
-import type {TYDaemonHarvests} from 'types/types';
+import type {TYDaemonHarvests, TYearnVault} from 'types/types';
 
 type THoldings = {
 	legacy: BigNumber;
@@ -56,7 +56,8 @@ const	YCRVContext = createContext<TYCRVContext>(defaultProps);
 export const YCRVContextApp = ({children}: {children: ReactElement}): ReactElement => {
 	const	{provider} = useWeb3();
 	const	{settings: webLibSettings} = useSettings();
-	const	{data: styCRVExperimentalAPY} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/apy/${process.env.STYCRV_TOKEN_ADDRESS}`, baseFetcher);
+	// const	{data: styCRVExperimentalAPY} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/apy/${process.env.STYCRV_TOKEN_ADDRESS}`, baseFetcher);
+	const	{data: vault} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/${process.env.STYCRV_TOKEN_ADDRESS}`, baseFetcher);
 	const	{data: yCRVHarvests} = useSWR(`${webLibSettings.yDaemonBaseURI}/1/vaults/harvests/${process.env.STYCRV_TOKEN_ADDRESS},${process.env.LPYCRV_TOKEN_ADDRESS}`, baseFetcher);
 
 	/* 🔵 - Yearn Finance ******************************************************
@@ -127,8 +128,8 @@ export const YCRVContextApp = ({children}: {children: ReactElement}): ReactEleme
 	** Compute the styCRV APY based on the experimental APY and the mega boost.
 	**************************************************************************/
 	const	styCRVAPY = useMemo((): number => {
-		return (styCRVExperimentalAPY * 100) + (styCRVMegaBoost * 100);
-	}, [styCRVExperimentalAPY, styCRVMegaBoost]);
+		return (((vault as TYearnVault)?.apy?.net_apy || 0) * 100) + (styCRVMegaBoost * 100);
+	}, [vault, styCRVMegaBoost]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	**	Setup and render the Context provider to use in the app.
