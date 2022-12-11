@@ -1,8 +1,11 @@
-import React, {ReactElement} from 'react';
-import {Button} from '@yearn-finance/web-lib/components';
-import {useClientEffect} from '@yearn-finance/web-lib/hooks';
-import CardMigrateLegacy from 'components/swagRock/CardMigrateLegacy';
-import CardZap from 'components/swagRock/CardZap';
+import React from 'react';
+import {Button} from '@yearn-finance/web-lib/components/Button';
+import {useClientEffect} from '@yearn-finance/web-lib/hooks/useClientEffect';
+import CardMigrateLegacy from '@yCRV/components/CardMigrateLegacy';
+import CardZap from '@yCRV/components/CardZap';
+import Wrapper from '@yCRV/Wrapper';
+
+import type {ReactElement} from 'react';
 
 function	TextAnimation(): ReactElement {
 	function	onStartAnimation(): void {
@@ -117,5 +120,9 @@ function	Index(): ReactElement {
 		</>
 	);
 }
+
+Index.getLayout = function getLayout(page: ReactElement): ReactElement {
+	return <Wrapper>{page}</Wrapper>;
+};
 
 export default Index;

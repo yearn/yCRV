@@ -1,6 +1,8 @@
-import React, {cloneElement, Fragment, ReactElement, useRef} from 'react';
+import React, {cloneElement, Fragment, useRef} from 'react';
 import {Menu, Transition} from '@headlessui/react';
-import IconChevron from 'components/icons/IconChevron';
+import IconChevron from '@common/icons/IconChevron';
+
+import type {ReactElement} from 'react';
 
 export type TDropdownGaugeOption = {
 	icon?: ReactElement;

@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, {ReactElement, ReactNode, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {usePagination, useSortBy, useTable} from 'react-table';
 import Link from 'next/link';
-import {Chevron} from '@yearn-finance/web-lib/icons';
-import {format} from '@yearn-finance/web-lib/utils';
-import IconChevronPlain from 'components/icons/IconChevronPlain';
+import IconChevron from '@yearn-finance/web-lib/icons/IconChevron';
+import {formatAmount} from '@yearn-finance/web-lib/utils/format.number';
+
+import type {ReactElement, ReactNode} from 'react';
 
 type	TWorkLogs = {
 	asset: string,
@@ -43,7 +43,7 @@ function	ListOfVaults(): ReactElement {
 		// 	date: format.date(Number(log.time) * 1000, true),
 		// 	jobName: 'Unverified Job',
 		// 	earnedKp3r: format.toNormalizedAmount(log.earned, 18),
-		// 	earnedUsd: format.amount(format.toNormalizedValue(log.earned, 18) * (10), 2, 2),
+		// 	earnedUsd: formatAmount(format.toNormalizedValue(log.earned, 18) * (10), 2, 2),
 		// 	fees: format.toNormalizedAmount(log.fees, 18),
 		// 	linkOut: 'log.job'
 		// }))
@@ -56,28 +56,28 @@ function	ListOfVaults(): ReactElement {
 			accessor: 'tvl',
 			className: 'cell-end pr-8',
 			sortType: 'basic',
-			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+			Cell: ({value}: {value: number}): ReactNode => formatAmount(value, 2, 2)
 		},
 		{
 			Header: 'Total incoming rewards',
 			accessor: 'tir',
 			className: 'cell-end pr-8',
 			sortType: 'basic',
-			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+			Cell: ({value}: {value: number}): ReactNode => formatAmount(value, 2, 2)
 		},
 		{
 			Header: 'Available to stake',
 			accessor: 'availableToStake',
 			className: 'cell-end pr-8',
 			sortType: 'basic',
-			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+			Cell: ({value}: {value: number}): ReactNode => formatAmount(value, 2, 2)
 		},
 		{
 			Header: 'Staked',
 			accessor: 'staked',
 			className: 'cell-end pr-20',
 			sortType: 'basic',
-			Cell: ({value}: {value: number}): ReactNode => format.amount(value, 2, 2)
+			Cell: ({value}: {value: number}): ReactNode => formatAmount(value, 2, 2)
 
 		},
 		{
@@ -114,10 +114,10 @@ function	ListOfVaults(): ReactElement {
 	
 	function	renderPreviousChevron(): ReactElement {
 		if (!canPreviousPage) {
-			return (<Chevron className={'h-4 w-4 cursor-not-allowed opacity-50'} />);
+			return (<IconChevron className={'h-4 w-4 cursor-not-allowed opacity-50'} />);
 		}
 		return (
-			<Chevron
+			<IconChevron
 				className={'h-4 w-4 cursor-pointer'}
 				onClick={previousPage} />
 		);
@@ -125,10 +125,10 @@ function	ListOfVaults(): ReactElement {
 
 	function	renderNextChevron(): ReactElement {
 		if (!canNextPage) {
-			return (<Chevron className={'h-4 w-4 rotate-180 cursor-not-allowed opacity-50'} />);
+			return (<IconChevron className={'h-4 w-4 rotate-180 cursor-not-allowed opacity-50'} />);
 		}
 		return (
-			<Chevron
+			<IconChevron
 				className={'h-4 w-4 rotate-180 cursor-pointer'}
 				onClick={nextPage} />
 		);
@@ -164,9 +164,9 @@ function	ListOfVaults(): ReactElement {
 											<div className={'ml-1'}>
 												{column.isSorted
 													? column.isSortedDesc
-														? <IconChevronPlain className={'h-4 w-4 cursor-pointer text-neutral-500'} />
-														: <IconChevronPlain className={'h-4 w-4 rotate-180 cursor-pointer text-neutral-500'} />
-													: <IconChevronPlain className={'h-4 w-4 cursor-pointer text-neutral-300 transition-colors hover:text-neutral-500'} />}
+														? <IconChevron className={'h-4 w-4 cursor-pointer text-neutral-500'} />
+														: <IconChevron className={'h-4 w-4 rotate-180 cursor-pointer text-neutral-500'} />
+													: <IconChevron className={'h-4 w-4 cursor-pointer text-neutral-300 transition-colors hover:text-neutral-500'} />}
 											</div>
 										) : null}
 									</div>
