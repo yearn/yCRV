@@ -7,8 +7,8 @@ import {
 	STYCRV_TOKEN_ADDRESS
 } from '@yearn-finance/web-lib/utils/constants';
 import {useFetch} from '@common/hooks/useFetch';
+import {useYDaemonBaseURI} from '@common/hooks/useYDaemonBaseURI';
 import {yDaemonVaultHarvestsSchema, yDaemonVaultSchema} from '@common/schemas/yDaemonVaultsSchemas';
-import {useYDaemonBaseURI} from '@common/utils/getYDaemonBaseURI';
 
 import type {TCRVHoldings} from 'apps/useHoldingsHook';
 import type {ReactElement} from 'react';
