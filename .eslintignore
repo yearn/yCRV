@@ -1,0 +1,5 @@
+# Auto Generated PWA files
+public/sw*
+public/workbox*
+ipfs/*
+public/worker*
