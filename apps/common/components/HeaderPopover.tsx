@@ -1,9 +1,10 @@
 import {cloneElement, Fragment, useState} from 'react';
 import Link from 'next/link';
 import {Popover, Transition} from '@headlessui/react';
-import {LogoYearn} from '@common/icons/LogoYearn';
+import {YCRV_TOKEN_ADDRESS} from '@yearn-finance/web-lib/utils/constants';
 
 import {APPS} from './HeaderPopover.apps';
+import {ImageWithFallback} from './ImageWithFallback';
 
 import type {ReactElement} from 'react';
 
@@ -18,10 +19,14 @@ function LogoPopover(): ReactElement {
 			<Popover.Button className={'flex items-center'}>
 				<Link href={'/'}>
 					<span className={'sr-only'}>{'Back to home'}</span>
-					<LogoYearn
+					<ImageWithFallback
+						alt={'yCRV'}
 						className={'h-8 w-8'}
-						back={'text-neutral-900'}
-						front={'text-neutral-0'}
+						width={64}
+						height={64}
+						src={`${process.env.SMOL_ASSETS_URL}/token/1/${YCRV_TOKEN_ADDRESS}/logo-128.png`}
+						loading={'eager'}
+						priority
 					/>
 				</Link>
 			</Popover.Button>
