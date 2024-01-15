@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {useYCRV} from 'apps/useYCRV';
+import {useYCRV} from 'app/contexts/useYCRV';
 import {Button} from '@yearn-finance/web-lib/components/Button';
 import {
 	LPYCRV_V2_TOKEN_ADDRESS,

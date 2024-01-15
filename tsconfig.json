@@ -3,8 +3,7 @@
 		"rootDirs": ["."],
 		"baseUrl": ".",
 		"paths": {
-			"@common/*": ["apps/common/*"],
-			"@yCRV/*": ["apps/ycrv/*"]
+			"@yCRV/*": ["app/ycrv/*"]
 		},
 		/* Basic Options */
 		"target": "esnext",

@@ -1,8 +1,14 @@
 import {Fragment, useMemo} from 'react';
-import {WithCardTransactor} from 'apps/components/CardZap';
-import {Harvests} from 'apps/components/Harvests';
-import {VaultsListInternalMigrationRow} from 'apps/components/VaultsListInternalMigrationRow';
-import {useYCRV} from 'apps/useYCRV';
+import {WithCardTransactor} from 'app/components/CardZap';
+import {ValueAnimation} from 'app/components/common/ValueAnimation';
+import {Harvests} from 'app/components/Harvests';
+import {VaultsListInternalMigrationRow} from 'app/components/VaultsListInternalMigrationRow';
+import {useCurve} from 'app/contexts/useCurve';
+import {useYCRV} from 'app/contexts/useYCRV';
+import {useBalance} from 'app/hooks/useBalance';
+import {useTokenPrice} from 'app/hooks/useTokenPrice';
+import {getVaultAPR} from 'app/utils';
+import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
 import {cl} from '@yearn-finance/web-lib/utils/cl';
 import {
 	LPYCRV_TOKEN_ADDRESS,
@@ -13,12 +19,6 @@ import {
 import {formatBigNumberOver10K, formatToNormalizedValue, toBigInt} from '@yearn-finance/web-lib/utils/format.bigNumber';
 import {formatAmount, formatNumberOver10K, formatPercent} from '@yearn-finance/web-lib/utils/format.number';
 import {formatCounterValue, formatCounterValueRaw} from '@yearn-finance/web-lib/utils/format.value';
-import {ValueAnimation} from '@common/components/ValueAnimation';
-import {useCurve} from '@common/contexts/useCurve';
-import {useYearn} from '@common/contexts/useYearn';
-import {useBalance} from '@common/hooks/useBalance';
-import {useTokenPrice} from '@common/hooks/useTokenPrice';
-import {getVaultAPR} from '@common/utils';
 
 import type {ReactElement} from 'react';
 

@@ -1,19 +1,20 @@
 import React, {memo} from 'react';
 import localFont from 'next/font/local';
 import {useRouter} from 'next/router';
-import {YCRVContextApp} from 'apps/useYCRV';
+import AppHeader from 'app/components/common/Header';
+import {CurveContextApp} from 'app/contexts/useCurve';
+import {YCRVContextApp} from 'app/contexts/useYCRV';
+import manifest from 'public/manifest.json';
 import {AnimatePresence, motion} from 'framer-motion';
 import {Analytics} from '@vercel/analytics/react';
 import {arbitrum, base, fantom, mainnet, optimism, polygon} from '@wagmi/chains';
+import Meta from '@yearn-finance/web-lib/components/Meta';
+import {WalletContextApp} from '@yearn-finance/web-lib/contexts/useWallet';
+import {YearnContextApp} from '@yearn-finance/web-lib/contexts/useYearn';
 import {WithYearn} from '@yearn-finance/web-lib/contexts/WithYearn';
 import {cl} from '@yearn-finance/web-lib/utils/cl';
+import {motionVariants} from '@yearn-finance/web-lib/utils/helpers';
 import {localhost} from '@yearn-finance/web-lib/utils/wagmi/networks';
-import AppHeader from '@common/components/Header';
-import Meta from '@common/components/Meta';
-import {CurveContextApp} from '@common/contexts/useCurve';
-import {WalletContextApp} from '@common/contexts/useWallet';
-import {YearnContextApp} from '@common/contexts/useYearn';
-import {variants} from '@common/utils/animations';
 
 import type {AppProps} from 'next/app';
 import type {ReactElement} from 'react';
@@ -48,7 +49,7 @@ function AppWrapper(props: AppProps): ReactElement {
 
 	return (
 		<>
-			<Meta />
+			<Meta meta={manifest} />
 			<div
 				id={'app'}
 				className={cl('mx-auto mb-0 flex font-aeonik')}>
@@ -62,7 +63,7 @@ function AppWrapper(props: AppProps): ReactElement {
 								animate={'enter'}
 								exit={'exit'}
 								className={'my-0 h-full md:mb-0 md:mt-16'}
-								variants={variants}>
+								variants={motionVariants}>
 								<Component
 									router={props.router}
 									{...pageProps}
