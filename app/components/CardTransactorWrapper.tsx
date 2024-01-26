@@ -3,6 +3,7 @@ import {deposit, zapCRV} from 'app/actions';
 import {useYCRV} from 'app/contexts/useYCRV';
 import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'app/tokens';
 import {getAmountWithSlippage, getVaultAPR} from 'app/utils';
+import useWallet from '@builtbymom/web3/contexts/useWallet';
 import {useWeb3} from '@builtbymom/web3/contexts/useWeb3';
 import {formatPercent, isZero, MAX_UINT_256, toAddress, toBigInt, toNormalizedBN} from '@builtbymom/web3/utils';
 import {approveERC20, defaultTxStatus} from '@builtbymom/web3/utils/wagmi';
@@ -10,7 +11,6 @@ import {useAsync, useIntervalEffect} from '@react-hookz/web';
 import {readContract} from '@wagmi/core';
 import {yToast} from '@yearn-finance/web-lib/components/yToast';
 import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
-import {useYearnWallet} from '@yearn-finance/web-lib/contexts/useYearnWallet';
 import {useAddToken} from '@yearn-finance/web-lib/hooks/useAddToken';
 import {useDismissToasts} from '@yearn-finance/web-lib/hooks/useDismissToasts';
 import {VAULT_ABI} from '@yearn-finance/web-lib/utils/abi/vault.abi';
@@ -77,7 +77,7 @@ export function CardTransactorContextApp({
 }): ReactElement {
 	const {provider, isActive, address} = useWeb3();
 	const {styCRVAPY, allowances, refetchAllowances, slippage} = useYCRV();
-	const {getBalance, onRefresh} = useYearnWallet();
+	const {getBalance, onRefresh} = useWallet();
 	const {vaults} = useYearn();
 	const [txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const [txStatusZap, set_txStatusZap] = useState(defaultTxStatus);

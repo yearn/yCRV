@@ -3,6 +3,7 @@ import {CardTransactorContextApp, useCardTransactor} from 'app/components/CardTr
 import {Dropdown} from 'app/components/common/TokenDropdown';
 import {ArrowDown} from 'app/icons/ArrowDown';
 import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'app/tokens';
+import useWallet from '@builtbymom/web3/contexts/useWallet';
 import {useWeb3} from '@builtbymom/web3/contexts/useWeb3';
 import {
 	cl,
@@ -17,7 +18,6 @@ import {
 } from '@builtbymom/web3/utils';
 import {Button} from '@yearn-finance/web-lib/components/Button';
 import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
-import {useYearnWallet} from '@yearn-finance/web-lib/contexts/useYearnWallet';
 import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
@@ -32,7 +32,7 @@ import type {TDropdownOption} from '@yearn-finance/web-lib/types';
 
 function CardZap(): ReactElement {
 	const {isActive} = useWeb3();
-	const {getToken, getBalance} = useYearnWallet();
+	const {getToken, getBalance} = useWallet();
 	const {vaults, prices} = useYearn();
 	const {
 		txStatusApprove,

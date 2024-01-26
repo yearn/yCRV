@@ -6,14 +6,15 @@ import AppHeader from 'app/components/common/Header';
 import Meta from 'app/components/common/Meta';
 import {CurveContextApp} from 'app/contexts/useCurve';
 import {YCRVContextApp} from 'app/contexts/useYCRV';
+import {arbitrum, base, fantom, optimism, polygon} from 'viem/chains';
 import {AnimatePresence, motion} from 'framer-motion';
+import {WalletContextApp} from '@builtbymom/web3/contexts/useWallet';
 import {WithMom} from '@builtbymom/web3/contexts/WithMom';
 import {cl} from '@builtbymom/web3/utils/cl';
 import {motionVariants} from '@builtbymom/web3/utils/helpers';
 import {localhost} from '@builtbymom/web3/utils/wagmi';
 import {mainnet} from '@wagmi/chains';
 import {YearnContextApp} from '@yearn-finance/web-lib/contexts/useYearn';
-import {YearnWalletContextApp} from '@yearn-finance/web-lib/contexts/useYearnWallet';
 
 import type {AppProps} from 'next/app';
 import type {ReactElement} from 'react';
@@ -101,9 +102,9 @@ function MyApp(props: AppProps): ReactElement {
 			</Head>
 			<Meta />
 			<WithMom
-				supportedChains={[mainnet, localhost]}
+				supportedChains={[mainnet, optimism, polygon, fantom, base, arbitrum, localhost]}
 				tokenLists={['https://raw.githubusercontent.com/SmolDapp/tokenLists/main/lists/yearn.json']}>
-				<YearnWalletContextApp>
+				<WalletContextApp>
 					<YearnContextApp>
 						<YCRVContextApp>
 							<CurveContextApp>
@@ -116,7 +117,7 @@ function MyApp(props: AppProps): ReactElement {
 							</CurveContextApp>
 						</YCRVContextApp>
 					</YearnContextApp>
-				</YearnWalletContextApp>
+				</WalletContextApp>
 			</WithMom>
 		</>
 	);

@@ -5,7 +5,9 @@ import {Harvests} from 'app/components/Harvests';
 import {VaultsListInternalMigrationRow} from 'app/components/VaultsListInternalMigrationRow';
 import {useCurve} from 'app/contexts/useCurve';
 import {useYCRV} from 'app/contexts/useYCRV';
+import {useTokenPrice} from 'app/hooks/useTokenPrice';
 import {getVaultAPR} from 'app/utils';
+import {useWallet} from '@builtbymom/web3/contexts/useWallet';
 import {
 	cl,
 	formatAmount,
@@ -18,8 +20,6 @@ import {
 	toNormalizedValue
 } from '@builtbymom/web3/utils';
 import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
-import {useYearnBalance} from '@yearn-finance/web-lib/hooks/useYearnBalance';
-import {useYearnTokenPrice} from '@yearn-finance/web-lib/hooks/useYearnTokenPrice';
 import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
@@ -30,13 +30,14 @@ import {
 import type {ReactElement} from 'react';
 
 function HeaderPosition(): ReactElement {
+	const {getBalance} = useWallet();
 	const {holdings} = useYCRV();
-	const balanceOfStyCRV = useYearnBalance({address: STYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
-	const balanceOfLpyCRV = useYearnBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
-	const balanceOfLpyCRVV2 = useYearnBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
-	const stycrvPrice = useYearnTokenPrice({address: STYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvPrice = useYearnTokenPrice({address: LPYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvV2Price = useYearnTokenPrice({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1});
+	const balanceOfStyCRV = getBalance({address: STYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+	const balanceOfLpyCRVV2 = getBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+	const stycrvPrice = useTokenPrice({address: STYCRV_TOKEN_ADDRESS, chainID: 1});
+	const lpycrvPrice = useTokenPrice({address: LPYCRV_TOKEN_ADDRESS, chainID: 1});
+	const lpycrvV2Price = useTokenPrice({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1});
 
 	const formatedYearnHas = useMemo(
 		(): string => (holdings?.veCRVBalance ? formatAmount(toNormalizedValue(holdings.veCRVBalance, 18), 0, 0) : ''),
@@ -93,16 +94,19 @@ function ZapAndStats(): ReactElement {
 	const {holdings, styCRVAPY} = useYCRV();
 	const {vaults} = useYearn();
 	const {curveWeeklyFees, cgPrices} = useCurve();
+	const {balances, getBalance} = useWallet();
+
+	console.log(balances?.[1], getBalance({address: YCRV_TOKEN_ADDRESS, chainID: 1}));
 
 	const lpCRVAPY = useMemo((): string => getVaultAPR(vaults, LPYCRV_TOKEN_ADDRESS), [vaults]);
 	const lpCRVV2APY = useMemo((): string => getVaultAPR(vaults, LPYCRV_V2_TOKEN_ADDRESS), [vaults]);
-	const ycrvPrice = useYearnTokenPrice({address: YCRV_TOKEN_ADDRESS, chainID: 1});
-	const stycrvPrice = useYearnTokenPrice({address: STYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvPrice = useYearnTokenPrice({address: LPYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvV2Price = useYearnTokenPrice({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1});
-	const balanceOfStyCRV = useYearnBalance({address: STYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
-	const balanceOfLpyCRV = useYearnBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
-	const balanceOfLpyCRVV2 = useYearnBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+	const ycrvPrice = useTokenPrice({address: YCRV_TOKEN_ADDRESS, chainID: 1});
+	const stycrvPrice = useTokenPrice({address: STYCRV_TOKEN_ADDRESS, chainID: 1});
+	const lpycrvPrice = useTokenPrice({address: LPYCRV_TOKEN_ADDRESS, chainID: 1});
+	const lpycrvV2Price = useTokenPrice({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1});
+	const balanceOfStyCRV = getBalance({address: STYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+	const balanceOfLpyCRVV2 = getBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 
 	const latestCurveFeesValue = useMemo((): number => {
 		const {weeklyFeesTable} = curveWeeklyFees;
@@ -379,8 +383,9 @@ function ZapAndStats(): ReactElement {
 }
 
 function Holdings(): ReactElement {
+	const {getBalance} = useWallet();
 	const {vaultsMigrations} = useYearn();
-	const balanceOfLpyCRV = useYearnBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const hasLegacyLpyCRV = !!vaultsMigrations[LPYCRV_TOKEN_ADDRESS] && balanceOfLpyCRV.raw > 0n;
 
 	return (
