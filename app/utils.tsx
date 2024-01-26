@@ -1,5 +1,5 @@
 import {formatUnits, parseUnits} from 'viem';
-import {toAddress} from '@yearn-finance/web-lib/utils/address';
+import {formatPercent, toAddress, toBigInt, toNormalizedValue} from '@builtbymom/web3/utils';
 import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
@@ -7,11 +7,9 @@ import {
 	YVBOOST_TOKEN_ADDRESS,
 	YVECRV_TOKEN_ADDRESS
 } from '@yearn-finance/web-lib/utils/constants';
-import {formatToNormalizedValue, toBigInt} from '@yearn-finance/web-lib/utils/format.bigNumber';
-import {formatPercent} from '@yearn-finance/web-lib/utils/format.number';
 
-import type {TDict} from '@yearn-finance/web-lib/types';
 import type {TYDaemonVault} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
+import type {TDict} from '@builtbymom/web3/types';
 
 export function getVaultAPR(vaults: TDict<TYDaemonVault | undefined>, vaultAddress: string): string {
 	if (!vaults?.[toAddress(vaultAddress)]) {
@@ -42,7 +40,7 @@ export function getAmountWithSlippage(from: string, to: string, value: bigint, s
 	if (hasLP && !isDirectDeposit) {
 		const minAmountStr = Number(formatUnits(toBigInt(value), 18));
 		const minAmountWithSlippage = parseUnits((minAmountStr * (1 - slippage / 100)).toFixed(18) as `${number}`, 18);
-		return formatToNormalizedValue(toBigInt(minAmountWithSlippage), 18);
+		return toNormalizedValue(toBigInt(minAmountWithSlippage), 18);
 	}
-	return formatToNormalizedValue(value, 18);
+	return toNormalizedValue(value, 18);
 }

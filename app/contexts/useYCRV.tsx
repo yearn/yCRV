@@ -1,7 +1,7 @@
 import {createContext, useContext, useMemo, useState} from 'react';
 import {useAllowances} from 'app/hooks/useAllowanceHook';
 import {defaultHoldings, useHoldings} from 'app/hooks/useHoldingsHook';
-import {useFetch} from '@yearn-finance/web-lib/hooks/useFetch';
+import {useFetch} from '@builtbymom/web3/hooks/useFetch';
 import {useYDaemonBaseURI} from '@yearn-finance/web-lib/hooks/useYDaemonBaseURI';
 import {
 	LPYCRV_TOKEN_ADDRESS,
@@ -9,15 +9,14 @@ import {
 	STYCRV_TOKEN_ADDRESS
 } from '@yearn-finance/web-lib/utils/constants';
 import {
-	type TYDaemonVault,
-	type TYDaemonVaultHarvests,
 	yDaemonVaultHarvestsSchema,
 	yDaemonVaultSchema
 } from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
 
 import type {TCRVHoldings} from 'app/hooks/useHoldingsHook';
 import type {ReactElement} from 'react';
-import type {TDict} from '@yearn-finance/web-lib/types';
+import type {TYDaemonVault, TYDaemonVaultHarvests} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
+import type {TDict} from '@builtbymom/web3/types';
 
 type TYCRVContext = {
 	styCRVAPY: number;

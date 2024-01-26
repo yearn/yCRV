@@ -1,27 +1,19 @@
 import {createContext, useContext, useMemo} from 'react';
-import {useFetch} from '@yearn-finance/web-lib/hooks/useFetch';
-import {isZeroAddress} from '@yearn-finance/web-lib/utils/address';
+import {useFetch} from '@builtbymom/web3/hooks/useFetch';
 import {coinGeckoPricesSchema} from '@yearn-finance/web-lib/utils/schemas/coinGeckoSchemas';
-import {
-	curveAllGaugesSchema,
-	curveGaugesFromYearnSchema,
-	curveWeeklyFeesSchema
-} from '@yearn-finance/web-lib/utils/schemas/curveSchemas';
+import {curveWeeklyFeesSchema} from '@yearn-finance/web-lib/utils/schemas/curveSchemas';
+
+import {curveAllGaugesSchema} from './useCurve.schema';
 
 import type {TCoinGeckoPrices} from '@yearn-finance/web-lib/utils/schemas/coinGeckoSchemas';
-import type {
-	TCurveAllGauges,
-	TCurveGauge,
-	TCurveGaugesFromYearn,
-	TCurveWeeklyFees
-} from '@yearn-finance/web-lib/utils/schemas/curveSchemas';
+import type {TCurveWeeklyFees} from '@yearn-finance/web-lib/utils/schemas/curveSchemas';
+import type {TCurveAllGauges, TCurveGauge} from './useCurve.schema';
 
 export type TCurveContext = {
 	curveWeeklyFees: TCurveWeeklyFees['data'];
 	cgPrices: TCoinGeckoPrices;
 	gauges: TCurveGauge[];
 	isLoadingGauges: boolean;
-	gaugesFromYearn: TCurveGaugesFromYearn;
 };
 
 const defaultProps: TCurveContext = {
@@ -33,8 +25,7 @@ const defaultProps: TCurveContext = {
 	},
 	cgPrices: {},
 	gauges: [],
-	isLoadingGauges: false,
-	gaugesFromYearn: []
+	isLoadingGauges: false
 };
 
 const CurveContext = createContext<TCurveContext>(defaultProps);
@@ -58,13 +49,8 @@ export const CurveContextApp = ({children}: {children: React.ReactElement}): Rea
 	 **	Fetch all the CurveGauges to be able to create some new if required
 	 ***************************************************************************/
 	const {data: gaugesWrapper, isLoading: isLoadingGauges} = useFetch<TCurveAllGauges>({
-		endpoint: 'https://api.curve.fi/api/getAllGauges?blockchainId=ethereum',
+		endpoint: 'https://api.curve.fi/v1/getAllGauges',
 		schema: curveAllGaugesSchema
-	});
-
-	const {data: gaugesFromYearn} = useFetch<TCurveGaugesFromYearn>({
-		endpoint: 'https://api.yexporter.io/v1/chains/1/apy-previews/curve-factory',
-		schema: curveGaugesFromYearnSchema
 	});
 
 	const gauges = useMemo((): TCurveGauge[] => {
@@ -92,12 +78,9 @@ export const CurveContextApp = ({children}: {children: React.ReactElement}): Rea
 			curveWeeklyFees: curveWeeklyFees?.data || defaultProps.curveWeeklyFees,
 			cgPrices: cgPrices || defaultProps.cgPrices,
 			gauges: gauges || defaultProps.gauges,
-			isLoadingGauges: isLoadingGauges || defaultProps.isLoadingGauges,
-			gaugesFromYearn: (gaugesFromYearn || defaultProps.gaugesFromYearn).filter(
-				(props): boolean => !isZeroAddress(props.gauge_address)
-			)
+			isLoadingGauges: isLoadingGauges || defaultProps.isLoadingGauges
 		}),
-		[curveWeeklyFees, cgPrices, gauges, isLoadingGauges, gaugesFromYearn]
+		[cgPrices, gauges, isLoadingGauges, curveWeeklyFees]
 	);
 
 	return <CurveContext.Provider value={contextValue}>{children}</CurveContext.Provider>;

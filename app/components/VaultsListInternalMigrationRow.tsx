@@ -1,9 +1,8 @@
 import {useMemo} from 'react';
 import Link from 'next/link';
-import {useBalance} from 'app/hooks/useBalance';
+import {formatAmount, toAddress} from '@builtbymom/web3/utils';
 import {ImageWithFallback} from '@yearn-finance/web-lib/components/ImageWithFallback';
-import {toAddress} from '@yearn-finance/web-lib/utils/address';
-import {formatAmount} from '@yearn-finance/web-lib/utils/format.number';
+import {useYearnBalance} from '@yearn-finance/web-lib/hooks/useYearnBalance';
 
 import type {ReactElement} from 'react';
 import type {TYDaemonVault} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
@@ -18,7 +17,7 @@ function getVaultName(vault: TYDaemonVault): string {
 
 export function VaultsListInternalMigrationRow({currentVault}: {currentVault: TYDaemonVault}): ReactElement {
 	const vaultName = useMemo((): string => getVaultName(currentVault), [currentVault]);
-	const balanceToMigrate = useBalance({address: currentVault.address, chainID: currentVault.chainID});
+	const balanceToMigrate = useYearnBalance({address: currentVault.address, chainID: currentVault.chainID});
 
 	return (
 		<Link

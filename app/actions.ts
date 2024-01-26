@@ -1,14 +1,11 @@
+import {assert, assertAddress, toAddress} from '@builtbymom/web3/utils';
+import {handleTx, toWagmiProvider} from '@builtbymom/web3/utils/wagmi';
 import {VAULT_ABI} from '@yearn-finance/web-lib/utils/abi/vault.abi';
 import {ZAP_CRV_ABI} from '@yearn-finance/web-lib/utils/abi/ycrv.zapCRV.abi';
-import {toAddress} from '@yearn-finance/web-lib/utils/address';
-import {assert} from '@yearn-finance/web-lib/utils/assert';
 import {ZAP_YEARN_VE_CRV_ADDRESS} from '@yearn-finance/web-lib/utils/constants';
-import {handleTx, toWagmiProvider} from '@yearn-finance/web-lib/utils/wagmi/provider';
-import {assertAddress} from '@yearn-finance/web-lib/utils/wagmi/utils';
 
-import type {TAddress} from '@yearn-finance/web-lib/types';
-import type {TWriteTransaction} from '@yearn-finance/web-lib/utils/wagmi/provider';
-import type {TTxResponse} from '@yearn-finance/web-lib/utils/web3/transaction';
+import type {TAddress} from '@builtbymom/web3/types';
+import type {TTxResponse, TWriteTransaction} from '@builtbymom/web3/utils/wagmi';
 
 /* 🔵 - Yearn Finance **********************************************************
  ** deposit is a _WRITE_ function that deposits a collateral into a vault using

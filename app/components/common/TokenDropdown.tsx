@@ -1,18 +1,17 @@
 import {cloneElement, Fragment, useState} from 'react';
+import {useWeb3} from '@builtbymom/web3/contexts/useWeb3';
+import {cl, formatAmount} from '@builtbymom/web3/utils';
 import {Combobox, Transition} from '@headlessui/react';
 import {useThrottledState} from '@react-hookz/web';
 import {Renderable} from '@yearn-finance/web-lib/components/Renderable';
-import {useWallet} from '@yearn-finance/web-lib/contexts/useWallet';
-import {useWeb3} from '@yearn-finance/web-lib/contexts/useWeb3';
+import {useYearnWallet} from '@yearn-finance/web-lib/contexts/useYearnWallet';
 import {IconChevron} from '@yearn-finance/web-lib/icons/IconChevron';
-import {cl} from '@yearn-finance/web-lib/utils/cl';
-import {formatAmount} from '@yearn-finance/web-lib/utils/format.number';
 
 import type {ReactElement} from 'react';
 import type {TDropdownItemProps, TDropdownOption, TDropdownProps} from '@yearn-finance/web-lib/types';
 
 function DropdownItem({option}: TDropdownItemProps): ReactElement {
-	const {getBalance} = useWallet();
+	const {getBalance} = useYearnWallet();
 	const balance = getBalance({address: option.value, chainID: option.chainID});
 
 	return (
@@ -21,7 +20,7 @@ function DropdownItem({option}: TDropdownItemProps): ReactElement {
 				<div
 					data-active={active}
 					className={'yearn--dropdown-menu-item w-full hover:bg-neutral-0/40'}>
-					<div className={'h-6 w-6 flex-none rounded-full'}>{option?.icon ? option.icon : null}</div>
+					<div className={'size-6 flex-none rounded-full'}>{option?.icon ? option.icon : null}</div>
 					<div>
 						<p className={`${option.icon ? 'pl-2' : 'pl-0'} font-normal text-neutral-900`}>
 							{option.symbol}
@@ -112,11 +111,11 @@ export function Dropdown(props: TDropdownProps): ReactElement {
 							<div className={'flex w-full items-center'}>
 								<div
 									key={props.selected?.label}
-									className={'h-6 w-6 flex-none rounded-full'}>
+									className={'size-6 flex-none rounded-full'}>
 									{props.selected?.icon ? (
 										cloneElement(props.selected.icon)
 									) : (
-										<div className={'h-6 w-6 flex-none rounded-full bg-neutral-500'} />
+										<div className={'size-6 flex-none rounded-full bg-neutral-500'} />
 									)}
 								</div>
 								<p
@@ -139,9 +138,7 @@ export function Dropdown(props: TDropdownProps): ReactElement {
 								<div className={'ml-auto'}>
 									<IconChevron
 										aria-hidden={'true'}
-										className={`h-6 w-6 transition-transform ${
-											isOpen ? '-rotate-180' : 'rotate-0'
-										}`}
+										className={`size-6 transition-transform${isOpen ? '-rotate-180' : 'rotate-0'}`}
 									/>
 								</div>
 							</div>

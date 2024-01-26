@@ -2,8 +2,8 @@ import {useMemo, useState} from 'react';
 import {HarvestListHead} from 'app/components/HarvestsListHead';
 import {HarvestListRow} from 'app/components/HarvestsListRow';
 import {useYCRV} from 'app/contexts/useYCRV';
+import {toAddress} from '@builtbymom/web3/utils';
 import {Button} from '@yearn-finance/web-lib/components/Button';
-import {toAddress} from '@yearn-finance/web-lib/utils/address';
 import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,

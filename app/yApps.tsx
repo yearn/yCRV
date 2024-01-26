@@ -8,7 +8,7 @@ export const APPS = {
 		href: 'https://yearn.fi/vaults',
 		icon: (
 			<LogoYearn
-				className={'h-8 w-8'}
+				className={'size-8'}
 				back={'text-[#f472b6]'}
 				front={'text-white'}
 			/>
@@ -20,7 +20,7 @@ export const APPS = {
 		icon: (
 			<ImageWithFallback
 				alt={'yCRV'}
-				className={'h-8 w-8'}
+				className={'size-8'}
 				width={64}
 				height={64}
 				src={`${process.env.SMOL_ASSETS_URL}/token/1/${YCRV_TOKEN_ADDRESS}/logo-128.png`}
@@ -34,7 +34,7 @@ export const APPS = {
 		href: 'https://yearn.fi/veyfi',
 		icon: (
 			<LogoYearn
-				className={'h-8 w-8'}
+				className={'size-8'}
 				back={'text-[#0657F9]'}
 				front={'text-white'}
 			/>
@@ -45,7 +45,7 @@ export const APPS = {
 		href: '/',
 		icon: (
 			<LogoYearn
-				className={'h-8 w-8'}
+				className={'size-8'}
 				back={'text-neutral-900'}
 				front={'text-neutral-0'}
 			/>
@@ -57,7 +57,7 @@ export const APPS = {
 		icon: (
 			<ImageWithFallback
 				alt={'yETH'}
-				className={'h-8 w-8'}
+				className={'size-8'}
 				width={64}
 				height={64}
 				src={`${process.env.SMOL_ASSETS_URL}/token/1/0x1BED97CBC3c24A4fb5C069C6E311a967386131f7/logo-128.png`}
@@ -73,7 +73,7 @@ export const APPS = {
 			<ImageWithFallback
 				priority
 				src={`${process.env.SMOL_ASSETS_URL}/token/1/0xe3668873d944e4a949da05fc8bde419eff543882/logo-128.png`}
-				className={'h-8 w-8'}
+				className={'size-8'}
 				width={64}
 				height={64}
 				alt={'yPrisma'}

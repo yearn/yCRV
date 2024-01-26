@@ -4,10 +4,15 @@
 	"description": "The best crv yields in defi. *mic drop*",
 	"iconPath": "./favicons/favicon.svg",
 	"locale": "en-US",
-	"uri": "https://yearn.fi/ycrv/",
-	"og": "https://yearn.fi/apps/ycrv-og.png",
 	"twitter": "@iearnfinance",
-	"github": "https://github.com/Majorfi/y",
+	"domain": "ycrv.yearn.fi",
+	"uri": "https://ycrv.yearn.fi",
+	"og": "https://ycrv.yearn.fi/og.png",
+	"github": "https://github.com/yearn/yCRV",
+	"twitterURI": "https://twitter.com/yearnfi",
+	"telegramURI": "https://t.me/yearnfinance/",
+	"mediumURI": "https://medium.com/iearn",
+	"governanceURI": "https://gov.yearn.fi/",
 	"icons": [
 		{
 			"src": "./favicons/android-icon-192x192.png",

@@ -3,14 +3,22 @@ import {CardTransactorContextApp, useCardTransactor} from 'app/components/CardTr
 import {Dropdown} from 'app/components/common/TokenDropdown';
 import {ArrowDown} from 'app/icons/ArrowDown';
 import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'app/tokens';
-import {Button} from '@yearn-finance/web-lib/components/Button';
-import {useWallet} from '@yearn-finance/web-lib/contexts/useWallet';
-import {useWeb3} from '@yearn-finance/web-lib/contexts/useWeb3';
-import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
-import {toAddress} from '@yearn-finance/web-lib/utils/address';
-import {cl} from '@yearn-finance/web-lib/utils/cl';
+import {useWeb3} from '@builtbymom/web3/contexts/useWeb3';
 import {
+	cl,
 	CRV_TOKEN_ADDRESS,
+	formatCounterValue,
+	handleInputChangeValue,
+	isZero,
+	toAddress,
+	toBigInt,
+	toNormalizedBN,
+	toNormalizedValue
+} from '@builtbymom/web3/utils';
+import {Button} from '@yearn-finance/web-lib/components/Button';
+import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
+import {useYearnWallet} from '@yearn-finance/web-lib/contexts/useYearnWallet';
+import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
 	STYCRV_TOKEN_ADDRESS,
@@ -18,17 +26,13 @@ import {
 	YCRV_CURVE_POOL_V2_ADDRESS,
 	YCRV_TOKEN_ADDRESS
 } from '@yearn-finance/web-lib/utils/constants';
-import {formatToNormalizedValue, toBigInt, toNormalizedBN} from '@yearn-finance/web-lib/utils/format.bigNumber';
-import {formatCounterValue} from '@yearn-finance/web-lib/utils/format.value';
-import {handleInputChangeValue} from '@yearn-finance/web-lib/utils/handler';
-import {isZero} from '@yearn-finance/web-lib/utils/isZero';
 
 import type {ChangeEvent, ReactElement} from 'react';
 import type {TDropdownOption} from '@yearn-finance/web-lib/types';
 
 function CardZap(): ReactElement {
 	const {isActive} = useWeb3();
-	const {getToken, getBalance} = useWallet();
+	const {getToken, getBalance} = useYearnWallet();
 	const {vaults, prices} = useYearn();
 	const {
 		txStatusApprove,
@@ -50,17 +54,17 @@ function CardZap(): ReactElement {
 	} = useCardTransactor();
 
 	const ycrvPrice = useMemo(
-		(): number => formatToNormalizedValue(toBigInt(prices?.[1]?.[YCRV_TOKEN_ADDRESS] || 0), 6),
+		(): number => toNormalizedValue(toBigInt(prices?.[1]?.[YCRV_TOKEN_ADDRESS] || 0), 6),
 		[prices]
 	);
 
 	const ycrvCurvePoolPrice = useMemo(
-		(): number => formatToNormalizedValue(toBigInt(prices?.[1]?.[YCRV_CURVE_POOL_ADDRESS] || 0), 6),
+		(): number => toNormalizedValue(toBigInt(prices?.[1]?.[YCRV_CURVE_POOL_ADDRESS] || 0), 6),
 		[prices]
 	);
 
 	const stycrvPrice = useMemo(
-		(): number => formatToNormalizedValue(toBigInt(prices?.[1]?.[STYCRV_TOKEN_ADDRESS] || 0), 6),
+		(): number => toNormalizedValue(toBigInt(prices?.[1]?.[STYCRV_TOKEN_ADDRESS] || 0), 6),
 		[prices]
 	);
 

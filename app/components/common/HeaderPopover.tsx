@@ -20,7 +20,7 @@ function LogoPopover(): ReactElement {
 					<span className={'sr-only'}>{'Back to home'}</span>
 					<ImageWithFallback
 						alt={'yCRV'}
-						className={'h-8 w-8'}
+						className={'size-8'}
 						width={64}
 						height={64}
 						src={`${process.env.SMOL_ASSETS_URL}/token/1/${YCRV_TOKEN_ADDRESS}/logo-128.png`}

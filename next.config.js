@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+const meta = require('./public/manifest.json');
 const runtimeCaching = require('next-pwa/cache');
-// eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-// const withTM = require('next-transpile-modules')(['@yearn-finance/web-lib'], {resolveSymlinks: false});
 const withPWA = require('next-pwa')({
 	dest: 'public',
 	register: true,
@@ -54,41 +53,28 @@ const config = {
 	redirects() {
 		return [
 			{
-				source: '/:path*',
-				has: [{type: 'host', value: 'ybribe.com'}],
-				destination: 'https://yearn.fi/ybribe/:path*',
+				source: '/github',
+				destination: meta.github,
 				permanent: true
 			},
-			{
-				source: '/:path*',
-				has: [{type: 'host', value: 'vote.yearn.fi'}],
-				destination: 'https://yearn.fi/veyfi/:path*',
-				permanent: true
-			},
-			//
 			{
 				source: '/twitter',
-				destination: 'https://twitter.com/yearnfi',
+				destination: meta.twitterURI,
 				permanent: true
 			},
 			{
 				source: '/telegram',
-				destination: 'https://t.me/yearnfinance/',
+				destination: meta.telegramURI,
 				permanent: true
 			},
 			{
 				source: '/medium',
-				destination: 'https://medium.com/iearn',
+				destination: meta.mediumURI,
 				permanent: true
 			},
 			{
 				source: '/governance',
-				destination: 'https://gov.yearn.fi/',
-				permanent: true
-			},
-			{
-				source: '/snapshot',
-				destination: 'https://snapshot.org/#/veyfi.eth',
+				destination: meta.governanceURI,
 				permanent: true
 			}
 		];
