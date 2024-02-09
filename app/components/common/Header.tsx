@@ -4,10 +4,9 @@ import {useRouter} from 'next/router';
 import {useWeb3} from '@builtbymom/web3/contexts/useWeb3';
 import {truncateHex} from '@builtbymom/web3/utils';
 import {useAccountModal, useChainModal} from '@rainbow-me/rainbowkit';
+import {LogoPopover} from '@yearn-finance/web-lib/components/LogoPopover';
 import {ModalMobileMenu} from '@yearn-finance/web-lib/components/ModalMobileMenu';
 import {IconWallet} from '@yearn-finance/web-lib/icons/IconWallet';
-
-import {LogoPopover} from './HeaderPopover';
 
 import type {ReactElement} from 'react';
 

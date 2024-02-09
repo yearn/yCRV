@@ -161,7 +161,10 @@ function CardZap(): ReactElement {
 							}
 							set_selectedOptionFrom(option);
 							set_amount(
-								toNormalizedBN(getBalance({address: option.value, chainID: option.chainID}).raw)
+								toNormalizedBN(
+									getBalance({address: option.value, chainID: option.chainID}).raw,
+									option.decimals
+								)
 							);
 						}}
 					/>
@@ -208,7 +211,8 @@ function CardZap(): ReactElement {
 											getBalance({
 												address: selectedOptionFrom.value,
 												chainID: selectedOptionFrom.chainID
-											}).raw
+											}).raw,
+											selectedOptionFrom.decimals
 										)
 									)
 								}

@@ -5,7 +5,15 @@ import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'app/tokens';
 import {getAmountWithSlippage, getVaultAPR} from 'app/utils';
 import useWallet from '@builtbymom/web3/contexts/useWallet';
 import {useWeb3} from '@builtbymom/web3/contexts/useWeb3';
-import {formatPercent, isZero, MAX_UINT_256, toAddress, toBigInt, toNormalizedBN} from '@builtbymom/web3/utils';
+import {
+	formatPercent,
+	isZero,
+	MAX_UINT_256,
+	toAddress,
+	toBigInt,
+	toNormalizedBN,
+	zeroNormalizedBN
+} from '@builtbymom/web3/utils';
 import {approveERC20, defaultTxStatus} from '@builtbymom/web3/utils/wagmi';
 import {useAsync, useIntervalEffect} from '@react-hookz/web';
 import {readContract} from '@wagmi/core';
@@ -54,7 +62,7 @@ type TCardTransactor = {
 const CardTransactorContext = createContext<TCardTransactor>({
 	selectedOptionFrom: ZAP_OPTIONS_FROM[0],
 	selectedOptionTo: ZAP_OPTIONS_TO[0],
-	amount: toNormalizedBN(0),
+	amount: zeroNormalizedBN,
 	txStatusApprove: defaultTxStatus,
 	txStatusZap: defaultTxStatus,
 	allowanceFrom: 0n,
@@ -83,7 +91,7 @@ export function CardTransactorContextApp({
 	const [txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 	const [selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
 	const [selectedOptionTo, set_selectedOptionTo] = useState(defaultOptionTo);
-	const [amount, set_amount] = useState<TNormalizedBN>(toNormalizedBN(0));
+	const [amount, set_amount] = useState<TNormalizedBN>(zeroNormalizedBN);
 	const [hasTypedSomething, set_hasTypedSomething] = useState(false);
 	const addToken = useAddToken();
 	const {dismissAllToasts} = useDismissToasts();
@@ -112,11 +120,12 @@ export function CardTransactorContextApp({
 		if (isActive && isZero(amount.raw) && !hasTypedSomething) {
 			set_amount(
 				toNormalizedBN(
-					getBalance({address: selectedOptionFrom.value, chainID: selectedOptionFrom.chainID})?.raw
+					getBalance({address: selectedOptionFrom.value, chainID: selectedOptionFrom.chainID})?.raw,
+					selectedOptionFrom.decimals
 				)
 			);
 		} else if (!isActive && amount.raw > 0n) {
-			set_amount(toNormalizedBN(0));
+			set_amount(zeroNormalizedBN);
 			set_hasTypedSomething(false);
 			fetchExpectedOut();
 		}
@@ -250,7 +259,7 @@ export function CardTransactorContextApp({
 				statusHandler: set_txStatusZap
 			});
 			if (result.isSuccessful) {
-				set_amount(toNormalizedBN(0));
+				set_amount(zeroNormalizedBN);
 				await onRefresh();
 				toast(addToMetamaskToast);
 			}
@@ -268,7 +277,7 @@ export function CardTransactorContextApp({
 				statusHandler: set_txStatusZap
 			});
 			if (result.isSuccessful) {
-				set_amount(toNormalizedBN(0));
+				set_amount(zeroNormalizedBN);
 				await onRefresh();
 				toast(addToMetamaskToast);
 			}
