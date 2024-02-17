@@ -1,4 +1,4 @@
-import {formatUnits, parseUnits} from 'viem';
+import {formatUnits, parseUnits, zeroAddress} from 'viem';
 import {formatPercent, toAddress, toBigInt, toNormalizedValue} from '@builtbymom/web3/utils';
 import {
 	LPYCRV_TOKEN_ADDRESS,
@@ -43,4 +43,20 @@ export function getAmountWithSlippage(from: string, to: string, value: bigint, s
 		return toNormalizedValue(toBigInt(minAmountWithSlippage), 18);
 	}
 	return toNormalizedValue(value, 18);
+}
+
+export function truncateHexTx(hash: string | undefined, size: number): string {
+	if (hash !== undefined) {
+		if (size === 0) {
+			return hash;
+		}
+		if (hash.length <= size * 2 + 4) {
+			return hash;
+		}
+		return `0x${hash.slice(2, size + 2)}...${hash.slice(-size)}`;
+	}
+	if (size === 0) {
+		return zeroAddress;
+	}
+	return `0x${zeroAddress.slice(2, size)}...${zeroAddress.slice(-size)}`;
 }

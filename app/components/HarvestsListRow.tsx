@@ -1,4 +1,5 @@
-import {formatAmount, formatUSD, toAddress, toBigInt, toNormalizedValue, truncateHex} from '@builtbymom/web3/utils';
+import {truncateHexTx} from 'app/utils';
+import {formatAmount, formatUSD, toAddress, toBigInt, toNormalizedValue} from '@builtbymom/web3/utils';
 import {ImageWithFallback} from '@yearn-finance/web-lib/components/ImageWithFallback';
 import {IconLinkOut} from '@yearn-finance/web-lib/icons/IconLinkOut';
 import {STYCRV_TOKEN_ADDRESS} from '@yearn-finance/web-lib/utils/constants';
@@ -67,7 +68,7 @@ export function HarvestListRow({harvest}: {harvest: TYDaemonVaultHarvest}): Reac
 						<div
 							className={'font-number flex flex-row items-center space-x-2 text-neutral-900'}
 							style={{lineHeight: '24px'}}>
-							{truncateHex(harvest.txHash, 6)}
+							{truncateHexTx(harvest.txHash, 6)}
 							<IconLinkOut className={'ml-2 size-4 md:ml-4'} />
 						</div>
 					</a>
