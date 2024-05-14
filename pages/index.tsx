@@ -94,9 +94,7 @@ function ZapAndStats(): ReactElement {
 	const {holdings, styCRVAPY} = useYCRV();
 	const {vaults} = useYearn();
 	const {curveWeeklyFees, cgPrices} = useCurve();
-	const {balances, getBalance} = useWallet();
-
-	console.log(balances?.[1], getBalance({address: YCRV_TOKEN_ADDRESS, chainID: 1}));
+	const {getBalance} = useWallet();
 
 	const lpCRVAPY = useMemo((): string => getVaultAPR(vaults, LPYCRV_TOKEN_ADDRESS), [vaults]);
 	const lpCRVV2APY = useMemo((): string => getVaultAPR(vaults, LPYCRV_V2_TOKEN_ADDRESS), [vaults]);
