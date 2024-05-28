@@ -5,7 +5,6 @@ import {Harvests} from 'app/components/Harvests';
 import {VaultsListInternalMigrationRow} from 'app/components/VaultsListInternalMigrationRow';
 import {useCurve} from 'app/contexts/useCurve';
 import {useYCRV} from 'app/contexts/useYCRV';
-import {useTokenPrice} from 'app/hooks/useTokenPrice';
 import {getVaultAPR} from 'app/utils';
 import {useWallet} from '@builtbymom/web3/contexts/useWallet';
 import {
@@ -21,6 +20,7 @@ import {
 } from '@builtbymom/web3/utils';
 import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
 import {
+	CRV_TOKEN_ADDRESS,
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
 	STYCRV_TOKEN_ADDRESS,
@@ -31,13 +31,13 @@ import type {ReactElement} from 'react';
 
 function HeaderPosition(): ReactElement {
 	const {getBalance} = useWallet();
-	const {holdings} = useYCRV();
+	const {prices, holdings} = useYCRV();
 	const balanceOfStyCRV = getBalance({address: STYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const balanceOfLpyCRVV2 = getBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
-	const stycrvPrice = useTokenPrice({address: STYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvPrice = useTokenPrice({address: LPYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvV2Price = useTokenPrice({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1});
+	const stycrvPrice = prices[STYCRV_TOKEN_ADDRESS]?.normalized;
+	const lpycrvPrice = prices[LPYCRV_TOKEN_ADDRESS]?.normalized;
+	const lpycrvV2Price = prices[LPYCRV_V2_TOKEN_ADDRESS]?.normalized;
 
 	const formatedYearnHas = useMemo(
 		(): string => (holdings?.veCRVBalance ? formatAmount(toNormalizedValue(holdings.veCRVBalance, 18), 0, 0) : ''),
@@ -91,20 +91,21 @@ function HeaderPosition(): ReactElement {
 }
 
 function ZapAndStats(): ReactElement {
-	const {holdings, styCRVAPY} = useYCRV();
+	const {holdings, styCRVAPY, prices} = useYCRV();
 	const {vaults} = useYearn();
-	const {curveWeeklyFees, cgPrices} = useCurve();
+	const {curveWeeklyFees} = useCurve();
 	const {getBalance} = useWallet();
 
 	const lpCRVAPY = useMemo((): string => getVaultAPR(vaults, LPYCRV_TOKEN_ADDRESS), [vaults]);
 	const lpCRVV2APY = useMemo((): string => getVaultAPR(vaults, LPYCRV_V2_TOKEN_ADDRESS), [vaults]);
-	const ycrvPrice = useTokenPrice({address: YCRV_TOKEN_ADDRESS, chainID: 1});
-	const stycrvPrice = useTokenPrice({address: STYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvPrice = useTokenPrice({address: LPYCRV_TOKEN_ADDRESS, chainID: 1});
-	const lpycrvV2Price = useTokenPrice({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1});
 	const balanceOfStyCRV = getBalance({address: STYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const balanceOfLpyCRVV2 = getBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
+
+	const ycrvPrice = useMemo((): number => prices?.[YCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
+	const stycrvPrice = useMemo((): number => prices?.[STYCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
+	const lpycrvPrice = useMemo((): number => prices?.[LPYCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
+	const lpycrvV2Price = useMemo((): number => prices?.[LPYCRV_V2_TOKEN_ADDRESS]?.normalized || 0, [prices]);
 
 	const latestCurveFeesValue = useMemo((): number => {
 		const {weeklyFeesTable} = curveWeeklyFees;
@@ -123,11 +124,12 @@ function ZapAndStats(): ReactElement {
 	const currentVeCRVAPY = useMemo((): number => {
 		return (
 			(latestCurveFeesValue /
-				(toNormalizedValue(toBigInt(holdings?.veCRVTotalSupply), 18) * cgPrices?.['curve-dao-token']?.usd)) *
+				(toNormalizedValue(toBigInt(holdings?.veCRVTotalSupply), 18) * prices[CRV_TOKEN_ADDRESS]?.normalized ||
+					0)) *
 			52 *
 			100
 		);
-	}, [holdings, latestCurveFeesValue, cgPrices]);
+	}, [holdings?.veCRVTotalSupply, latestCurveFeesValue, prices]);
 
 	const curveAdminFeePercent = useMemo((): number => {
 		return (currentVeCRVAPY * Number(holdings?.boostMultiplier)) / 10000;

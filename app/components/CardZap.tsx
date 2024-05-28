@@ -1,6 +1,7 @@
 import {useMemo} from 'react';
 import {CardTransactorContextApp, useCardTransactor} from 'app/components/CardTransactorWrapper';
 import {Dropdown} from 'app/components/common/TokenDropdown';
+import {useYCRV} from 'app/contexts/useYCRV';
 import {ArrowDown} from 'app/icons/ArrowDown';
 import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'app/tokens';
 import useWallet from '@builtbymom/web3/contexts/useWallet';
@@ -12,9 +13,7 @@ import {
 	handleInputChangeValue,
 	isZero,
 	toAddress,
-	toBigInt,
-	toNormalizedBN,
-	toNormalizedValue
+	toNormalizedBN
 } from '@builtbymom/web3/utils';
 import {Button} from '@yearn-finance/web-lib/components/Button';
 import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
@@ -31,9 +30,10 @@ import type {ChangeEvent, ReactElement} from 'react';
 import type {TDropdownOption} from '@yearn-finance/web-lib/types';
 
 function CardZap(): ReactElement {
+	const {prices} = useYCRV();
 	const {isActive} = useWeb3();
 	const {getToken, getBalance} = useWallet();
-	const {vaults, prices} = useYearn();
+	const {vaults} = useYearn();
 	const {
 		txStatusApprove,
 		txStatusZap,
@@ -53,20 +53,10 @@ function CardZap(): ReactElement {
 		onIncreaseCRVAllowance
 	} = useCardTransactor();
 
-	const ycrvPrice = useMemo(
-		(): number => toNormalizedValue(toBigInt(prices?.[1]?.[YCRV_TOKEN_ADDRESS] || 0), 6),
-		[prices]
-	);
-
-	const ycrvCurvePoolPrice = useMemo(
-		(): number => toNormalizedValue(toBigInt(prices?.[1]?.[YCRV_CURVE_POOL_ADDRESS] || 0), 6),
-		[prices]
-	);
-
-	const stycrvPrice = useMemo(
-		(): number => toNormalizedValue(toBigInt(prices?.[1]?.[STYCRV_TOKEN_ADDRESS] || 0), 6),
-		[prices]
-	);
+	const crvPrice = useMemo((): number => prices?.[CRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
+	const ycrvPrice = useMemo((): number => prices?.[YCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
+	const ycrvCurvePoolPrice = useMemo((): number => prices?.[YCRV_CURVE_POOL_ADDRESS]?.normalized || 0, [prices]);
+	const stycrvPrice = useMemo((): number => prices?.[STYCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	 ** useMemo to get the current possible TO vaults path for the current FROM
@@ -228,20 +218,22 @@ function CardZap(): ReactElement {
 						className={'pl-2 text-xs font-normal text-neutral-600'}>
 						{formatCounterValue(
 							amount?.normalized || 0,
-							toAddress(selectedOptionFrom.value) === YCRV_TOKEN_ADDRESS
+							toAddress(selectedOptionFrom.value) === toAddress(YCRV_TOKEN_ADDRESS)
 								? ycrvPrice || 0
-								: toAddress(selectedOptionFrom.value) === YCRV_CURVE_POOL_ADDRESS
+								: toAddress(selectedOptionFrom.value) === toAddress(YCRV_CURVE_POOL_ADDRESS)
 									? ycrvCurvePoolPrice || 0
-									: toAddress(selectedOptionFrom.value) === STYCRV_TOKEN_ADDRESS
+									: toAddress(selectedOptionFrom.value) === toAddress(STYCRV_TOKEN_ADDRESS)
 										? stycrvPrice || 0
-										: Number(
-												getToken({
-													address: selectedOptionFrom.value,
-													chainID: selectedOptionFrom.chainID
-												}).price.normalized
-											) ||
-											vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price ||
-											0
+										: toAddress(selectedOptionFrom.value) === toAddress(CRV_TOKEN_ADDRESS)
+											? crvPrice || 0
+											: Number(
+													getToken({
+														address: selectedOptionFrom.value,
+														chainID: selectedOptionFrom.chainID
+													}).price.normalized
+												) ||
+												vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price ||
+												0
 						)}
 					</p>
 				</div>
@@ -286,16 +278,18 @@ function CardZap(): ReactElement {
 							expectedOutWithSlippage,
 							toAddress(selectedOptionTo.value) === YCRV_TOKEN_ADDRESS
 								? ycrvPrice || 0
-								: toAddress(selectedOptionFrom.value) === YCRV_CURVE_POOL_ADDRESS
-									? ycrvCurvePoolPrice || 0
-									: Number(
-											getToken({
-												address: selectedOptionTo.value,
-												chainID: selectedOptionTo.chainID
-											}).price.normalized
-										) ||
-										vaults?.[toAddress(selectedOptionTo.value)]?.tvl?.price ||
-										0
+								: toAddress(selectedOptionTo.value) === STYCRV_TOKEN_ADDRESS
+									? stycrvPrice || 0
+									: toAddress(selectedOptionFrom.value) === YCRV_CURVE_POOL_ADDRESS
+										? ycrvCurvePoolPrice || 0
+										: Number(
+												getToken({
+													address: selectedOptionTo.value,
+													chainID: selectedOptionTo.chainID
+												}).price.normalized
+											) ||
+											vaults?.[toAddress(selectedOptionTo.value)]?.tvl?.price ||
+											0
 						)}
 					</p>
 				</div>

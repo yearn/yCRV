@@ -1,12 +1,18 @@
 import {createContext, useContext, useMemo, useState} from 'react';
 import {useAllowances} from 'app/hooks/useAllowanceHook';
 import {defaultHoldings, useHoldings} from 'app/hooks/useHoldingsHook';
+import {usePrices} from 'app/hooks/usePrices';
 import {useFetch} from '@builtbymom/web3/hooks/useFetch';
+import {CRV_TOKEN_ADDRESS} from '@builtbymom/web3/utils';
 import {useYDaemonBaseURI} from '@yearn-finance/web-lib/hooks/useYDaemonBaseURI';
 import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
-	STYCRV_TOKEN_ADDRESS
+	STYCRV_TOKEN_ADDRESS,
+	VLYCRV_TOKEN_ADDRESS,
+	YCRV_TOKEN_ADDRESS,
+	YVBOOST_TOKEN_ADDRESS,
+	YVECRV_TOKEN_ADDRESS
 } from '@yearn-finance/web-lib/utils/constants';
 import {
 	yDaemonVaultHarvestsSchema,
@@ -14,6 +20,7 @@ import {
 } from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
 
 import type {TCRVHoldings} from 'app/hooks/useHoldingsHook';
+import type {TPriceResult} from 'app/hooks/usePrices';
 import type {ReactElement} from 'react';
 import type {TYDaemonVault, TYDaemonVaultHarvests} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
 import type {TDict} from '@builtbymom/web3/types';
@@ -24,6 +31,7 @@ type TYCRVContext = {
 	allowances: TDict<bigint>;
 	holdings: TCRVHoldings;
 	harvests: TYDaemonVaultHarvests;
+	prices: TPriceResult;
 	set_slippage: (slippage: number) => void;
 	refetchAllowances: () => void;
 };
@@ -34,6 +42,7 @@ const defaultProps = {
 	allowances: {},
 	slippage: 0.6,
 	holdings: defaultHoldings,
+	prices: {},
 	set_slippage: (): void => undefined,
 	refetchAllowances: (): void => undefined
 };
@@ -47,6 +56,20 @@ export const YCRVContextApp = ({children}: {children: ReactElement}): ReactEleme
 	const [slippage, set_slippage] = useState<number>(0.6);
 	const holdings = useHoldings();
 	const allowances = useAllowances();
+	const {data: prices} = usePrices({
+		tokens: [
+			CRV_TOKEN_ADDRESS,
+			STYCRV_TOKEN_ADDRESS,
+			LPYCRV_TOKEN_ADDRESS,
+			LPYCRV_V2_TOKEN_ADDRESS,
+			VLYCRV_TOKEN_ADDRESS,
+			YCRV_TOKEN_ADDRESS,
+			LPYCRV_V2_TOKEN_ADDRESS,
+			YVECRV_TOKEN_ADDRESS,
+			YVBOOST_TOKEN_ADDRESS
+		],
+		chainId: 1
+	});
 
 	const {data: styCRVVault} = useFetch<TYDaemonVault>({
 		endpoint: `${yDaemonBaseUri}/vaults/${STYCRV_TOKEN_ADDRESS}`,
@@ -76,9 +99,10 @@ export const YCRVContextApp = ({children}: {children: ReactElement}): ReactEleme
 			refetchAllowances: allowances[1],
 			styCRVAPY,
 			slippage,
-			set_slippage
+			set_slippage,
+			prices: prices ?? {}
 		}),
-		[yCRVHarvests, holdings, allowances, styCRVAPY, slippage, set_slippage]
+		[yCRVHarvests, holdings, allowances, styCRVAPY, slippage, set_slippage, prices]
 	);
 
 	return <YCRVContext.Provider value={contextValue}>{children}</YCRVContext.Provider>;
