@@ -199,14 +199,14 @@ function About(): ReactElement {
 							<p className={'mt-1 pr-2 text-neutral-900/60'}>{'%'}</p>
 						</div>
 						<button
-							onClick={(): void => set_localSlippage(2)}
+							onClick={(): void => set_localSlippage(0.05)}
 							className={'flex h-10 items-center bg-neutral-300 p-2'}>
-							<p className={'pr-5 text-neutral-900'}>{'2%'}</p>
+							<p className={'pr-5 text-neutral-900'}>{'0.05%'}</p>
 						</button>
 						<button
-							onClick={(): void => set_localSlippage(3)}
+							onClick={(): void => set_localSlippage(0.1)}
 							className={'flex h-10 items-center bg-neutral-300 p-2'}>
-							<p className={'pr-5 text-neutral-900'}>{'3%'}</p>
+							<p className={'pr-5 text-neutral-900'}>{'0.1%'}</p>
 						</button>
 						<Button
 							isDisabled={slippage === localSlippage}

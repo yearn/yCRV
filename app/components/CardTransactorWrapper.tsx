@@ -273,7 +273,7 @@ export function CardTransactorContextApp({
 				outputToken: selectedOptionTo.value, //_output_token
 				amount: amount.raw, //amount_in
 				minAmount: toBigInt(expectedOut), //_min_out
-				slippage: selectedOptionTo.value === YCRV_TOKEN_ADDRESS ? 0n : toBigInt(slippage * 100), // Default to 0.6
+				slippage: selectedOptionTo.value === YCRV_TOKEN_ADDRESS ? 0n : toBigInt(slippage * 100), // Default to 0.03
 				statusHandler: set_txStatusZap
 			});
 			if (result.isSuccessful) {

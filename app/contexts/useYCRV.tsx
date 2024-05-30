@@ -40,7 +40,7 @@ const defaultProps = {
 	styCRVAPY: 0,
 	harvests: [],
 	allowances: {},
-	slippage: 0.6,
+	slippage: 0.03,
 	holdings: defaultHoldings,
 	prices: {},
 	set_slippage: (): void => undefined,
@@ -53,7 +53,7 @@ const defaultProps = {
 const YCRVContext = createContext<TYCRVContext>(defaultProps);
 export const YCRVContextApp = ({children}: {children: ReactElement}): ReactElement => {
 	const {yDaemonBaseUri} = useYDaemonBaseURI({chainID: 1});
-	const [slippage, set_slippage] = useState<number>(0.6);
+	const [slippage, set_slippage] = useState<number>(0.03);
 	const holdings = useHoldings();
 	const allowances = useAllowances();
 	const {data: prices} = usePrices({
