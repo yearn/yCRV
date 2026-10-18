@@ -6,6 +6,7 @@ import AppHeader from 'app/components/common/Header';
 import Meta from 'app/components/common/Meta';
 import {CurveContextApp} from 'app/contexts/useCurve';
 import {YCRVContextApp} from 'app/contexts/useYCRV';
+import {YearnKongVaultContextApp} from 'app/contexts/useYearn';
 import {arbitrum, base, fantom, optimism, polygon} from 'viem/chains';
 import {AnimatePresence, motion} from 'framer-motion';
 import {WalletContextApp} from '@builtbymom/web3/contexts/useWallet';
@@ -14,7 +15,6 @@ import {cl} from '@builtbymom/web3/utils/cl';
 import {motionVariants} from '@builtbymom/web3/utils/helpers';
 import {localhost} from '@builtbymom/web3/utils/wagmi';
 import {mainnet} from '@wagmi/chains';
-import {YearnContextApp} from '@yearn-finance/web-lib/contexts/useYearn';
 
 import type {AppProps} from 'next/app';
 import type {ReactElement} from 'react';
@@ -78,8 +78,7 @@ function AppWrapper(props: AppProps): ReactElement {
  ** The 'MyApp' function is a React functional component that returns a ReactElement. It is the main
  ** entry point of the application.
  **
- ** It uses the 'WithYearn' context provider to provide global state for Yearn. The 'WithYearn'
- ** component is configured with a list of supported chains and some options.
+ ** It uses providers for wallet state, Kong vault details, yCRV prices, harvests, and Curve data.
  **
  ** The 'App' component is wrapped with the 'WithYearn' component to provide it with the Yearn
  ** context.
@@ -105,7 +104,7 @@ function MyApp(props: AppProps): ReactElement {
 				supportedChains={[mainnet, optimism, polygon, fantom, base, arbitrum, localhost]}
 				tokenLists={['https://raw.githubusercontent.com/SmolDapp/tokenLists/main/lists/yearn.json']}>
 				<WalletContextApp>
-					<YearnContextApp>
+					<YearnKongVaultContextApp>
 						<YCRVContextApp>
 							<CurveContextApp>
 								<main className={cl('flex flex-col h-screen', aeonik.className)}>
@@ -116,7 +115,7 @@ function MyApp(props: AppProps): ReactElement {
 								</main>
 							</CurveContextApp>
 						</YCRVContextApp>
-					</YearnContextApp>
+					</YearnKongVaultContextApp>
 				</WalletContextApp>
 			</WithMom>
 		</>

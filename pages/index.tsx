@@ -5,6 +5,7 @@ import {Harvests} from 'app/components/Harvests';
 import {VaultsListInternalMigrationRow} from 'app/components/VaultsListInternalMigrationRow';
 import {useCurve} from 'app/contexts/useCurve';
 import {useYCRV} from 'app/contexts/useYCRV';
+import {useKongVaults} from 'app/contexts/useYearn';
 import {getVaultAPR} from 'app/utils';
 import {useWallet} from '@builtbymom/web3/contexts/useWallet';
 import {
@@ -18,7 +19,6 @@ import {
 	toBigInt,
 	toNormalizedValue
 } from '@builtbymom/web3/utils';
-import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
 import {
 	CRV_TOKEN_ADDRESS,
 	LPYCRV_TOKEN_ADDRESS,
@@ -29,15 +29,25 @@ import {
 
 import type {ReactElement} from 'react';
 
+function formatKnownUSDValue(amount: number, price: number | undefined): string {
+	if (!Number.isFinite(amount)) {
+		return 'N/A';
+	}
+	if (amount === 0) {
+		return formatCounterValue(0, 0);
+	}
+	return price === undefined ? 'N/A' : formatCounterValue(amount, price);
+}
+
 function HeaderPosition(): ReactElement {
 	const {getBalance} = useWallet();
 	const {prices, holdings} = useYCRV();
 	const balanceOfStyCRV = getBalance({address: STYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const balanceOfLpyCRVV2 = getBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
-	const stycrvPrice = prices[STYCRV_TOKEN_ADDRESS]?.normalized;
-	const lpycrvPrice = prices[LPYCRV_TOKEN_ADDRESS]?.normalized;
-	const lpycrvV2Price = prices[LPYCRV_V2_TOKEN_ADDRESS]?.normalized;
+	const stycrvPrice = prices[STYCRV_TOKEN_ADDRESS];
+	const lpycrvPrice = prices[LPYCRV_TOKEN_ADDRESS];
+	const lpycrvV2Price = prices[LPYCRV_V2_TOKEN_ADDRESS];
 
 	const formatedYearnHas = useMemo(
 		(): string => (holdings?.veCRVBalance ? formatAmount(toNormalizedValue(holdings.veCRVBalance, 18), 0, 0) : ''),
@@ -45,13 +55,21 @@ function HeaderPosition(): ReactElement {
 	);
 
 	const formatedYouHave = useMemo(
-		(): string =>
-			formatCounterValueRaw(
-				Number(balanceOfStyCRV.normalized) * stycrvPrice +
-					Number(balanceOfLpyCRV.normalized) * lpycrvPrice +
-					Number(balanceOfLpyCRVV2.normalized) * lpycrvV2Price,
-				1
-			),
+		(): string => {
+			const positions = [
+				{balance: Number(balanceOfStyCRV.normalized), price: stycrvPrice},
+				{balance: Number(balanceOfLpyCRV.normalized), price: lpycrvPrice},
+				{balance: Number(balanceOfLpyCRVV2.normalized), price: lpycrvV2Price}
+			];
+			if (positions.some(({balance, price}): boolean => balance > 0 && price === undefined)) {
+				return 'N/A';
+			}
+			const total = positions.reduce(
+				(sum, {balance, price}): number => sum + balance * (price ?? 0),
+				0
+			);
+			return formatCounterValueRaw(total, 1);
+		},
 		[
 			balanceOfStyCRV.normalized,
 			stycrvPrice,
@@ -78,12 +96,16 @@ function HeaderPosition(): ReactElement {
 			<div className={'col-span-12 w-full md:col-span-4'}>
 				<p className={'pb-2 text-lg text-neutral-900 md:pb-6 md:text-3xl'}>{'You have'}</p>
 				<b className={'font-number text-3xl text-neutral-900 md:text-7xl'}>
-					<ValueAnimation
-						identifier={'youHave'}
-						value={formatedYouHave}
-						prefix={'$'}
-						defaultValue={'0,00'}
-					/>
+					{formatedYouHave === 'N/A' ? (
+						<span>{'$ N/A'}</span>
+					) : (
+						<ValueAnimation
+							identifier={'youHave'}
+							value={formatedYouHave}
+							prefix={'$'}
+							defaultValue={'0,00'}
+						/>
+					)}
 				</b>
 			</div>
 		</Fragment>
@@ -92,7 +114,7 @@ function HeaderPosition(): ReactElement {
 
 function ZapAndStats(): ReactElement {
 	const {holdings, styCRVAPY, prices} = useYCRV();
-	const {vaults} = useYearn();
+	const {vaults} = useKongVaults();
 	const {curveWeeklyFees} = useCurve();
 	const {getBalance} = useWallet();
 
@@ -102,10 +124,10 @@ function ZapAndStats(): ReactElement {
 	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const balanceOfLpyCRVV2 = getBalance({address: LPYCRV_V2_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 
-	const ycrvPrice = useMemo((): number => prices?.[YCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
-	const stycrvPrice = useMemo((): number => prices?.[STYCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
-	const lpycrvPrice = useMemo((): number => prices?.[LPYCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
-	const lpycrvV2Price = useMemo((): number => prices?.[LPYCRV_V2_TOKEN_ADDRESS]?.normalized || 0, [prices]);
+	const ycrvPrice = prices[YCRV_TOKEN_ADDRESS];
+	const stycrvPrice = prices[STYCRV_TOKEN_ADDRESS];
+	const lpycrvPrice = prices[LPYCRV_TOKEN_ADDRESS];
+	const lpycrvV2Price = prices[LPYCRV_V2_TOKEN_ADDRESS];
 
 	const latestCurveFeesValue = useMemo((): number => {
 		const {weeklyFeesTable} = curveWeeklyFees;
@@ -121,18 +143,20 @@ function ZapAndStats(): ReactElement {
 		return weeklyFeesTable[1]?.rawFees || 0;
 	}, [curveWeeklyFees]);
 
-	const currentVeCRVAPY = useMemo((): number => {
-		return (
-			(latestCurveFeesValue /
-				(toNormalizedValue(toBigInt(holdings?.veCRVTotalSupply), 18) * prices[CRV_TOKEN_ADDRESS]?.normalized ||
-					0)) *
-			52 *
-			100
-		);
+	const currentVeCRVAPY = useMemo((): number | undefined => {
+		const crvPrice = prices[CRV_TOKEN_ADDRESS];
+		const veCRVSupply = toNormalizedValue(toBigInt(holdings?.veCRVTotalSupply), 18);
+		const denominator = veCRVSupply * (crvPrice ?? 0);
+		if (crvPrice === undefined || !Number.isFinite(denominator) || denominator <= 0) {
+			return undefined;
+		}
+		return (latestCurveFeesValue / denominator) * 52 * 100;
 	}, [holdings?.veCRVTotalSupply, latestCurveFeesValue, prices]);
 
-	const curveAdminFeePercent = useMemo((): number => {
-		return (currentVeCRVAPY * Number(holdings?.boostMultiplier)) / 10000;
+	const curveAdminFeePercent = useMemo((): number | undefined => {
+		return currentVeCRVAPY === undefined
+			? undefined
+			: (currentVeCRVAPY * Number(holdings?.boostMultiplier)) / 10000;
 	}, [holdings, currentVeCRVAPY]);
 
 	const crvYCRVPeg = useMemo((): number => {
@@ -151,7 +175,7 @@ function ZapAndStats(): ReactElement {
 						<p
 							suppressHydrationWarning
 							className={'font-number text-sm text-neutral-900'}>
-							{`Price = $${formatAmount(ycrvPrice || 0)} | CRV Ratio = ${
+							{`Price = $${ycrvPrice === undefined ? 'N/A' : formatAmount(ycrvPrice)} | CRV Ratio = ${
 								holdings?.crvYCRVPeg ? formatPercent(crvYCRVPeg * 100) : formatPercent(0)
 							}`}
 						</p>
@@ -196,7 +220,7 @@ function ZapAndStats(): ReactElement {
 						<p
 							suppressHydrationWarning
 							className={'font-number text-sm text-neutral-900'}>
-							{formatCounterValue(balanceOfStyCRV.normalized, stycrvPrice)}
+							{formatKnownUSDValue(Number(balanceOfStyCRV.normalized), stycrvPrice)}
 						</p>
 					</div>
 
@@ -208,7 +232,7 @@ function ZapAndStats(): ReactElement {
 							<b
 								suppressHydrationWarning
 								className={'font-number text-sm text-neutral-900'}>
-								{`${formatPercent(styCRVAPY ?? 0)}*`}
+								{styCRVAPY === undefined ? 'N/A*' : `${formatPercent(styCRVAPY)}*`}
 							</b>
 							<span
 								suppressHydrationWarning
@@ -221,17 +245,17 @@ function ZapAndStats(): ReactElement {
 										<p
 											suppressHydrationWarning
 											className={'font-number text-neutral-400 md:text-xxs'}>
-											{styCRVAPY
-												? `*${formatPercent(styCRVAPY)} APY: `
-												: `*${formatPercent(0)} APY: `}
+											{styCRVAPY === undefined
+												? '*APY unavailable: '
+												: `*${formatPercent(styCRVAPY)} APY: `}
 										</p>
 										<p
 											suppressHydrationWarning
 											className={'font-number text-neutral-400 md:text-xxs'}>
 											{`∙ ${
-												curveAdminFeePercent
-													? formatPercent(curveAdminFeePercent)
-													: formatPercent(0)
+												curveAdminFeePercent === undefined
+													? 'N/A'
+													: formatPercent(curveAdminFeePercent)
 											} Curve Admin Fees (${formatAmount(
 												Number(holdings?.boostMultiplier) / 10000
 											)}x boost)`}
@@ -240,9 +264,9 @@ function ZapAndStats(): ReactElement {
 											suppressHydrationWarning
 											className={'font-number text-neutral-400 md:text-xxs'}>
 											{`∙ ${
-												styCRVAPY && curveAdminFeePercent
-													? formatAmount(styCRVAPY - curveAdminFeePercent, 2, 2)
-													: '0.00'
+												styCRVAPY === undefined || curveAdminFeePercent === undefined
+													? 'N/A'
+													: formatAmount(styCRVAPY - curveAdminFeePercent, 2, 2)
 											}% Gauge Voting Bribes`}
 										</p>
 									</div>
@@ -255,9 +279,7 @@ function ZapAndStats(): ReactElement {
 						<p
 							suppressHydrationWarning
 							className={'font-number text-sm text-neutral-900'}>
-							{holdings?.styCRVSupply
-								? formatCounterValue(toNormalizedValue(holdings.styCRVSupply, 18), ycrvPrice)
-								: formatAmount(0)}
+							{formatKnownUSDValue(toNormalizedValue(holdings.styCRVSupply, 18), ycrvPrice)}
 						</p>
 					</div>
 					<div className={'flex flex-row items-center justify-between pb-1'}>
@@ -288,7 +310,7 @@ function ZapAndStats(): ReactElement {
 						<p
 							suppressHydrationWarning
 							className={'font-number text-sm text-neutral-900'}>
-							{formatCounterValue(balanceOfLpyCRVV2.normalized, lpycrvV2Price)}
+							{formatKnownUSDValue(Number(balanceOfLpyCRVV2.normalized), lpycrvV2Price)}
 						</p>
 					</div>
 
@@ -299,7 +321,7 @@ function ZapAndStats(): ReactElement {
 						<b
 							suppressHydrationWarning
 							className={'font-number text-sm text-neutral-900'}>
-							{lpCRVV2APY ? `${(lpCRVV2APY || '').replace('APY', '')}` : `${formatPercent(0)}`}
+							{lpCRVV2APY.replace('APY', '').trim()}
 						</b>
 					</div>
 					<div className={'flex flex-row items-center justify-between pb-1'}>
@@ -307,9 +329,7 @@ function ZapAndStats(): ReactElement {
 						<p
 							suppressHydrationWarning
 							className={'font-number text-sm text-neutral-900'}>
-							{holdings?.lpyCRVV2Supply
-								? formatCounterValue(toNormalizedValue(holdings.lpyCRVV2Supply, 18), lpycrvV2Price)
-								: formatAmount(0)}
+							{formatKnownUSDValue(toNormalizedValue(holdings.lpyCRVV2Supply, 18), lpycrvV2Price)}
 						</p>
 					</div>
 					<div className={'flex flex-row items-center justify-between pb-1'}>
@@ -341,7 +361,7 @@ function ZapAndStats(): ReactElement {
 							<p
 								suppressHydrationWarning
 								className={'font-number text-sm text-neutral-900'}>
-								{formatCounterValue(balanceOfLpyCRV.normalized, lpycrvPrice)}
+								{formatKnownUSDValue(Number(balanceOfLpyCRV.normalized), lpycrvPrice)}
 							</p>
 						</div>
 
@@ -352,7 +372,7 @@ function ZapAndStats(): ReactElement {
 							<b
 								suppressHydrationWarning
 								className={'font-number text-sm text-neutral-900'}>
-								{lpCRVAPY ? `${(lpCRVAPY || '').replace('APY', '')}` : `${formatPercent(0)}`}
+								{lpCRVAPY.replace('APY', '').trim()}
 							</b>
 						</div>
 						<div className={'flex flex-row items-center justify-between pb-1'}>
@@ -360,9 +380,7 @@ function ZapAndStats(): ReactElement {
 							<p
 								suppressHydrationWarning
 								className={'font-number text-sm text-neutral-900'}>
-								{holdings?.lpyCRVSupply
-									? formatCounterValue(toNormalizedValue(holdings.lpyCRVSupply, 18), lpycrvPrice)
-									: formatAmount(0)}
+								{formatKnownUSDValue(toNormalizedValue(holdings.lpyCRVSupply, 18), lpycrvPrice)}
 							</p>
 						</div>
 						<div className={'flex flex-row items-center justify-between pb-1'}>
@@ -384,7 +402,7 @@ function ZapAndStats(): ReactElement {
 
 function Holdings(): ReactElement {
 	const {getBalance} = useWallet();
-	const {vaultsMigrations} = useYearn();
+	const {vaultsMigrations} = useKongVaults();
 	const balanceOfLpyCRV = getBalance({address: LPYCRV_TOKEN_ADDRESS, chainID: 1}); //yCRV is on ETH mainnet only
 	const hasLegacyLpyCRV = !!vaultsMigrations[LPYCRV_TOKEN_ADDRESS] && balanceOfLpyCRV.raw > 0n;
 

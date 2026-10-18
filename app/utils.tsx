@@ -1,5 +1,6 @@
 import {formatUnits, parseUnits, zeroAddress} from 'viem';
 import {formatPercent, toAddress, toBigInt, toNormalizedValue} from '@builtbymom/web3/utils';
+import type {TYCRVKongVault} from 'app/contexts/useYearn';
 import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
@@ -8,22 +9,22 @@ import {
 	YVECRV_TOKEN_ADDRESS
 } from '@yearn-finance/web-lib/utils/constants';
 
-import type {TYDaemonVault} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
 import type {TDict} from '@builtbymom/web3/types';
 
-export function getVaultAPR(vaults: TDict<TYDaemonVault | undefined>, vaultAddress: string): string {
-	if (!vaults?.[toAddress(vaultAddress)]) {
-		return '';
+export function getVaultAPR(vaults: TDict<TYCRVKongVault | undefined>, vaultAddress: string): string {
+	const vault = vaults?.[toAddress(vaultAddress)];
+	if (!vault) {
+		return 'APY N/A';
 	}
 
 	if (toAddress(vaultAddress) === YVECRV_TOKEN_ADDRESS || toAddress(vaultAddress) === YVBOOST_TOKEN_ADDRESS) {
 		return `APY ${formatPercent(0)}`;
 	}
 
-	if (vaults?.[toAddress(vaultAddress)]?.apr?.netAPR) {
-		return `APY ${formatPercent((vaults?.[toAddress(vaultAddress)]?.apr?.netAPR || 0) * 100, 2, 2, 500)}`;
+	if (vault.apr.netAPR === undefined) {
+		return 'APY N/A';
 	}
-	return `APY ${formatPercent(0)}`;
+	return `APY ${formatPercent(vault.apr.netAPR * 100, 2, 2, 500)}`;
 }
 
 export function getAmountWithSlippage(from: string, to: string, value: bigint, slippage: number): number {

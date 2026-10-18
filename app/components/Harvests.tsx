@@ -2,6 +2,7 @@ import {useMemo, useState} from 'react';
 import {HarvestListHead} from 'app/components/HarvestsListHead';
 import {HarvestListRow} from 'app/components/HarvestsListRow';
 import {useYCRV} from 'app/contexts/useYCRV';
+import type {TYCRVHarvest} from 'app/contexts/useYCRV';
 import {toAddress} from '@builtbymom/web3/utils';
 import {Button} from '@yearn-finance/web-lib/components/Button';
 import {
@@ -11,16 +12,12 @@ import {
 } from '@yearn-finance/web-lib/utils/constants';
 
 import type {ReactElement} from 'react';
-import type {
-	TYDaemonVaultHarvest,
-	TYDaemonVaultHarvests
-} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
 
 export function Harvests(): ReactElement {
-	const {harvests} = useYCRV();
+	const {harvests, harvestsUnavailableVaults, harvestsPartialVaults, isHarvestsLoading} = useYCRV();
 	const [category, set_category] = useState('all');
 
-	const filteredHarvests = useMemo((): TYDaemonVaultHarvests => {
+	const filteredHarvests = useMemo((): TYCRVHarvest[] => {
 		const _harvests = [...(harvests || [])];
 		if (category === 'st-yCRV') {
 			return _harvests.filter((harvest): boolean => toAddress(harvest.vaultAddress) === STYCRV_TOKEN_ADDRESS);
@@ -66,8 +63,16 @@ export function Harvests(): ReactElement {
 				</div>
 			</div>
 			<div className={'mt-4 grid w-full grid-cols-1 md:mt-0'}>
+				{(harvestsUnavailableVaults.length > 0 || harvestsPartialVaults.length > 0) && (
+					<div
+						role={'alert'}
+						className={'bg-amber-100 px-4 py-3 text-sm text-amber-900'}>
+						{'Some vault harvest history is unavailable or incomplete. Available reports are shown below.'}
+					</div>
+				)}
+				{isHarvestsLoading && harvests.length === 0 && <p className={'px-4 py-3 text-sm'}>{'Loading harvest history…'}</p>}
 				<HarvestListHead />
-				{(filteredHarvests || [])?.map((harvest: TYDaemonVaultHarvest, index: number): ReactElement => {
+				{filteredHarvests.map((harvest: TYCRVHarvest, index: number): ReactElement => {
 					return (
 						<HarvestListRow
 							key={`${harvest.timestamp}_${harvest.vaultAddress}_${index}`}

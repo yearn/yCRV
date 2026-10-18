@@ -16,14 +16,11 @@ import {
 	toNormalizedBN
 } from '@builtbymom/web3/utils';
 import {Button} from '@yearn-finance/web-lib/components/Button';
-import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
 import {
 	LPYCRV_TOKEN_ADDRESS,
 	LPYCRV_V2_TOKEN_ADDRESS,
-	STYCRV_TOKEN_ADDRESS,
 	YCRV_CURVE_POOL_ADDRESS,
-	YCRV_CURVE_POOL_V2_ADDRESS,
-	YCRV_TOKEN_ADDRESS
+	YCRV_CURVE_POOL_V2_ADDRESS
 } from '@yearn-finance/web-lib/utils/constants';
 
 import type {ChangeEvent, ReactElement} from 'react';
@@ -32,8 +29,7 @@ import type {TDropdownOption} from '@yearn-finance/web-lib/types';
 function CardZap(): ReactElement {
 	const {prices} = useYCRV();
 	const {isActive} = useWeb3();
-	const {getToken, getBalance} = useWallet();
-	const {vaults} = useYearn();
+	const {getBalance} = useWallet();
 	const {
 		txStatusApprove,
 		txStatusZap,
@@ -52,11 +48,6 @@ function CardZap(): ReactElement {
 		onZap,
 		onIncreaseCRVAllowance
 	} = useCardTransactor();
-
-	const crvPrice = useMemo((): number => prices?.[CRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
-	const ycrvPrice = useMemo((): number => prices?.[YCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
-	const ycrvCurvePoolPrice = useMemo((): number => prices?.[YCRV_CURVE_POOL_ADDRESS]?.normalized || 0, [prices]);
-	const stycrvPrice = useMemo((): number => prices?.[STYCRV_TOKEN_ADDRESS]?.normalized || 0, [prices]);
 
 	/* 🔵 - Yearn Finance ******************************************************
 	 ** useMemo to get the current possible TO vaults path for the current FROM
@@ -185,10 +176,7 @@ function CardZap(): ReactElement {
 									set_amount(
 										handleInputChangeValue(
 											e.target.value,
-											getToken({
-												address: selectedOptionFrom.value,
-												chainID: selectedOptionFrom.chainID
-											}).decimals || 18
+											selectedOptionFrom.decimals
 										)
 									);
 									set_hasTypedSomething(true);
@@ -216,25 +204,9 @@ function CardZap(): ReactElement {
 					<p
 						suppressHydrationWarning
 						className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{formatCounterValue(
-							amount?.normalized || 0,
-							toAddress(selectedOptionFrom.value) === toAddress(YCRV_TOKEN_ADDRESS)
-								? ycrvPrice || 0
-								: toAddress(selectedOptionFrom.value) === toAddress(YCRV_CURVE_POOL_ADDRESS)
-									? ycrvCurvePoolPrice || 0
-									: toAddress(selectedOptionFrom.value) === toAddress(STYCRV_TOKEN_ADDRESS)
-										? stycrvPrice || 0
-										: toAddress(selectedOptionFrom.value) === toAddress(CRV_TOKEN_ADDRESS)
-											? crvPrice || 0
-											: Number(
-													getToken({
-														address: selectedOptionFrom.value,
-														chainID: selectedOptionFrom.chainID
-													}).price.normalized
-												) ||
-												vaults?.[toAddress(selectedOptionFrom.value)]?.tvl?.price ||
-												0
-						)}
+						{prices[toAddress(selectedOptionFrom.value)] === undefined
+							? 'N/A'
+							: formatCounterValue(amount?.normalized || 0, prices[toAddress(selectedOptionFrom.value)])}
 					</p>
 				</div>
 			</div>
@@ -274,23 +246,12 @@ function CardZap(): ReactElement {
 					<p
 						suppressHydrationWarning
 						className={'pl-2 text-xs font-normal text-neutral-600'}>
-						{formatCounterValue(
-							expectedOutWithSlippage,
-							toAddress(selectedOptionTo.value) === YCRV_TOKEN_ADDRESS
-								? ycrvPrice || 0
-								: toAddress(selectedOptionTo.value) === STYCRV_TOKEN_ADDRESS
-									? stycrvPrice || 0
-									: toAddress(selectedOptionFrom.value) === YCRV_CURVE_POOL_ADDRESS
-										? ycrvCurvePoolPrice || 0
-										: Number(
-												getToken({
-													address: selectedOptionTo.value,
-													chainID: selectedOptionTo.chainID
-												}).price.normalized
-											) ||
-											vaults?.[toAddress(selectedOptionTo.value)]?.tvl?.price ||
-											0
-						)}
+						{prices[toAddress(selectedOptionTo.value)] === undefined
+							? 'N/A'
+							: formatCounterValue(
+									expectedOutWithSlippage,
+									prices[toAddress(selectedOptionTo.value)]
+								)}
 					</p>
 				</div>
 			</div>

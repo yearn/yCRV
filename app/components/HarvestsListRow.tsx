@@ -4,11 +4,11 @@ import {ImageWithFallback} from '@yearn-finance/web-lib/components/ImageWithFall
 import {IconLinkOut} from '@yearn-finance/web-lib/icons/IconLinkOut';
 import {STYCRV_TOKEN_ADDRESS} from '@yearn-finance/web-lib/utils/constants';
 import {formatDate} from '@yearn-finance/web-lib/utils/format.time';
+import type {TYCRVHarvest} from 'app/contexts/useYCRV';
 
 import type {ReactElement} from 'react';
-import type {TYDaemonVaultHarvest} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
 
-export function HarvestListRow({harvest}: {harvest: TYDaemonVaultHarvest}): ReactElement {
+export function HarvestListRow({harvest}: {harvest: TYCRVHarvest}): ReactElement {
 	return (
 		<div className={'yearn--table-wrapper'}>
 			<div className={'yearn--table-token-section'}>

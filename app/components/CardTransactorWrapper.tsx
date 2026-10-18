@@ -1,6 +1,7 @@
 import {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import {deposit, zapCRV} from 'app/actions';
 import {useYCRV} from 'app/contexts/useYCRV';
+import {useKongVaults} from 'app/contexts/useYearn';
 import {ZAP_OPTIONS_FROM, ZAP_OPTIONS_TO} from 'app/tokens';
 import {getAmountWithSlippage, getVaultAPR} from 'app/utils';
 import useWallet from '@builtbymom/web3/contexts/useWallet';
@@ -18,7 +19,6 @@ import {approveERC20, defaultTxStatus} from '@builtbymom/web3/utils/wagmi';
 import {useAsync, useIntervalEffect} from '@react-hookz/web';
 import {readContract} from '@wagmi/core';
 import {yToast} from '@yearn-finance/web-lib/components/yToast';
-import {useYearn} from '@yearn-finance/web-lib/contexts/useYearn';
 import {useAddToken} from '@yearn-finance/web-lib/hooks/useAddToken';
 import {useDismissToasts} from '@yearn-finance/web-lib/hooks/useDismissToasts';
 import {VAULT_ABI} from '@yearn-finance/web-lib/utils/abi/vault.abi';
@@ -86,7 +86,7 @@ export function CardTransactorContextApp({
 	const {provider, isActive, address} = useWeb3();
 	const {styCRVAPY, allowances, refetchAllowances, slippage} = useYCRV();
 	const {getBalance, onRefresh} = useWallet();
-	const {vaults} = useYearn();
+	const {vaults} = useKongVaults();
 	const [txStatusApprove, set_txStatusApprove] = useState(defaultTxStatus);
 	const [txStatusZap, set_txStatusZap] = useState(defaultTxStatus);
 	const [selectedOptionFrom, set_selectedOptionFrom] = useState(defaultOptionFrom);
@@ -301,14 +301,14 @@ export function CardTransactorContextApp({
 	 **************************************************************************/
 	const fromVaultAPY = useMemo((): string => {
 		if (toAddress(selectedOptionFrom.value) === STYCRV_TOKEN_ADDRESS) {
-			return `APY ${formatPercent(styCRVAPY)}`;
+			return styCRVAPY === undefined ? 'APY N/A' : `APY ${formatPercent(styCRVAPY)}`;
 		}
 		return getVaultAPR(vaults, selectedOptionFrom.value);
 	}, [vaults, selectedOptionFrom, styCRVAPY]);
 
 	const toVaultAPY = useMemo((): string => {
 		if (toAddress(selectedOptionTo.value) === STYCRV_TOKEN_ADDRESS) {
-			return `APY ${formatPercent(styCRVAPY)}`;
+			return styCRVAPY === undefined ? 'APY N/A' : `APY ${formatPercent(styCRVAPY)}`;
 		}
 		return getVaultAPR(vaults, selectedOptionTo.value);
 	}, [vaults, selectedOptionTo, styCRVAPY]);

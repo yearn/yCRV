@@ -3,11 +3,11 @@ import Link from 'next/link';
 import useWallet from '@builtbymom/web3/contexts/useWallet';
 import {formatAmount, toAddress} from '@builtbymom/web3/utils';
 import {ImageWithFallback} from '@yearn-finance/web-lib/components/ImageWithFallback';
+import type {TYCRVKongVault} from 'app/contexts/useYearn';
 
 import type {ReactElement} from 'react';
-import type {TYDaemonVault} from '@yearn-finance/web-lib/utils/schemas/yDaemonVaultsSchemas';
 
-function getVaultName(vault: TYDaemonVault): string {
+function getVaultName(vault: TYCRVKongVault): string {
 	const baseName = vault.name;
 	if (baseName.includes(' yVault')) {
 		return baseName.replace(' yVault', '');
@@ -15,7 +15,7 @@ function getVaultName(vault: TYDaemonVault): string {
 	return baseName;
 }
 
-export function VaultsListInternalMigrationRow({currentVault}: {currentVault: TYDaemonVault}): ReactElement {
+export function VaultsListInternalMigrationRow({currentVault}: {currentVault: TYCRVKongVault}): ReactElement {
 	const {getBalance} = useWallet();
 	const vaultName = useMemo((): string => getVaultName(currentVault), [currentVault]);
 	const balanceToMigrate = getBalance({address: currentVault.address, chainID: currentVault.chainID});

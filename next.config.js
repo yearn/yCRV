@@ -106,10 +106,6 @@ const config = {
 		SHOULD_USE_PARTNER_CONTRACT: true,
 		RANGE_LIMIT: 1_000_000,
 
-		YDAEMON_BASE_URI: process.env.YDAEMON_BASE_URI,
-		// YDAEMON_BASE_URI: 'https://ydaemon.ycorpo.com',
-		// YDAEMON_BASE_URI: 'http://localhost:8080',
-		// YDAEMON_BASE_URI: 'https://api.ycorpo.com',
 		BASE_YEARN_ASSETS_URI: 'https://assets.smold.app/api/token',
 		BASE_YEARN_CHAIN_URI: 'https://assets.smold.app/api/chain',
 		SMOL_ASSETS_URL: 'https://assets.smold.app/api'
